@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MessageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message
@@ -15,6 +16,11 @@ class Message
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 400,
+        maxMessage: 'Message content cannot be longer than {{ limit }} characters.'
+    )]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]

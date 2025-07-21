@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
 class Story
@@ -23,9 +24,34 @@ class Story
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: 'The title must be at least {{ limit }} characters long.',
+        maxMessage: 'The title cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the title.'
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 1000,
+        maxMessage: 'The description cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the description.'
+    )]
+    #[Assert\Regex(
+        pattern: '/\S/',
+        message: 'The description cannot be empty or contain only spaces.'
+    )]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]

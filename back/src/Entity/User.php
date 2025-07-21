@@ -9,7 +9,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity(fields: ['username'], message: 'This username is already taken.')]
+#[UniqueEntity(fields: ['email'], message: 'This email is already used.')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
@@ -21,6 +25,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
+    #[Assert\NotBlank(message: 'The username cannot be blank.')]
+    #[Assert\NotNull(message: 'The username cannot be null.')]
+    #[Assert\Length(
+        min: 3,
+        max: 30,
+        minMessage: 'Your username must be at least {{ limit }} characters long',
+        maxMessage: 'Your username cannot be longer than {{ limit }} characters',
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9]+$/',
+        message: 'Your username can only contain letters and numbers (no spaces, dashes or special characters).'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the username.'
+    )]
     private ?string $username = null;
 
     /**
@@ -33,17 +54,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'The password cannot be blank.')]
+    #[Assert\NotNull(message: 'The password cannot be null.')]
+    #[Assert\Length(
+        min: 8,
+        max: 50,
+        minMessage: 'Your password must be at least {{ limit }} characters long.',
+        maxMessage: 'Your password cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+        message: 'Your password must contain at least one uppercase letter, one lowercase letter, and one number.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the password.'
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Email cannot be blank.')]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Email cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Assert\LessThan('today', message: 'Birthdate must be in the past.')]
+    #[Assert\LessThan('-13 years', message: 'You must be at least 13 years old.')]
+    #[Assert\GreaterThan('-120 years', message: 'Please enter a valid birthdate.')]
     private ?\DateTime $birthdate = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 1000,
+        maxMessage: 'Your bio cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in your bio.'
+    )]
+    #[Assert\Regex(
+        pattern: '/\S/',
+        message: 'Your description cannot be empty or contain only spaces.'
+    )]
     private ?string $description = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarUrl = null;
 

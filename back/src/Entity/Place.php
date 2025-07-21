@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PlaceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PlaceRepository::class)]
 class Place
@@ -18,9 +19,31 @@ class Place
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: 'The title must be at least {{ limit }} characters long.',
+        maxMessage: 'The title cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the title.'
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Description cannot be blank.')]
+    #[Assert\Length(
+        max: 200,
+        maxMessage: 'Description cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the title.'
+    )]
     private ?string $description = null;
 
     #[ORM\OneToOne(mappedBy: 'currentPlace', cascade: ['persist', 'remove'])]

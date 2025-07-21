@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 class Character
@@ -20,12 +21,42 @@ class Character
     private ?string $hashId = null;
 
     #[ORM\Column(length: 30)]
+    #[Assert\NotBlank(message: 'Character name cannot be blank.')]
+    #[Assert\Length(
+        min: 1,
+        max: 30,
+        minMessage: 'Character name must be at least {{ limit }} character long.',
+        maxMessage: 'Character name cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the title.'
+    )]
     private ?string $name = null;
 
     #[ORM\Column(length: 40, nullable: true)]
+    #[Assert\Length(
+        max: 40,
+        maxMessage: 'Title cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the title.'
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 2000,
+        maxMessage: 'Biography cannot be longer than {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/<[^>]*>/',
+        match: false,
+        message: 'HTML tags are not allowed in the title.'
+    )]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255)]
