@@ -11,7 +11,6 @@ use App\Entity\MemberChatStatus;
 use App\DataFixtures\ChatFixtures;
 use App\DataFixtures\UserFixtures;
 use App\DataFixtures\StoryFixtures;
-use App\DataFixtures\MessageFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use App\DataFixtures\MemberChatStatusFixtures;
@@ -22,36 +21,53 @@ class StoryMemberFixtures extends Fixture implements DependentFixtureInterface
   public function load(ObjectManager $manager): void
   {
     $faker = Factory::create('en_US');
+    $usedPairs = []; // éviter doublons (story, user)
 
-    // Création de 40 StoryMembers
-    for ($i = 0; $i < 40; $i++) {
+    // Ajouter un auteur par story
+    for ($i = 0; $i < 10; $i++) {
+      $story = $this->getReference('story_' . $i, Story::class);
+      $chat = $this->getReference('chat_' . $i, Chat::class);
+      $author = $story->getAuthor();
+
+      $storyMember = new StoryMember();
+      $storyMember->setStory($story);
+      $storyMember->setChat($chat);
+      $storyMember->setMemberUser($author);
+      $storyMember->setIsAuthor(true);
+      $storyMember->setIsAccepted(true);
+      $storyMember->setMemberChatStatus($this->getReference('memberChatStatus_' . $i, MemberChatStatus::class));
+
+      $usedPairs[] = $story->getId() . '_' . $author->getId();
+
+      $manager->persist($storyMember);
+      $this->addReference('storyMember_' . $i, $storyMember);
+    }
+
+    // Ajouter 30 membres aléatoires
+    for ($i = 10; $i < 40; $i++) {
       $storyMember = new StoryMember();
 
-      // Assignation de MemberUser
-      $member = $this->getReference('user_' . $faker->numberBetween(0, 9), User::class);
-      $storyMember->setMemberUser($member);
+      // Random user/story
+      $userIndex = $faker->numberBetween(0, 9);
+      $storyIndex = $faker->numberBetween(0, 9);
+      $user = $this->getReference('user_' . $userIndex, User::class);
+      $story = $this->getReference('story_' . $storyIndex, Story::class);
+      $chat = $this->getReference('chat_' . $storyIndex, Chat::class);
 
-      // Assignation de MemberChatStatus
-      $memberChatStatus = $this->getReference('memberChatStatus_' . $i, MemberChatStatus::class);
-      $storyMember->setMemberChatStatus($memberChatStatus);
+      // éviter doublon story/auteur déjà ajouté
+      $pairKey = $story->getId() . '_' . $user->getId();
+      if (in_array($pairKey, $usedPairs)) {
+        $i--; // réessayer
+        continue;
+      }
+      $usedPairs[] = $pairKey;
 
-      // Assignation de Story et Chat
-      $randomIndex = $faker->numberBetween(0, 9);
-
-      $story = $this->getReference('story_' . $randomIndex, Story::class);
+      $storyMember->setMemberUser($user);
       $storyMember->setStory($story);
-
-      $chat = $this->getReference('chat_' . $randomIndex, Chat::class);
       $storyMember->setChat($chat);
-
-      // Assignation de isAuthor
-      $isAuthor = $story->getAuthor()->getId() === $member->getId();
-      $storyMember->setIsAuthor($isAuthor);
-
-      // isAccepted est toujours true si isAuthor, sinon aléatoire
-      $storyMember->setIsAccepted($isAuthor ? true : $faker->boolean(50));
-
-      // Assignation de Messages dans MessageFixtures
+      $storyMember->setIsAuthor(false);
+      $storyMember->setIsAccepted($faker->boolean(50));
+      $storyMember->setMemberChatStatus($this->getReference('memberChatStatus_' . $i, MemberChatStatus::class));
 
       $manager->persist($storyMember);
       $this->addReference('storyMember_' . $i, $storyMember);
@@ -59,7 +75,6 @@ class StoryMemberFixtures extends Fixture implements DependentFixtureInterface
 
     $manager->flush();
   }
-
 
   public function getDependencies(): array
   {
