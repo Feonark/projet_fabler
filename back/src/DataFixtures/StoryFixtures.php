@@ -5,19 +5,15 @@ namespace App\DataFixtures;
 use Sqids\Sqids;
 use Faker\Factory;
 use App\Enum\Genre;
-use App\Entity\Chat;
 use App\Entity\User;
-use App\Enum\Access;
 use App\Entity\Story;
+use App\Enum\Access;
 use App\Enum\Audience;
 use App\Enum\Language;
 use App\Entity\Character;
-use App\DataFixtures\ChatFixtures;
 use App\DataFixtures\UserFixtures;
-use App\DataFixtures\PlaceFixtures;
 use App\DataFixtures\CharacterFixtures;
 use Doctrine\Persistence\ObjectManager;
-use App\DataFixtures\StoryMemberFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
@@ -32,6 +28,8 @@ class StoryFixtures extends Fixture implements DependentFixtureInterface
     $accesses = Access::cases();
     $languages = Language::cases();
 
+    $stories = [];
+
     // Création de 10 histoires
     for ($i = 0; $i < 10; $i++) {
       $story = new Story();
@@ -43,8 +41,7 @@ class StoryFixtures extends Fixture implements DependentFixtureInterface
         ->setGenreType($faker->randomElement($genres))
         ->setAudienceType($faker->randomElement($audiences))
         ->setAccessType($faker->randomElement($accesses))
-        ->setLanguageType($faker->randomElement($languages))
-      ;
+        ->setLanguageType($faker->randomElement($languages));
 
       // Assignation de Characters
       $characterCount = $faker->numberBetween(3, 7);
@@ -57,33 +54,35 @@ class StoryFixtures extends Fixture implements DependentFixtureInterface
         $usedIndexes[] = $index;
 
         $character = $this->getReference('character_' . $index, Character::class);
+
         $story->addCharacter($character);
+
+        // Relation inverse (pas obligatoire si correctement gérée en cascade, mais ici on l'assure à la main)
+        if (!$character->getUsedInStories()->contains($story)) {
+          $character->addUsedInStory($story);
+        }
+
+        $manager->persist($character); // Important !
       }
 
-      // Assignation de Author
+      // Assignation de l’auteur
       $author = $this->getReference('user_' . $faker->numberBetween(0, 9), User::class);
       $story->setAuthor($author);
-
-      // Assignation de Members dans StoryMemberFixtures
-
-      // Assignation de Chat dans ChatFixtures
-
-      // Assignation de Places dans PlaceFixtures
 
       $manager->persist($story);
       $stories[] = $story;
       $this->addReference('story_' . $i, $story);
     }
 
-    // Je flush pour qu'ensuite je puisse avoir les IDs
+    // Flush une première fois pour récupérer les IDs
     $manager->flush();
 
-    // Une fois les ID récupérés, je génère le hashId
+    // Ajout des hashIds après création
     foreach ($stories as $story) {
-      $story
-        ->setHashId($sqids->encode([$story->getId()]));
+      $story->setHashId($sqids->encode([$story->getId()]));
     }
 
+    // Flush final avec les hashIds mis à jour
     $manager->flush();
   }
 

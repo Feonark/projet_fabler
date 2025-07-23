@@ -2,14 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\CharacterRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Repository\CharacterRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
+#[ApiResource(operations: [
+    new Post(),
+    new Get(),
+    new Patch(),
+    new GetCollection(
+        uriTemplate: '/users/{id}/characters',
+        uriVariables: [
+            'id' => new Link(
+                fromClass: User::class,
+                fromProperty: 'characters'
+            )
+        ]
+    ),
+    new GetCollection(
+        uriTemplate: '/stories/{id}/characters',
+        uriVariables: [
+            'id' => new Link(
+                fromClass: Story::class,
+                fromProperty: 'characters',
+                toClass: self::class,
+                toProperty: 'usedInStories'
+            )
+        ]
+    )
+])]
+
 class Character
 {
     #[ORM\Id]

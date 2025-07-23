@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\PlaceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PlaceRepository;
+use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PlaceRepository::class)]
+#[ApiResource]
 class Place
 {
     #[ORM\Id]

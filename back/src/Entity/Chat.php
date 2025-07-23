@@ -2,12 +2,24 @@
 
 namespace App\Entity;
 
-use App\Repository\ChatRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ChatRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
+#[ApiResource(operations: [
+    new Post(),
+    new Get(),
+    new Delete(),
+    new Patch(),
+])]
 class Chat
 {
     #[ORM\Id]
