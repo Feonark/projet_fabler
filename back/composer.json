@@ -11,16 +11,20 @@
         "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.5",
+        "fakerphp/faker": "^1.24",
+        "sqids/sqids": "^0.5.0",
         "symfony/console": "7.3.*",
         "symfony/dotenv": "7.3.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.3.*",
+        "symfony/password-hasher": "7.3.*",
         "symfony/runtime": "7.3.*",
         "symfony/security-bundle": "7.3.*",
         "symfony/validator": "7.3.*",
         "symfony/yaml": "7.3.*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.1",
         "symfony/maker-bundle": "^1.64"
     },
     "config": {

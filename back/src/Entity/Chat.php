@@ -32,7 +32,7 @@ class Chat
     private ?Story $story = null;
 
     #[ORM\OneToOne(inversedBy: 'chat', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Place $currentPlace = null;
 
     public function __construct()

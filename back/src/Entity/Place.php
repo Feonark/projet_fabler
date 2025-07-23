@@ -15,7 +15,7 @@ class Place
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 6)]
+    #[ORM\Column(length: 6, nullable: true)]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
@@ -46,12 +46,16 @@ class Place
     )]
     private ?string $description = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $placeImageUrl = null;
+
     #[ORM\OneToOne(mappedBy: 'currentPlace', cascade: ['persist', 'remove'])]
     private ?Chat $chat = null;
 
     #[ORM\ManyToOne(inversedBy: 'places')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Story $story = null;
+
 
     public function getId(): ?int
     {
@@ -119,6 +123,18 @@ class Place
     public function setStory(?Story $story): static
     {
         $this->story = $story;
+
+        return $this;
+    }
+
+    public function getPlaceImageUrl(): ?string
+    {
+        return $this->placeImageUrl;
+    }
+
+    public function setPlaceImageUrl(?string $placeImageUrl): static
+    {
+        $this->placeImageUrl = $placeImageUrl;
 
         return $this;
     }

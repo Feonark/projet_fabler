@@ -17,7 +17,7 @@ class Character
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 6)]
+    #[ORM\Column(length: 6, nullable: true)]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 30)]

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\Access;
 use App\Enum\Audience;
 use App\Enum\Genre;
+use App\Enum\Language;
 use App\Repository\StoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,7 +21,7 @@ class Story
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 6)]
+    #[ORM\Column(length: 6, nullable: true)]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
@@ -68,6 +69,9 @@ class Story
 
     #[ORM\Column(enumType: Access::class)]
     private ?Access $accessType = null;
+
+    #[ORM\Column(enumType: Language::class)]
+    private ?Language $languageType = null;
 
     /**
      * @var Collection<int, Character>
@@ -314,6 +318,18 @@ class Story
                 $place->setStory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLanguageType(): ?Language
+    {
+        return $this->languageType;
+    }
+
+    public function setLanguageType(Language $languageType): static
+    {
+        $this->languageType = $languageType;
 
         return $this;
     }
