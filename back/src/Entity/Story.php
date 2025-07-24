@@ -6,16 +6,37 @@ use App\Enum\Genre;
 use App\Enum\Access;
 use App\Enum\Audience;
 use App\Enum\Language;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\StoryRepository;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Post(),
+    new Get(),
+    new Patch(),
+    new Delete(),
+    new GetCollection(),
+    new GetCollection(
+        uriTemplate: '/users/{id}/stories',
+        uriVariables: [
+            'id' => new Link(
+                fromClass: User::class,
+                fromProperty: 'authoredStories'
+            )
+        ]
+    )
+])]
 class Story
 {
     #[ORM\Id]
