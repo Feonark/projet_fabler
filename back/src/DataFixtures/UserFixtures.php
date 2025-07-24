@@ -39,6 +39,38 @@ class UserFixtures extends Fixture
     $manager->persist($deletedUser);
     $manager->flush();
 
+    // Création d'un admin de test
+    $admin = new User();
+    $admin
+      ->setUsername('hugothivel')
+      ->setRoles(['ROLE_ADMIN'])
+      ->setPassword($this->hasher->hashPassword($admin, 'admin'))
+      ->setEmail('hugo.thivel@gmail.com')
+      ->setBirthdate(new \DateTime('1999-02-26'))
+      ->setDescription('Admin account')
+      ->setAvatarUrl('defaultAvi.jpg')
+      ->setCreatedAt(new \DateTimeImmutable('today'))
+      ->setIsOnline(false)
+    ;
+    $manager->persist($admin);
+    $manager->flush();
+
+    // Création d'un user de test
+    $testUser = new User();
+    $testUser
+      ->setUsername('GlassHollow')
+      ->setRoles(['ROLE_USER'])
+      ->setPassword($this->hasher->hashPassword($testUser, 'user'))
+      ->setEmail($faker->email())
+      ->setBirthdate($faker->dateTime())
+      ->setDescription($faker->text(1000))
+      ->setAvatarUrl('defaultAvi.jpg')
+      ->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTime()))
+      ->setIsOnline(false)
+    ;
+    $manager->persist($testUser);
+    $manager->flush();
+
     // Création de 10 users
     for ($i = 0; $i < 10; $i++) {
       $user = new User();
