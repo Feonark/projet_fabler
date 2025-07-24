@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
@@ -20,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     new Post(),
     new Get(),
     new Patch(),
+    new Delete(),
     new GetCollection(
         uriTemplate: '/users/{id}/characters',
         uriVariables: [
@@ -41,7 +43,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     )
 ])]
-
 class Character
 {
     #[ORM\Id]
