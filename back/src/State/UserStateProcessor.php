@@ -24,7 +24,7 @@ class UserStateProcessor implements ProcessorInterface
         if ($data->getPlainPassword()) {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());
             $data->setPassword($hashedPassword);
-            $data->setPlainPassword(null); // sécurité : on efface
+            $data->setPlainPassword(null);
         }
 
         $this->entityManager->persist($data);

@@ -2,11 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserStateProcessor;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -24,8 +29,22 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ApiResource(
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
-    validationContext: ['groups' => ['user:write']],
-    processor: UserStateProcessor::class,
+    operations: [
+        new Get(),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Post(
+            processor: UserStateProcessor::class,
+            validationContext: ['groups' => ['create']],
+            denormalizationContext: ['groups' => ['create_write']]
+        ),
+        new Patch(
+            processor: UserStateProcessor::class,
+            security: "is_granted('POST_EDIT', object)",
+            validationContext: ['groups' => ['edit']],
+            denormalizationContext: ['groups' => ['edit_write']]
+        ),
+        new Delete(security: "is_granted('POST_DELETE', object)")
+    ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -38,25 +57,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30)]
     #[Assert\NotBlank(
         message: 'The username cannot be blank.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\NotNull(
         message: 'The username cannot be null.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\Length(
         min: 3,
         max: 30,
         minMessage: 'Your username must be at least {{ limit }} characters long',
         maxMessage: 'Your username cannot be longer than {{ limit }} characters',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\Regex(
         pattern: '/^[a-zA-Z0-9]+$/',
         message: 'Your username can only contain letters and numbers (no spaces, dashes or special characters).',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'write'])]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $username = null;
 
     /**
@@ -70,95 +89,95 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Assert\NotBlank(
         message: 'The password cannot be blank.',
-        groups: ['user:write']
+        groups: ['create']
     )]
     #[Assert\NotNull(
         message: 'The password cannot be null.',
-        groups: ['user:write']
+        groups: ['create']
     )]
     #[Assert\Length(
         min: 8,
         max: 50,
         minMessage: 'Your password must be at least {{ limit }} characters long.',
         maxMessage: 'Your password cannot be longer than {{ limit }} characters.',
-        groups: ['user:write']
+        groups: ['create']
     )]
     #[Assert\Regex(
         pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
         message: 'Your password must contain at least one uppercase letter, one lowercase letter, and one number.',
-        groups: ['user:write']
+        groups: ['create']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the password.',
-        groups: ['user:write']
+        groups: ['create']
     )]
-    #[Groups('write')]
+    #[Groups('create_write')]
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(
         message: 'Email cannot be blank.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\Length(
         max: 255,
         maxMessage: 'Email cannot be longer than {{ limit }} characters.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\Email(
         message: 'The email {{ value }} is not a valid email.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'write'])]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Assert\LessThan(
         'today',
         message: 'Birthdate must be in the past.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\LessThan(
         '-13 years',
         message: 'You must be at least 13 years old.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\GreaterThan(
         '-120 years',
         message: 'Please enter a valid birthdate.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'write'])]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?\DateTime $birthdate = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         max: 1000,
         maxMessage: 'Your bio cannot be longer than {{ limit }} characters.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in your bio.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[Assert\Regex(
         pattern: '/\S/',
         message: 'Your description cannot be empty or contain only spaces.',
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'write'])]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $description = null;
 
     #[Assert\Length(
         max: 255,
-        groups: ['user:write']
+        groups: ['create', 'edit']
     )]
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
