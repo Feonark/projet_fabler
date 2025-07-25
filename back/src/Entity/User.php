@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\UserStateProcessor;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -18,32 +20,43 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
-#[ApiResource]
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+    validationContext: ['groups' => ['user:write']],
+    processor: UserStateProcessor::class,
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
-    #[Assert\NotBlank(message: 'The username cannot be blank.')]
-    #[Assert\NotNull(message: 'The username cannot be null.')]
+    #[Assert\NotBlank(
+        message: 'The username cannot be blank.',
+        groups: ['user:write']
+    )]
+    #[Assert\NotNull(
+        message: 'The username cannot be null.',
+        groups: ['user:write']
+    )]
     #[Assert\Length(
         min: 3,
         max: 30,
         minMessage: 'Your username must be at least {{ limit }} characters long',
         maxMessage: 'Your username cannot be longer than {{ limit }} characters',
+        groups: ['user:write']
     )]
     #[Assert\Regex(
         pattern: '/^[a-zA-Z0-9]+$/',
-        message: 'Your username can only contain letters and numbers (no spaces, dashes or special characters).'
+        message: 'Your username can only contain letters and numbers (no spaces, dashes or special characters).',
+        groups: ['user:write']
     )]
-    #[Assert\Regex(
-        pattern: '/<[^>]*>/',
-        match: false,
-        message: 'HTML tags are not allowed in the username.'
-    )]
+    #[Groups(['read', 'write'])]
     private ?string $username = null;
 
     /**
@@ -52,64 +65,100 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'The password cannot be blank.')]
-    #[Assert\NotNull(message: 'The password cannot be null.')]
+    private ?string $password = null;
+
+    #[Assert\NotBlank(
+        message: 'The password cannot be blank.',
+        groups: ['user:write']
+    )]
+    #[Assert\NotNull(
+        message: 'The password cannot be null.',
+        groups: ['user:write']
+    )]
     #[Assert\Length(
         min: 8,
         max: 50,
         minMessage: 'Your password must be at least {{ limit }} characters long.',
-        maxMessage: 'Your password cannot be longer than {{ limit }} characters.'
+        maxMessage: 'Your password cannot be longer than {{ limit }} characters.',
+        groups: ['user:write']
     )]
     #[Assert\Regex(
         pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
-        message: 'Your password must contain at least one uppercase letter, one lowercase letter, and one number.'
+        message: 'Your password must contain at least one uppercase letter, one lowercase letter, and one number.',
+        groups: ['user:write']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
-        message: 'HTML tags are not allowed in the password.'
+        message: 'HTML tags are not allowed in the password.',
+        groups: ['user:write']
     )]
-    private ?string $password = null;
+    #[Groups('write')]
+    private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Email cannot be blank.')]
+    #[Assert\NotBlank(
+        message: 'Email cannot be blank.',
+        groups: ['user:write']
+    )]
     #[Assert\Length(
         max: 255,
-        maxMessage: 'Email cannot be longer than {{ limit }} characters.'
+        maxMessage: 'Email cannot be longer than {{ limit }} characters.',
+        groups: ['user:write']
     )]
     #[Assert\Email(
         message: 'The email {{ value }} is not a valid email.',
+        groups: ['user:write']
     )]
+    #[Groups(['read', 'write'])]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Assert\LessThan('today', message: 'Birthdate must be in the past.')]
-    #[Assert\LessThan('-13 years', message: 'You must be at least 13 years old.')]
-    #[Assert\GreaterThan('-120 years', message: 'Please enter a valid birthdate.')]
+    #[Assert\LessThan(
+        'today',
+        message: 'Birthdate must be in the past.',
+        groups: ['user:write']
+    )]
+    #[Assert\LessThan(
+        '-13 years',
+        message: 'You must be at least 13 years old.',
+        groups: ['user:write']
+    )]
+    #[Assert\GreaterThan(
+        '-120 years',
+        message: 'Please enter a valid birthdate.',
+        groups: ['user:write']
+    )]
+    #[Groups(['read', 'write'])]
     private ?\DateTime $birthdate = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         max: 1000,
-        maxMessage: 'Your bio cannot be longer than {{ limit }} characters.'
+        maxMessage: 'Your bio cannot be longer than {{ limit }} characters.',
+        groups: ['user:write']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
-        message: 'HTML tags are not allowed in your bio.'
+        message: 'HTML tags are not allowed in your bio.',
+        groups: ['user:write']
     )]
     #[Assert\Regex(
         pattern: '/\S/',
-        message: 'Your description cannot be empty or contain only spaces.'
+        message: 'Your description cannot be empty or contain only spaces.',
+        groups: ['user:write']
     )]
+    #[Groups(['read', 'write'])]
     private ?string $description = null;
 
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(
+        max: 255,
+        groups: ['user:write']
+    )]
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read', 'write'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
@@ -135,6 +184,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'memberUser')]
     private Collection $storyMemberships;
+
 
     public function __construct()
     {
@@ -289,6 +339,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->isOnline;
     }
 
+
     public function setIsOnline(bool $isOnline): static
     {
         $this->isOnline = $isOnline;
@@ -382,6 +433,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $storyMembership->setMemberUser(null);
             }
         }
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function initializeDefaults(): void
+    {
+        $this->setRoles(['ROLE_USER']);
+        $this->setIsOnline(false);
+        $this->setCreatedAt(new \DateTimeImmutable());
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
