@@ -25,7 +25,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
-#[ORM\HasLifecycleCallbacks]
 #[ApiResource(
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
@@ -54,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('read')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, unique: true)]
     #[Assert\NotBlank(
         message: 'The username cannot be blank.',
         groups: ['create', 'edit']
@@ -116,7 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('create_write')]
     private ?string $plainPassword = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank(
         message: 'Email cannot be blank.',
         groups: ['create', 'edit']
@@ -454,14 +453,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
-    }
-
-    #[ORM\PrePersist]
-    public function initializeDefaults(): void
-    {
-        $this->setRoles(['ROLE_USER']);
-        $this->setIsOnline(false);
-        $this->setCreatedAt(new \DateTimeImmutable());
     }
 
     public function getPlainPassword(): ?string

@@ -27,6 +27,14 @@ class UserStateProcessor implements ProcessorInterface
             $data->setPlainPassword(null);
         }
 
+        $method = $context['request']?->getMethod();
+
+        if ($method === 'POST') {
+            $data->setRoles(['ROLE_USER']);
+            $data->setIsOnline(false);
+            $data->setCreatedAt(new \DateTimeImmutable());
+        }
+
         $this->entityManager->persist($data);
         $this->entityManager->flush();
 

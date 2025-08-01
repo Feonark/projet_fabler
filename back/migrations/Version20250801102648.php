@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250725110524 extends AbstractMigration
+final class Version20250801102648 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -44,6 +44,7 @@ final class Version20250725110524 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_3FE7488AAA5D4036 ON story_member (story_id)');
         $this->addSql('CREATE INDEX IDX_3FE7488A1A9A7125 ON story_member (chat_id)');
         $this->addSql('CREATE TABLE "user" (id SERIAL NOT NULL, username VARCHAR(30) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, birthdate DATE DEFAULT NULL, description TEXT DEFAULT NULL, avatar_url VARCHAR(255) DEFAULT NULL, created_at DATE NOT NULL, is_online BOOLEAN NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_IDENTIFIER_USERNAME ON "user" (username)');
         $this->addSql('COMMENT ON COLUMN "user".created_at IS \'(DC2Type:date_immutable)\'');
         $this->addSql('ALTER TABLE character ADD CONSTRAINT FK_937AB0347E3C61F9 FOREIGN KEY (owner_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
