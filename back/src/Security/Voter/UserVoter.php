@@ -2,9 +2,10 @@
 
 namespace App\Security\Voter;
 
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use App\Entity\User;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 final class UserVoter extends Voter
 {
@@ -17,14 +18,14 @@ final class UserVoter extends Voter
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [self::EDIT, self::VIEW, self::DELETE])
-            && $subject instanceof \App\Entity\User;
+            && $subject instanceof User;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
         // if the user is anonymous, do not grant access
-        if (!$user instanceof \App\Entity\User) {
+        if (!$user instanceof User) {
             return false;
         }
 
