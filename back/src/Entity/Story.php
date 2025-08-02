@@ -13,98 +13,133 @@ use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\StoryStateProcessor;
 use App\Repository\StoryRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
-#[ApiResource(operations: [
-    new Post(),
-    new Get(),
-    new Patch(),
-    new Delete(),
-    new GetCollection(),
-    new GetCollection(
-        uriTemplate: '/users/{id}/stories',
-        uriVariables: [
-            'id' => new Link(
-                fromClass: User::class,
-                fromProperty: 'authoredStories'
-            )
-        ]
-    )
-])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/users/{id}/stories',
+            uriVariables: [
+                'id' => new Link(
+                    fromClass: User::class,
+                    fromProperty: 'authoredStories'
+                )
+            ]
+        ),
+        new Post(
+            processor: StoryStateProcessor::class,
+            security: "is_granted('ROLE_USER')",
+            validationContext: ['groups' => ['create']],
+            denormalizationContext: ['groups' => ['create_write']]
+        ),
+        new Patch(
+            processor: StoryStateProcessor::class,
+            security: "is_granted('POST_EDIT', object)",
+            validationContext: ['groups' => ['edit']],
+            denormalizationContext: ['groups' => ['edit_write']]
+        ),
+        new Delete(
+            security: "is_granted('POST_DELETE', object)"
+        ),
+    ]
+)]
 class Story
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
+    #[Groups('read')]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(
+        groups: ['create', 'edit']
+    )]
     #[Assert\Length(
         min: 3,
         max: 50,
         minMessage: 'The title must be at least {{ limit }} characters long.',
-        maxMessage: 'The title cannot be longer than {{ limit }} characters.'
+        maxMessage: 'The title cannot be longer than {{ limit }} characters.',
+        groups: ['create', 'edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
-        message: 'HTML tags are not allowed in the title.'
+        message: 'HTML tags are not allowed in the title.',
+        groups: ['create', 'edit']
     )]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         max: 1000,
-        maxMessage: 'The description cannot be longer than {{ limit }} characters.'
+        maxMessage: 'The description cannot be longer than {{ limit }} characters.',
+        groups: ['create', 'edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
-        message: 'HTML tags are not allowed in the description.'
+        message: 'HTML tags are not allowed in the description.',
+        groups: ['create', 'edit']
     )]
     #[Assert\Regex(
         pattern: '/\S/',
-        message: 'The description cannot be empty or contain only spaces.'
+        message: 'The description cannot be empty or contain only spaces.',
+        groups: ['create', 'edit']
     )]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?string $bannerImageUrl = null;
 
     #[ORM\Column]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?bool $isPublic = null;
 
     #[ORM\Column(enumType: Genre::class)]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?Genre $genreType = null;
 
     #[ORM\Column(enumType: Audience::class)]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?Audience $audienceType = null;
 
     #[ORM\Column(enumType: Access::class)]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?Access $accessType = null;
 
     #[ORM\Column(enumType: Language::class)]
+    #[Groups(['read', 'create_write', 'edit_write'])]
     private ?Language $languageType = null;
+
+    #[ORM\ManyToOne(inversedBy: 'authoredStories')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $author = null;
 
     /**
      * @var Collection<int, Character>
      */
     #[ORM\ManyToMany(targetEntity: Character::class, mappedBy: 'usedInStories')]
     private Collection $characters;
-
-    #[ORM\ManyToOne(inversedBy: 'authoredStories')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $author = null;
 
     /**
      * @var Collection<int, StoryMember>
