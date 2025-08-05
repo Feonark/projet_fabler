@@ -33,7 +33,6 @@ final class StoryMemberVoter extends Voter
       return true;
     }
 
-    // Sinon, on vérifie que l'utilisateur agit sur sa propre storymembership
     switch ($attribute) {
       case self::CREATE:
         // Les utilisateurs connectés peuvent créer un storymember
