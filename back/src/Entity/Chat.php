@@ -15,10 +15,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
 #[ApiResource(operations: [
-    new Post(),
     new Get(),
-    new Delete(),
-    new Patch(),
+    new Patch()
 ])]
 class Chat
 {

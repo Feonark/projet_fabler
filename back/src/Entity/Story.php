@@ -216,6 +216,7 @@ class Story
         return $this;
     }
 
+    #[Groups('read')]
     public function isPublic(): ?bool
     {
         return $this->isPublic;

@@ -2,12 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MemberChatStatusRepository;
 
 #[ORM\Entity(repositoryClass: MemberChatStatusRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Get(),
+    new Patch()
+])]
 class MemberChatStatus
 {
     #[ORM\Id]
