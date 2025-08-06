@@ -1,0 +1,55 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: database
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./back/.database.env
+    volumes:
+      # Dump SQL pour l'init
+      - ./back/db-init:/docker-entrypoint-initdb.d:ro
+      # Volume persistant
+      - database_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "fabler", "-U", "postgres"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: back
+    env_file:
+      - ./back/.env.local
+    volumes:
+      - ./back:/var/www
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    command: php -S 0.0.0.0:8000 -t public
+
+  front:
+    container_name: front
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - back
+    volumes:
+      - ./front:/app
+    command:
+      - sh
+      - -c
+      - |
+        rm -rf /app/node_modules && \
+        npm ci && \
+        npm run dev -- --host --port 3000
+
+volumes:
+  database_data:
