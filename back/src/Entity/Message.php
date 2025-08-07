@@ -15,16 +15,17 @@ use App\Repository\MessageRepository;
 use ApiPlatform\Metadata\GetCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 #[ApiResource(
-    mercure: true,
+    mercure: 'object.getMercureOptions()',
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
     operations: [
         new Get(),
         new GetCollection(
-            uriTemplate: '/chat/{id}/messages',
+            uriTemplate: '/chats/{id}/messages',
             uriVariables: [
                 'id' => new Link(
                     fromClass: Chat::class,
@@ -148,5 +149,19 @@ class Message
         $this->chat = $chat;
 
         return $this;
+    }
+
+    public function getMercureOptions(): array
+    {
+        $topic1 = '@=iri(object.getChat(), ' . UrlGeneratorInterface::ABSOLUTE_URL . ') ~ "/messages"';
+        // $topic2 = '@=iri(object, ' . UrlGeneratorInterface::ABSOLUTE_URL . ')';
+
+        return [
+            'private' => false,
+            'topics' => [
+                $topic1,
+                // $topic2
+            ],
+        ];
     }
 }
