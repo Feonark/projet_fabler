@@ -138,6 +138,7 @@ class Character
 
     #[ORM\ManyToOne(inversedBy: 'characters')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read'])]
     private ?User $owner = null;
 
     /**

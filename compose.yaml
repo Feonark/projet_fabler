@@ -51,5 +51,29 @@ services:
         npm ci && \
         npm run dev -- --host --port 3000
 
+  mercure:
+    image: dunglas/mercure
+    restart: unless-stopped
+    environment:
+      # Uncomment the following line to disable HTTPS
+      SERVER_NAME: ':80'
+      MERCURE_PUBLISHER_JWT_KEY: 8d89e0e346b58520bccd3d9ef1666c097df62a9634dca6f9cad9f29bbb2a4eb1
+      MERCURE_SUBSCRIBER_JWT_KEY: 8d89e0e346b58520bccd3d9ef1666c097df62a9634dca6f9cad9f29bbb2a4eb1
+    # Uncomment the following line to enable the development mode
+    command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/.well-known/mercure/healthz"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - mercure_data:/data
+      - mercure_config:/config
+
 volumes:
   database_data:
+  mercure_data:
+  mercure_config:
