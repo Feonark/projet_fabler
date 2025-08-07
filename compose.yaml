@@ -56,13 +56,13 @@ services:
     restart: unless-stopped
     environment:
       # Uncomment the following line to disable HTTPS
-      SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: 8d89e0e346b58520bccd3d9ef1666c097df62a9634dca6f9cad9f29bbb2a4eb1
-      MERCURE_SUBSCRIBER_JWT_KEY: 8d89e0e346b58520bccd3d9ef1666c097df62a9634dca6f9cad9f29bbb2a4eb1
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISHER_JWT_KEY: "!ChangeThisMercureHubJWTSecretKey!"
+      MERCURE_SUBSCRIBER_JWT_KEY: "!ChangeThisMercureHubJWTSecretKey!"
     # Uncomment the following line to enable the development mode
     command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/.well-known/mercure/healthz"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/healthz"]
       timeout: 5s
       retries: 5
       start_period: 60s

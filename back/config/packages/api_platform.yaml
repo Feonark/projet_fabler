@@ -10,6 +10,6 @@ api_platform:
             JWT:
                 name: Authorization
                 type: header
-    # mercure:
-        # enabled: true
-        # hub_url: "default" # nom du hub configuré ci-dessus
+    mercure:
+        enabled: true
+        hub_url: "default"

@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             ]
         ),
         new Post(
-            processor: MessageStateProcessor::class,
+            // processor: MessageStateProcessor::class,
             securityPostDenormalize: "is_granted('MESSAGE_CREATE', object)",
             validationContext: ['groups' => ['create']],
             denormalizationContext: ['groups' => ['create_write']]
@@ -64,7 +64,7 @@ class Message
     private ?string $content = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
-    #[Groups(['read'])]
+    #[Groups(['read', 'create_write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'usedInMessages')]
@@ -75,7 +75,8 @@ class Message
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read'])]
+    #[Groups(['read', 'create_write'])]
+    #[ApiProperty(readableLink: false, writableLink: false)]
     private ?StoryMember $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
