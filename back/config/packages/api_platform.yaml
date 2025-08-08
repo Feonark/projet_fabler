@@ -1,5 +1,7 @@
 api_platform:
     title: Hello API Platform
+    eager_loading:
+        force_eager: false
     version: 1.0.0
     defaults:
         stateless: true

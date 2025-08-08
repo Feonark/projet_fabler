@@ -5,12 +5,39 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) setToken(storedToken);
   }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [token]);
+
+  const fetchUser = async () => {
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8000/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new Error("User not found.");
+      }
+
+      const data = await response.json();
+      setUser(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const login = (newToken) => {
     localStorage.setItem("token", newToken);
@@ -20,13 +47,14 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
-    navigate("/login");
   };
 
   const isAuthenticated = token ? true : false;
 
   return (
-    <AuthContext.Provider value={{ token, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ token, user, isAuthenticated, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

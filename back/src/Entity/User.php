@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\State\MeProvider;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
@@ -30,6 +31,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     denormalizationContext: ['groups' => ['write']],
     operations: [
         new Get(),
+        new Get(
+            provider: MeProvider::class,
+            uriTemplate: '/me'
+        ),
         new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Post(
             processor: UserStateProcessor::class,
@@ -180,27 +185,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $avatarUrl = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups('read')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups('read')]
     private ?bool $isOnline = null;
 
     /**
      * @var Collection<int, Character>
      */
     #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'owner')]
+    #[Groups('read')]
     private Collection $characters;
 
     /**
      * @var Collection<int, Story>
      */
     #[ORM\OneToMany(targetEntity: Story::class, mappedBy: 'author')]
+    #[Groups('read')]
     private Collection $authoredStories;
 
     /**
      * @var Collection<int, StoryMember>
      */
     #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'memberUser')]
+    #[Groups('read')]
     private Collection $storyMemberships;
 
 

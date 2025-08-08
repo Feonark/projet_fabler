@@ -12,37 +12,47 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
-#[ApiResource(operations: [
-    new Get(),
-    new Patch()
-])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+    operations: [
+        new Get(),
+        new Patch()
+    ]
+)]
 class Chat
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('read')]
     private ?int $id = null;
 
     /**
      * @var Collection<int, StoryMember>
      */
     #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'chat')]
+    #[Groups('read')]
     private Collection $members;
 
     /**
      * @var Collection<int, Message>
      */
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'chat', orphanRemoval: true)]
+    #[Groups('read')]
     private Collection $messages;
 
     #[ORM\OneToOne(inversedBy: 'chat', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read')]
     private ?Story $story = null;
 
     #[ORM\OneToOne(inversedBy: 'chat', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['read', 'edit_write'])]
     private ?Place $currentPlace = null;
 
     public function __construct()

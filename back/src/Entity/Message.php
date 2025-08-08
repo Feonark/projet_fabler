@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 #[ApiResource(
+    paginationEnabled: false,
     mercure: 'object.getMercureOptions()',
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
@@ -71,7 +72,7 @@ class Message
     #[ORM\ManyToOne(inversedBy: 'usedInMessages')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['read', 'create_write'])]
-    #[ApiProperty(readableLink: false, writableLink: false)]
+    #[ApiProperty(readableLink: true, writableLink: false)]
     private ?Character $characterAlias = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
