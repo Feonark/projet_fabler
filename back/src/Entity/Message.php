@@ -34,7 +34,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             ]
         ),
         new Post(
-            // processor: MessageStateProcessor::class,
+            processor: MessageStateProcessor::class,
             securityPostDenormalize: "is_granted('MESSAGE_CREATE', object)",
             validationContext: ['groups' => ['create']],
             denormalizationContext: ['groups' => ['create_write']]
