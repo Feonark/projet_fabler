@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     if (!token) {
-      setUser(null);
+      setUser("GUEST");
       return;
     }
 

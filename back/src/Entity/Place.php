@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PlaceRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: ['groups' => ['read', 'story:item:read']],
     denormalizationContext: ['groups' => ['write']],
     operations: [
         new Get(),
@@ -53,11 +53,11 @@ class Place
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
+    #[Groups(['read', 'story:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
-    #[Groups('read')]
+    #[Groups(['read'])]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
@@ -77,7 +77,7 @@ class Place
         message: 'HTML tags are not allowed in the title.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'story:item:read', 'create_write', 'edit_write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -96,11 +96,11 @@ class Place
         message: 'HTML tags are not allowed in the title.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'story:item:read', 'create_write', 'edit_write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'story:item:read', 'create_write', 'edit_write'])]
     private ?string $placeImageUrl = null;
 
     #[ORM\OneToOne(mappedBy: 'currentPlace', cascade: ['persist', 'remove'])]

@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use App\State\MeProvider;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
+use App\State\MeStateProvider;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
@@ -27,12 +27,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: ['groups' => ['story:item:read']],
     denormalizationContext: ['groups' => ['write']],
     operations: [
-        new Get(),
         new Get(
-            provider: MeProvider::class,
+            provider: MeStateProvider::class,
+            normalizationContext: ['groups' => ['me:read']],
             uriTemplate: '/me'
         ),
         new GetCollection(security: "is_granted('ROLE_ADMIN')"),
@@ -55,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
+    #[Groups(['me:read', 'story:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 30, unique: true)]
@@ -79,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'Your username can only contain letters and numbers (no spaces, dashes or special characters).',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['me:read', 'story:item:read', 'create_write', 'edit_write'])]
     private ?string $username = null;
 
     /**
@@ -134,7 +134,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'The email {{ value }} is not a valid email.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['me:read', 'create_write', 'edit_write'])]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
@@ -153,7 +153,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'Please enter a valid birthdate.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['create_write', 'edit_write'])]
     private ?\DateTime $birthdate = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -173,7 +173,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'Your description cannot be empty or contain only spaces.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['create_write', 'edit_write'])]
     private ?string $description = null;
 
     #[Assert\Length(
@@ -181,36 +181,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         groups: ['create', 'edit']
     )]
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['create_write', 'edit_write'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    #[Groups('read')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups('read')]
     private ?bool $isOnline = null;
 
     /**
      * @var Collection<int, Character>
      */
     #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'owner')]
-    #[Groups('read')]
     private Collection $characters;
 
     /**
      * @var Collection<int, Story>
      */
     #[ORM\OneToMany(targetEntity: Story::class, mappedBy: 'author')]
-    #[Groups('read')]
     private Collection $authoredStories;
 
     /**
      * @var Collection<int, StoryMember>
      */
     #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'memberUser')]
-    #[Groups('read')]
     private Collection $storyMemberships;
 
 

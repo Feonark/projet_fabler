@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StoryMemberRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: ['groups' => ['story:item:read']],
     denormalizationContext: ['groups' => ['write']],
     operations: [
         new Get(),
@@ -51,7 +51,7 @@ class StoryMember
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
+    #[Groups(['read', 'story:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -64,7 +64,7 @@ class StoryMember
 
     #[ORM\ManyToOne(inversedBy: 'storyMemberships')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read'])]
+    #[Groups(['read', 'story:item:read'])]
     private ?User $memberUser = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -99,7 +99,7 @@ class StoryMember
         return $this->id;
     }
 
-    #[Groups('read')]
+    #[Groups('story:item:read')]
     public function isAccepted(): ?bool
     {
         return $this->isAccepted;
@@ -112,7 +112,7 @@ class StoryMember
         return $this;
     }
 
-    #[Groups('read')]
+    #[Groups('story:item:read')]
     public function isAuthor(): ?bool
     {
         return $this->isAuthor;

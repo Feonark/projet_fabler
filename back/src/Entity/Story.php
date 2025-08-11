@@ -13,6 +13,7 @@ use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\StoryStateProvider;
 use App\State\StoryStateProcessor;
 use App\Repository\StoryRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -27,7 +28,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
     operations: [
-        new Get(),
+        new Get(
+            provider: StoryStateProvider::class,
+            normalizationContext: ['groups' => ['story:item:read']],
+        ),
         new GetCollection(),
         new GetCollection(
             uriTemplate: '/users/{id}/stories',
@@ -60,11 +64,9 @@ class Story
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
-    #[Groups('read')]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
@@ -84,7 +86,7 @@ class Story
         message: 'HTML tags are not allowed in the title.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -104,35 +106,36 @@ class Story
         message: 'The description cannot be empty or contain only spaces.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?string $bannerImageUrl = null;
 
     #[ORM\Column]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?bool $isPublic = null;
 
     #[ORM\Column(enumType: Genre::class)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?Genre $genreType = null;
 
     #[ORM\Column(enumType: Audience::class)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?Audience $audienceType = null;
 
     #[ORM\Column(enumType: Access::class)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?Access $accessType = null;
 
     #[ORM\Column(enumType: Language::class)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
     private ?Language $languageType = null;
 
     #[ORM\ManyToOne(inversedBy: 'authoredStories')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['story:item:read'])]
     private ?User $author = null;
 
     /**
@@ -145,6 +148,7 @@ class Story
      * @var Collection<int, StoryMember>
      */
     #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'story')]
+    #[Groups(['story:item:read'])]
     private Collection $members;
 
     #[ORM\OneToOne(mappedBy: 'story', cascade: ['persist', 'remove'])]
@@ -154,6 +158,7 @@ class Story
      * @var Collection<int, Place>
      */
     #[ORM\OneToMany(targetEntity: Place::class, mappedBy: 'story', orphanRemoval: true)]
+    #[Groups(['story:item:read'])]
     private Collection $places;
 
     public function __construct()
@@ -216,7 +221,6 @@ class Story
         return $this;
     }
 
-    #[Groups('read')]
     public function isPublic(): ?bool
     {
         return $this->isPublic;

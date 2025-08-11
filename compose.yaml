@@ -5,7 +5,7 @@ services:
     ports:
       - "5433:5432"
     env_file:
-      - ./back/.database.env
+      - ./back/.env.local
     volumes:
       # Dump SQL pour l'init
       - ./back/db-init:/docker-entrypoint-initdb.d:ro
@@ -54,6 +54,7 @@ services:
         npm run dev -- --host --port 3000
 
   mercure:
+    container_name: mercure
     image: dunglas/mercure
     restart: unless-stopped
     environment:
