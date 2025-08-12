@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router";
 
-const PlaceCard = ({ place, isAuthor }) => {
+const PlaceCard = ({ storyId, placeId, place, isAuthor, onDelete }) => {
   return (
     <div className="" key={place.id}>
       <div className="">
@@ -9,8 +10,10 @@ const PlaceCard = ({ place, isAuthor }) => {
       </div>
       {isAuthor ? (
         <div className="">
-          <button className="">Edit</button>
-          <button className="">Delete</button>
+          <Link to={`/stories/${storyId}/places/${placeId}/edit`}>Edit</Link>
+          <button className="" onClick={onDelete}>
+            Delete
+          </button>
         </div>
       ) : (
         ""

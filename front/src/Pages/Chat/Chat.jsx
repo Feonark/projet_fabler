@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ChatMessage from "../../Components/ChatMessage/ChatMessage"; 
+import ChatMessage from "../../Components/ChatMessage/ChatMessage";
 import { useParams } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
 
@@ -33,6 +33,10 @@ const Chat = () => {
     return () => es.close();
   }, [storyId, token]);
 
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // FETCH MESSAGES
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   const fetchMessages = async () => {
     try {
       const response = await fetch(
@@ -56,6 +60,10 @@ const Chat = () => {
       console.error(err);
     }
   };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLE
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   const handleSend = async () => {
     if (!selectedCharacter || !messageContent.trim()) return;

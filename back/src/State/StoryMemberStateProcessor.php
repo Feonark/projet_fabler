@@ -2,6 +2,7 @@
 
 namespace App\State;
 
+use App\Enum\Access;
 use App\Entity\StoryMember;
 use App\Entity\MemberChatStatus;
 use ApiPlatform\Metadata\Operation;
@@ -17,7 +18,7 @@ class StoryMemberStateProcessor implements ProcessorInterface
         private Security $security
     ) {}
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): StoryMember
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?StoryMember
     {
         if (!$data instanceof StoryMember) {
             return $data;
@@ -53,17 +54,30 @@ class StoryMemberStateProcessor implements ProcessorInterface
             ;
 
             switch ($story->getAccessType()) {
-                case 'OPEN':
+                case Access::OPEN:
                     $data->setIsAccepted(true);
                     break;
 
-                case 'ON_APPROVAL':
+                case Access::ON_APPROVAL:
                     $data->setIsAccepted(false);
                     break;
 
-                case 'CLOSED':
+                case Access::CLOSED:
                     throw new \RuntimeException('You cannot join a closed story.');
             }
+        }
+
+        if ($method === 'DELETE') {
+            $story = $data->getStory();
+
+            if ($story) {
+                $story->removeMember($data); // retire de la collection
+                $this->entityManager->persist($story);
+            }
+
+            $this->entityManager->flush();
+
+            return null;
         }
 
         $this->entityManager->persist($data);

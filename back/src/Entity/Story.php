@@ -147,7 +147,12 @@ class Story
     /**
      * @var Collection<int, StoryMember>
      */
-    #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'story')]
+    #[ORM\OneToMany(
+        targetEntity: StoryMember::class,
+        mappedBy: 'story',
+        cascade: ['remove'],
+        orphanRemoval: true
+    )]
     #[Groups(['story:item:read'])]
     private Collection $members;
 

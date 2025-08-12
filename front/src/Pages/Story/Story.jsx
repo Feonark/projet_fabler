@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
 import StorymemberCard from "../../Components/StorymemberCard/StorymemberCard";
 import PlaceCard from "../../Components/PlaceCard/PlaceCard";
 
 const Story = () => {
   const { storyId } = useParams();
+  const navigate = useNavigate();
   const { user, token } = useAuth();
   const [story, setStory] = useState();
   const memberCount =
@@ -82,6 +83,14 @@ const Story = () => {
     return placeCount >= 10;
   };
 
+  const getCurrentStoryMemberId = () => {
+    if (!user || !story) return null;
+    const currentMember = story.members?.find(
+      (member) => member.memberUser.id === user.id
+    );
+    return currentMember?.id ?? null;
+  };
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // CRUDs
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +158,19 @@ const Story = () => {
     }
   };
 
+  const quitStory = () => {
+    if (!user || !story) return;
+
+    const id = getCurrentStoryMemberId();
+    if (id) {
+      deleteStoryMember(id);
+    }
+  };
+
   const deleteStoryMember = async (id) => {
     if (!user || !story) return;
 
-    if (confirm("You're about to delete the selected entity. Are you sure?")) {
+    if (confirm("Are you sure?")) {
       try {
         const response = await fetch(
           `http://localhost:8000/api/story_members/${id}`,
@@ -179,48 +197,80 @@ const Story = () => {
     }
   };
 
-  // const addPlace = await () => {
-  //   if (!user || !story) return;
+  const deleteStory = async (id) => {
+    if (!user || !story) return;
 
-  //   if (checkIsPlacesFull()) {
-  //     alert("Sorry, you cannot add any more places.");
-  //     return;
-  //   }
+    if (confirm("You're about to delete this story. Are you sure?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/stories/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/ld+json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-  //   try {
-  //     const response = await fetch(`http://localhost:8000/api/places`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/ld+json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //       body: JSON.stringify({
-  //         title:
-  //         story: `/api/stories/${storyId}`,
-  //       }),
-  //     });
+        if (!response.ok) {
+          throw new Error(`Erreur serveur : ${response.status}`);
+        }
 
-  //     if (!response.ok) {
-  //       throw new Error(`Erreur serveur : ${response.status}`);
-  //     }
+        alert("Story successfully deleted.");
+        navigate("/");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
-  //     const data = await response.json();
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const deletePlace = async (id) => {
+    if (!user || !story) return;
 
-  // const editPlace = await () => {
-  //   //
-  // };
+    if (confirm("You're about to delete this place. Are you sure?")) {
+      try {
+        const response = await fetch(`http://localhost:8000/api/places/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/ld+json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  // const deletePlace = await () => {
-  //   //
-  // };
+        if (!response.ok) {
+          throw new Error(`Erreur serveur : ${response.status}`);
+        }
+
+        setStory((prev) => ({
+          ...prev,
+          places: prev.places.filter((place) => place.id !== id),
+        }));
+
+        alert("Place successfully deleted.");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
   return (
     <div>
       <h1>Page Story {storyId}</h1>
+
+      <div className="">
+        {checkIfAuthor() ? (
+          <button className="" onClick={() => deleteStory(storyId)}>
+            Delete story
+          </button>
+        ) : (
+          checkIfAcceptedMember() && (
+            <button className="" onClick={() => quitStory()}>
+              Quit story
+            </button>
+          )
+        )}
+      </div>
 
       {/* BANDEAU */}
       {story && (
@@ -325,9 +375,18 @@ const Story = () => {
 
             <div className="">
               {story.places?.map((place) => (
-                <PlaceCard key={place.id} place={place} isAuthor={checkIfAuthor()}/>
+                <PlaceCard
+                  key={place.id}
+                  placeId={place.id}
+                  place={place}
+                  storyId={storyId}
+                  isAuthor={checkIfAuthor()}
+                  onDelete={() => deletePlace(place.id)}
+                />
               ))}
-              {checkIfAuthor() ? <div className="">Add place</div> : ""}
+              {checkIfAuthor() && !checkIsPlacesFull() && (
+                <Link to={`/stories/${storyId}/places/new`}>Add place</Link>
+              )}
             </div>
           </div>
         )}
