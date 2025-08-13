@@ -20,7 +20,7 @@ const Navbar = () => {
       <nav className="navbar__nav">
         <Link to="/">Home</Link>
         <Link to="/">Search</Link>
-        <Link to="/">Profile</Link>
+        <Link to="/profile">Profile</Link>
       </nav>
       {isAuthenticated ? (
         <button onClick={handleLogout}>Logout</button>

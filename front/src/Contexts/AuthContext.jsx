@@ -14,10 +14,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetchUser();
+    getUser();
   }, [token]);
 
-  const fetchUser = async () => {
+  const getUser = async () => {
     if (!token) {
       setUser("GUEST");
       return;
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, user, isAuthenticated, login, logout }}
+      value={{ token, user, isAuthenticated, getUser, login, logout }}
     >
       {children}
     </AuthContext.Provider>

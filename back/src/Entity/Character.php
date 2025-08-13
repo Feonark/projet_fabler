@@ -70,7 +70,7 @@ class Character
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
+    #[Groups(['read', 'user:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
@@ -95,7 +95,7 @@ class Character
         message: 'HTML tags are not allowed in the title.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 40, nullable: true)]
@@ -110,7 +110,7 @@ class Character
         message: 'HTML tags are not allowed in the title.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

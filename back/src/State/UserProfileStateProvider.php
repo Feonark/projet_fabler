@@ -3,15 +3,12 @@
 namespace App\State;
 
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-/**
- * @implements ProviderInterface<User|null>
- */
-final class MeStateProvider implements ProviderInterface
+final class UserProfileStateProvider implements ProviderInterface
 {
     public function __construct(
         private EntityManagerInterface $em,
@@ -26,7 +23,7 @@ final class MeStateProvider implements ProviderInterface
         }
 
         $qb = $this->em->createQueryBuilder()
-            ->select('partial u.{id, username, birthdate, description, createdAt}')
+            ->select('partial u.{id, username, birthdate, description}')
             ->from(User::class, 'u')
             ->leftJoin('u.characters', 'c')
             ->addSelect('partial c.{id, name, title}')
@@ -41,5 +38,5 @@ final class MeStateProvider implements ProviderInterface
         $query = $qb->getQuery();
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         return $query->getOneOrNullResult();
-    }
+}
 }

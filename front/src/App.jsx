@@ -7,7 +7,10 @@ import NewStory from "./Pages/Story/NewStory";
 import EditStory from "./Pages/Story/EditStory";
 import NewPlace from "./Pages/Place/NewPlace";
 import EditPlace from "./Pages/Place/EditPlace";
+import NewCharacter from "./Pages/Character/NewCharacter";
+import EditCharacter from "./Pages/Character/EditCharacter";
 import Register from "./Pages/Register/Register";
+import Profile from "./Pages/Profile/Profile";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router";
 import PublicLayout from "./Layouts/PublicLayout/PublicLayout";
@@ -22,6 +25,13 @@ function App() {
 
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+
+            <Route path="profile" element={<Profile />} />
+            <Route path="profile/characters/new" element={<NewCharacter />} />
+            <Route
+              path="profile/characters/:characterId/edit"
+              element={<EditCharacter />}
+            />
 
             <Route path="stories/new" element={<NewStory />} />
             <Route path="stories/:storyId" element={<Story />} />
