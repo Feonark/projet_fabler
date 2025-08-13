@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: ['groups' => ['read', 'user:item:read']],
     denormalizationContext: ['groups' => ['write']],
     operations: [
         new Get(
@@ -64,6 +64,7 @@ class Story
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
@@ -86,7 +87,7 @@ class Story
         message: 'HTML tags are not allowed in the title.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['user:item:read', 'story:item:read', 'create_write', 'edit_write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -110,7 +111,7 @@ class Story
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['story:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['user:item:read', 'story:item:read', 'create_write', 'edit_write'])]
     private ?string $bannerImageUrl = null;
 
     #[ORM\Column]

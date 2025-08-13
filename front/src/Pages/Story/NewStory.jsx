@@ -3,14 +3,14 @@ import StoryForm from "../../Components/StoryForm/StoryForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate } from "react-router";
 
-export default function CreateStoryPage() {
+const NewStory = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const handleCreate = async (payload) => {
     setError("");
-    
+
     try {
       const res = await fetch("http://localhost:8000/api/stories", {
         method: "POST",
@@ -43,4 +43,6 @@ export default function CreateStoryPage() {
       />
     </>
   );
-}
+};
+
+export default NewStory;

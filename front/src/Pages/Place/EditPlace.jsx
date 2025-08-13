@@ -3,7 +3,7 @@ import PlaceForm from "../../Components/PlaceForm/PlaceForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, useParams } from "react-router";
 
-export default function EditStoryPage() {
+const EditPlace = () => {
   const { storyId, placeId } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -56,4 +56,6 @@ export default function EditStoryPage() {
       />
     </>
   );
-}
+};
+
+export default EditPlace;

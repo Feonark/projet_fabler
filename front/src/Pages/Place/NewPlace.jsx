@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import PlaceForm from "../../Components/PlaceForm/PlaceForm";
 import { useParams } from "react-router";
 
-export default function CreateStoryPage() {
+const NewPlace = () => {
   const { storyId } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -42,4 +42,6 @@ export default function CreateStoryPage() {
       />
     </>
   );
-}
+};
+
+export default NewPlace;

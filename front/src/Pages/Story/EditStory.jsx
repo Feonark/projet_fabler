@@ -3,7 +3,7 @@ import StoryForm from "../../Components/StoryForm/StoryForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, useParams } from "react-router";
 
-export default function EditStoryPage() {
+const EditStory = () => {
   const { storyId } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -56,4 +56,6 @@ export default function EditStoryPage() {
       />
     </>
   );
-}
+};
+
+export default EditStory;
