@@ -16,6 +16,7 @@ security:
         main:
             stateless: true
             provider: users
+            entry_point: jwt
 
             json_login:
                 check_path: /auth
@@ -26,7 +27,13 @@ security:
 
             jwt: ~
 
+            refresh_jwt:
+                check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
+                # or if you have more than one user provider
+                # provider: user_provider_name
+
     access_control:
+        - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/auth, roles: PUBLIC_ACCESS } # Permets de POST un nouvel user
         - { path: ^/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs

@@ -26,7 +26,7 @@ final class MeStateProvider implements ProviderInterface
         }
 
         $qb = $this->em->createQueryBuilder()
-            ->select('partial u.{id, username, birthdate, description, createdAt}')
+            ->select('partial u.{id, username, email, birthdate, description, createdAt}')
             ->from(User::class, 'u')
             ->leftJoin('u.characters', 'c')
             ->addSelect('partial c.{id, name, title}')

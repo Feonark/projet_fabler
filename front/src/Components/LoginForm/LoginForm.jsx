@@ -27,7 +27,10 @@ const LoginForm = () => {
       }
 
       const data = await response.json();
-      login(data.token); // Je stocke le token dans le contexte auth
+      login({
+        token: data.token,
+        refresh_token: data.refresh_token,
+      });
       navigate("/");
     } catch (err) {
       setError(err.message);

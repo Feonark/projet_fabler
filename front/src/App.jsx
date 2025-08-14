@@ -28,6 +28,7 @@ function App() {
             <Route path="register" element={<Register />} />
 
             <Route path="profile" element={<Profile />} />
+
             <Route path="profile/characters/new" element={<NewCharacter />} />
             <Route
               path="profile/characters/:characterId/edit"

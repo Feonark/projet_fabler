@@ -135,7 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'The email {{ value }} is not a valid email.',
         groups: ['create', 'edit']
     )]
-    #[Groups(['create_write', 'edit_write'])]
+    #[Groups(['user:item:read', 'create_write', 'edit_write'])]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
