@@ -49,9 +49,7 @@ const Profile = () => {
   return (
     <div>
       <h1>Page Profile</h1>
-      <div className="">
-        <button className="">Edit profile</button>
-      </div>
+      <div className=""></div>
       {userProfile?.createdAt && (
         <div className="">
           {/* PROFILE CARD */}
@@ -80,6 +78,7 @@ const Profile = () => {
                       {membership.author === true ? "Author" : "Member"}
                     </span>
                     <h2 className="">{membership.story?.title}</h2>
+                    <Link to={`/stories/${membership.story?.id}`}>Go to</Link>
                   </div>
                 ))}
               </div>
