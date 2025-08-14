@@ -15,7 +15,7 @@ const Story = () => {
 
   useEffect(() => {
     getStory();
-  }, []);
+  }, [user]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // FETCH STORY
@@ -28,6 +28,7 @@ const Story = () => {
         {
           headers: {
             Accept: "application/ld+json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -278,7 +279,7 @@ const Story = () => {
           <h1 className="">{story.title}</h1>
           <div className="">
             <span className="">
-              {story.isPublic === true ? "Private" : "Public"}
+              {story.public === true ? "Private" : "Public"}
             </span>
             <span className="">
               {checkIfAcceptedMember()

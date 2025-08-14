@@ -14,6 +14,7 @@ import Profile from "./Pages/Profile/Profile";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router";
 import PublicLayout from "./Layouts/PublicLayout/PublicLayout";
+import StorySearch from "./Pages/StorySearch/StorySearch";
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
               path="profile/characters/:characterId/edit"
               element={<EditCharacter />}
             />
+
+            <Route path="stories/search" element={<StorySearch />} />
 
             <Route path="stories/new" element={<NewStory />} />
             <Route path="stories/:storyId" element={<Story />} />

@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 final class StoryVoter extends Voter
 {
-  public const EDIT = 'POST_EDIT';
-  public const VIEW = 'POST_VIEW';
-  public const DELETE = 'POST_DELETE';
+  public const VIEW = 'STORY_VIEW';
+  public const EDIT = 'STORY_EDIT';
+  public const DELETE = 'STORY_DELETE';
 
   protected function supports(string $attribute, mixed $subject): bool
   {
@@ -23,19 +23,36 @@ final class StoryVoter extends Voter
   {
     $user = $token->getUser();
 
-    if (!$user instanceof User) {
-      return false;
-    }
-
     // Si c'est un admin on autorise tout
-    if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+    if ($user instanceof User && in_array('ROLE_ADMIN', $user->getRoles(), true)) {
       return true;
     }
 
-    // Sinon, on vérifie que l'utilisateur agit sur sa propre story
     switch ($attribute) {
-      case self::EDIT:
       case self::VIEW:
+        // Si story publique * peut voir
+        if ($subject->isPublic()) {
+          return true;
+        }
+
+        // Si pas connecté, voit pas
+        if (!$user instanceof User) {
+          return false;
+        }
+
+        // Auteur, voit
+        if ($subject->getAuthor() === $user) {
+          return true;
+        }
+
+        // Membre, voit
+        foreach ($subject->getMembers() as $member) {
+          if ($member->getMemberUser() === $user) {
+            return true;
+          }
+        }
+
+      case self::EDIT:
       case self::DELETE:
         return $subject->getAuthor() === $user;
     }

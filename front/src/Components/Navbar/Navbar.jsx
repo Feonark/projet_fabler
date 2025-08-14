@@ -19,7 +19,7 @@ const Navbar = () => {
       </Link>
       <nav className="navbar__nav">
         <Link to="/">Home</Link>
-        <Link to="/">Search</Link>
+        <Link to="/stories/search">Search</Link>
         <Link to="/profile">Profile</Link>
       </nav>
       {isAuthenticated ? (
