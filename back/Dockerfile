@@ -28,8 +28,5 @@ COPY . .
 # 4. Installer les dépendances PHP
 RUN composer install --no-interaction --no-scripts
 
-# 5. Permissions
-RUN chown -R www-data:www-data /var/www
-
 EXPOSE 9000
 CMD ["php-fpm"]
