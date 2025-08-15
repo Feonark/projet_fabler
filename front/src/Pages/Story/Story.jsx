@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
 import StorymemberCard from "../../Components/StorymemberCard/StorymemberCard";
 import PlaceCard from "../../Components/PlaceCard/PlaceCard";
+import "./Story.css";
 
 const Story = () => {
   const { storyId } = useParams();
@@ -14,7 +15,7 @@ const Story = () => {
   const placeCount = story?.places.length ?? 0;
 
   useEffect(() => {
-    getStory();
+    if (user) getStory();
   }, [user]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -261,9 +262,12 @@ const Story = () => {
 
       <div className="">
         {checkIfAuthor() ? (
-          <button className="" onClick={() => deleteStory(storyId)}>
-            Delete story
-          </button>
+          <div className="">
+            <Link to={`/stories/${storyId}/edit`}>Edit story</Link>
+            <button className="" onClick={() => deleteStory(storyId)}>
+              Delete story
+            </button>
+          </div>
         ) : (
           checkIfAcceptedMember() && (
             <button className="" onClick={() => quitStory()}>
@@ -275,7 +279,20 @@ const Story = () => {
 
       {/* BANDEAU */}
       {story && (
-        <div className="">
+        <div className="bannerImg">
+          <img
+            src={
+              `http://localhost:8000/${story.bannerImageUrl}` ??
+              `http://localhost:8000/uploads/banners/defaultBanner.jpg`
+            }
+            alt="Test"
+            style={{
+              width: "100%",
+              maxHeight: "300px",
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
+          />
           <h1 className="">{story.title}</h1>
           <div className="">
             <span className="">

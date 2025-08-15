@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Images
+back/public/uploads/*
+!back/public/uploads/.gitkeep
+!back/public/uploads/avatars/.gitkeep
+!back/public/uploads/banners/.gitkeep
+!back/public/uploads/portraits/.gitkeep
+!back/public/uploads/places/.gitkeep

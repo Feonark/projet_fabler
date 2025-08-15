@@ -182,7 +182,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         groups: ['create', 'edit']
     )]
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['create_write', 'edit_write'])]
+    #[Groups(['user:item:read', 'create_write', 'edit_write'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]

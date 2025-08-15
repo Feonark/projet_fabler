@@ -31,11 +31,12 @@ export default function StoryForm({
   initialValues,
   onSubmit,
   submitLabel = "Save",
-  error
+  error,
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bannerImgUrl, setBannerImgUrl] = useState("");
+  const [bannerFile, setBannerFile] = useState(null);
   const [isPublic, setIsPublic] = useState(false);
   const [genreType, setGenreType] = useState(GENRE_OPTIONS[0]);
   const [audienceType, setAudienceType] = useState(AUDIENCE_OPTIONS[0]);
@@ -54,12 +55,38 @@ export default function StoryForm({
     setLanguageType(initialValues.languageType ?? LANGUAGE_OPTIONS[0]);
   }, [initialValues]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let finalBannerUrl = bannerImgUrl;
+
+    if (bannerFile) {
+      const fd = new FormData();
+      const extension = bannerFile.name?.split(".").pop() || "jpg";
+      fd.append("file", bannerFile, `banner.${extension}`);
+      fd.append("folder", "banners");
+
+      try {
+        const uploadRes = await fetch("http://localhost:8000/api/images", {
+          method: "POST",
+          headers: { Accept: "application/ld+json" },
+          body: fd,
+        });
+
+        if (!uploadRes.ok) throw new Error("Upload failed");
+        const uploadData = await uploadRes.json();
+        finalBannerUrl = uploadData.url;
+      } catch (err) {
+        console.error(err);
+        alert("Upload échoué");
+        return;
+      }
+    }
+
     onSubmit({
       title,
       description,
-      bannerImgUrl,
+      bannerImageUrl: finalBannerUrl,
       isPublic,
       genreType,
       audienceType,
@@ -96,13 +123,12 @@ export default function StoryForm({
       </div>
 
       <div>
-        <label htmlFor="bannerImgUrl">BannerImgUrl</label>
+        <label htmlFor="bannerFile">Upload Banner</label>
         <input
-          id="bannerImgUrl"
-          type="url"
-          value={bannerImgUrl}
-          onChange={(e) => setBannerImgUrl(e.target.value)}
-          placeholder="https://..."
+          id="bannerFile"
+          type="file"
+          accept="image/*"
+          onChange={(e) => setBannerFile(e.target.files[0] || null)}
         />
       </div>
 

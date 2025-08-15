@@ -11,6 +11,7 @@ const PlaceForm = ({
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
   const [placeImgUrl, setPlaceImgUrl] = useState();
+  const [placeFile, setPlaceFile] = useState(null);
 
   useEffect(() => {
     if (!initialValues) return;
@@ -19,12 +20,38 @@ const PlaceForm = ({
     setPlaceImgUrl(initialValues.placeImgUrl ?? "");
   }, [initialValues]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let finalPlaceUrl = placeImgUrl;
+
+    if (placeFile) {
+      const fd = new FormData();
+      const extension = placeFile.name?.split(".").pop() || "jpg";
+      fd.append("file", placeFile, `place.${extension}`);
+      fd.append("folder", "places");
+
+      try {
+        const uploadRes = await fetch("http://localhost:8000/api/images", {
+          method: "POST",
+          headers: { Accept: "application/ld+json" },
+          body: fd,
+        });
+
+        if (!uploadRes.ok) throw new Error("Upload failed");
+        const uploadData = await uploadRes.json();
+        finalPlaceUrl = uploadData.url;
+      } catch (err) {
+        console.error(err);
+        alert("Upload échoué");
+        return;
+      }
+    }
+
     onSubmit({
       title,
       description,
-      placeImgUrl,
+      placeImageUrl: finalPlaceUrl,
       story: `/api/stories/${storyId}`,
     });
   };
@@ -62,17 +89,13 @@ const PlaceForm = ({
         />
       </div>
 
-      <div className="">
-        <label htmlFor="placeImgUrl" className="">
-          Place image URL
-        </label>
+      <div>
+        <label htmlFor="placeFile">Upload place image</label>
         <input
-          id="placeImgUrl"
-          className=""
-          type="text"
-          value={placeImgUrl}
-          placeholder="https://..."
-          onChange={(e) => setPlaceImgUrl(e.target.value)}
+          id="placeFile"
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPlaceFile(e.target.files[0] || null)}
         />
       </div>
 

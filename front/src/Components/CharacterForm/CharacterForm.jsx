@@ -11,7 +11,9 @@ const CharacterForm = ({
   const [title, setTitle] = useState();
   const [bio, setBio] = useState();
   const [portraitUrl, setPortraitUrl] = useState();
+  const [portraitFile, setPortraitFile] = useState();
   const [avatarUrl, setAvatarUrl] = useState();
+  const [avatarFile, setAvatarFile] = useState();
 
   useEffect(() => {
     if (!initialValues) return;
@@ -22,14 +24,66 @@ const CharacterForm = ({
     setAvatarUrl(initialValues.avatarUrl ?? "");
   }, [initialValues]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let finalPortraitUrl = portraitUrl;
+    let finalAvatarUrl = avatarUrl;
+
+    // POST du portrait
+    if (portraitFile) {
+      const fd = new FormData();
+      const extension = portraitFile.name?.split(".").pop() || "jpg";
+      fd.append("file", portraitFile, `portrait.${extension}`);
+      fd.append("folder", "portraits");
+
+      try {
+        const uploadRes = await fetch("http://localhost:8000/api/images", {
+          method: "POST",
+          headers: { Accept: "application/ld+json" },
+          body: fd,
+        });
+
+        if (!uploadRes.ok) throw new Error("Upload failed");
+        const uploadData = await uploadRes.json();
+        finalPortraitUrl = uploadData.url;
+      } catch (err) {
+        console.error(err);
+        alert("Upload échoué");
+        return;
+      }
+    }
+
+    // POST de l'avatar
+    if (avatarFile) {
+      const fd = new FormData();
+      const extension = avatarFile.name?.split(".").pop() || "jpg";
+      fd.append("file", avatarFile, `avatar.${extension}`);
+      fd.append("folder", "avatars");
+
+      try {
+        const uploadRes = await fetch("http://localhost:8000/api/images", {
+          method: "POST",
+          headers: { Accept: "application/ld+json" },
+          body: fd,
+        });
+
+        if (!uploadRes.ok) throw new Error("Upload failed");
+        const uploadData = await uploadRes.json();
+        finalAvatarUrl = uploadData.url;
+      } catch (err) {
+        console.error(err);
+        alert("Upload échoué");
+        return;
+      }
+    }
+
     onSubmit({
       name,
       title,
       bio,
-      portraitUrl,
-      avatarUrl,
+      portraitUrl: finalPortraitUrl,
+      avatarUrl: finalAvatarUrl,
     });
   };
 
@@ -81,31 +135,23 @@ const CharacterForm = ({
         />
       </div>
 
-      <div className="">
-        <label htmlFor="portraitUrl" className="">
-          Place portrait URL
-        </label>
+      <div>
+        <label htmlFor="portraitFile">Upload portrait</label>
         <input
-          id="portraitUrl"
-          className=""
-          type="text"
-          value={portraitUrl}
-          placeholder="https://..."
-          onChange={(e) => setPortraitUrl(e.target.value)}
+          id="portraitFile"
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPortraitFile(e.target.files[0] || null)}
         />
       </div>
 
-      <div className="">
-        <label htmlFor="avatarUrl" className="">
-          Place avatar URL
-        </label>
+      <div>
+        <label htmlFor="charaAvatarFile">Upload Banner</label>
         <input
-          id="avatarUrl"
-          className=""
-          type="text"
-          value={avatarUrl}
-          placeholder="https://..."
-          onChange={(e) => setAvatarUrl(e.target.value)}
+          id="charaAvatarFile"
+          type="file"
+          accept="image/*"
+          onChange={(e) => setAvatarFile(e.target.files[0] || null)}
         />
       </div>
 

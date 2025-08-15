@@ -129,11 +129,11 @@ class Character
     private ?string $bio = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
     private ?string $portraitUrl = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
     private ?string $avatarUrl = null;
 
     #[ORM\ManyToOne(inversedBy: 'characters')]

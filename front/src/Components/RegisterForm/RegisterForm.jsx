@@ -10,11 +10,38 @@ const RegisterForm = () => {
   const [birthdate, setBirthdate] = useState("");
   const [description, setDescription] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let finalAvatarUrl = avatarUrl;
+
+    if (avatarFile) {
+      const fd = new FormData();
+      const extension = avatarFile.name?.split(".").pop() || "jpg";
+      fd.append("file", avatarFile, `avatar.${extension}`);
+      fd.append("folder", "avatars");
+
+      try {
+        const uploadRes = await fetch("http://localhost:8000/api/images", {
+          method: "POST",
+          headers: { Accept: "application/ld+json" },
+          body: fd,
+        });
+
+        if (!uploadRes.ok) throw new Error("Upload failed");
+        const uploadData = await uploadRes.json();
+        finalAvatarUrl = uploadData.url;
+      } catch (err) {
+        console.error(err);
+        alert("Upload échoué");
+        return;
+      }
+    }
+
     setError("");
     setSuccess(false);
 
@@ -31,7 +58,7 @@ const RegisterForm = () => {
           email,
           birthdate: birthdate === "" ? null : birthdate,
           description,
-          avatarUrl,
+          avatarUrl: finalAvatarUrl,
         }),
       });
 
@@ -106,14 +133,15 @@ const RegisterForm = () => {
         />
       </label>
 
-      <label>
-        Avatar URL:
+      <div>
+        <label htmlFor="avatarFile">Upload avatar</label>
         <input
-          type="url"
-          value={avatarUrl}
-          onChange={(e) => setAvatarUrl(e.target.value)}
+          id="avatarFile"
+          type="file"
+          accept="image/*"
+          onChange={(e) => setAvatarFile(e.target.files[0] || null)}
         />
-      </label>
+      </div>
 
       <button type="submit">Register</button>
     </form>

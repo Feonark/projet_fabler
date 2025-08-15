@@ -7,7 +7,9 @@ const Profile = () => {
   const [userProfile, setUserProfile] = useState();
 
   useEffect(() => {
-    if (user) setUserProfile(user);
+    if (user) {
+      setUserProfile(user);
+    }
   }, [user]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +56,16 @@ const Profile = () => {
         <div className="">
           {/* PROFILE CARD */}
           <div className="">
+            <img
+              src={`http://localhost:8000${user.avatarUrl}`}
+              alt="User avatar"
+              style={{
+                width: "160px",
+                maxHeight: "160px",
+                objectFit: "cover",
+                borderRadius: "8px",
+              }}
+            />
             <h1 className="">{user.username}</h1>
             <div className="">
               <span className="">{user.isOnline ? "Online" : "Offline"}</span>
@@ -94,8 +106,30 @@ const Profile = () => {
               <div className="">
                 {userProfile.characters?.map((character) => (
                   <div className="" key={character.id}>
+                    <p className="">{character.id}</p>
+
                     <p className="">{character.title}</p>
                     <h2 className="">{character.name}</h2>
+                    <img
+                      src={`http://localhost:8000${character.portraitUrl}`}
+                      alt="Character portrait"
+                      style={{
+                        width: "20px",
+                        maxHeight: "60px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <img
+                      src={`http://localhost:8000${character.avatarUrl}`}
+                      alt="Character avatar"
+                      style={{
+                        width: "20px",
+                        maxHeight: "60px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    />
                     <Link to={`/profile/characters/${character.id}/edit`}>
                       Edit
                     </Link>
