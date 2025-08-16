@@ -15,7 +15,7 @@ const Story = () => {
   const placeCount = story?.places.length ?? 0;
 
   useEffect(() => {
-    if (user) getStory();
+    getStory();
   }, [user]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -24,14 +24,17 @@ const Story = () => {
 
   const getStory = async () => {
     try {
+      const headers = {
+        Accept: "application/ld+json",
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(
         `http://localhost:8000/api/stories/${storyId}`,
-        {
-          headers: {
-            Accept: "application/ld+json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers }
       );
 
       if (!response.ok) {
@@ -296,7 +299,7 @@ const Story = () => {
           <h1 className="">{story.title}</h1>
           <div className="">
             <span className="">
-              {story.public === true ? "Private" : "Public"}
+              {story.public === true ? "Public" : "Private"}
             </span>
             <span className="">
               {checkIfAcceptedMember()

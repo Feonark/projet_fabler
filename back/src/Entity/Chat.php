@@ -3,20 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use App\State\ChatStateProvider;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
 #[ApiResource(
+    mercure: 'object.getMercureOptions()',
     normalizationContext: ['groups' => ['chat:read', 'chat:item:read']],
     denormalizationContext: ['groups' => ['chat:edit']],
     operations: [
@@ -156,5 +155,17 @@ class Chat
         $this->currentPlace = $currentPlace;
 
         return $this;
+    }
+
+    public function getMercureOptions(): array
+    {
+        $topic1 = '@=iri(object, ' . UrlGeneratorInterface::ABSOLUTE_URL . ')';
+
+        return [
+            'private' => false,
+            'topics' => [
+                $topic1,
+            ],
+        ];
     }
 }
