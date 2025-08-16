@@ -8,9 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MemberChatStatusRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[ORM\Entity(repositoryClass: MemberChatStatusRepository::class)]
 #[ApiResource(
+    mercure: 'object.getMercureOptions()',
     normalizationContext: ['groups' => ['status:read', 'chat:item:read']],
     denormalizationContext: ['groups' => ['status:edit']],
     operations: [
@@ -45,6 +47,7 @@ class MemberChatStatus
         return $this->isOnline;
     }
 
+    #[Groups(['status:edit'])]
     public function setIsOnline(bool $isOnline): static
     {
         $this->isOnline = $isOnline;
@@ -58,10 +61,21 @@ class MemberChatStatus
         return $this->isWriting;
     }
 
+    #[Groups(['status:edit'])]
     public function setIsWriting(bool $isWriting): static
     {
         $this->isWriting = $isWriting;
 
         return $this;
+    }
+
+    public function getMercureOptions(): array
+    {
+        $topic = '@=iri(object, ' . UrlGeneratorInterface::ABSOLUTE_URL . ')';
+
+        return [
+            'private' => false,
+            'topics' => [$topic],
+        ];
     }
 }

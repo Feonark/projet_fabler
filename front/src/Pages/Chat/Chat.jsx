@@ -13,6 +13,8 @@ const Chat = () => {
   const [messageContent, setMessageContent] = useState("");
   const [lastMessage, setLastMessage] = useState();
 
+  // Premier useEffect pour l'abonnement aux events Chat + Messages
+  // Se lance au montage du composant
   useEffect(() => {
     if (!token) return;
     fetchMessages();
@@ -44,6 +46,60 @@ const Chat = () => {
 
     return () => es.close();
   }, [storyId, token]);
+
+  // Deuxième useEffect, séparé du premier car on écoute Chat lorsqu'il a fini d'être fetch (plus précisément ses membres)
+  // On s'abonne aux events de MemberChatStatus
+  useEffect(() => {
+    if (!token || !chat?.members) return;
+
+    const url = new URL("http://localhost/.well-known/mercure");
+    chat.members.forEach((member) => {
+      if (member.memberChatStatus?.["@id"]) {
+        url.searchParams.append(
+          "topic",
+          `http://localhost:8000${member.memberChatStatus["@id"]}`
+        );
+      }
+    });
+
+    const es = new EventSource(url);
+    es.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data["@type"] === "MemberChatStatus") {
+        setChat((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            members: prev.members.map((member) =>
+              member.memberChatStatus?.id === data.id
+                ? {
+                    ...member,
+                    memberChatStatus: { ...member.memberChatStatus, ...data },
+                  }
+                : member
+            ),
+          };
+        });
+      }
+    };
+
+    return () => es.close();
+  }, [token, chat?.members?.map((m) => m.memberChatStatus?.["@id"]).join(",")]);
+
+  // Troisième useEffect pour la gestion online/offline
+  // Quand le chat & l'user sont bien présents, on passe le statut à online
+  // Quand l'user quitte la page, on passe le statut à offline
+  useEffect(() => {
+    if (chat && user && token) {
+      setOnlineStatus(true);
+    }
+
+    return () => {
+      if (user && token) {
+        setOnlineStatus(false);
+      }
+    };
+  }, [chat?.id, user?.id, token]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // FETCHS
@@ -103,6 +159,41 @@ const Chat = () => {
   // CRUD
   ////////////////////////////////////////////////////////////////////////////////////////
 
+  const setOnlineStatus = async (online) => {
+    console.log("Called with:", online);
+    if (!chat || !user) return;
+    const myMember = chat.members?.find(
+      (member) => member.memberUser.id === user.id
+    );
+    console.log("N+1");
+    if (!myMember) return;
+    console.log("N+2");
+    try {
+      const response = await fetch(
+        `http://localhost:8000${myMember.memberChatStatus["@id"]}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/merge-patch+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ isOnline: online }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erreur serveur : ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Et là ça met :", data);
+
+      console.log("N+3");
+    } catch (err) {
+      console.error("Erreur setOnlineStatus:", err);
+    }
+  };
+
   const updateCurrentPlace = async (placeId) => {
     if (!user) return;
 
@@ -124,8 +215,6 @@ const Chat = () => {
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status}`);
       }
-
-      const data = await response.json();
     } catch (err) {
       console.error("Erreur lors de la mise à jour du lieu :", err);
     }
@@ -167,9 +256,22 @@ const Chat = () => {
     }
   };
 
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   return (
     <div className="chat">
       <h1>Page Chat de la Story {storyId}</h1>
+      {chat && (
+        <div className="">
+          <span className="">{chat.members?.length} roleplayers</span>
+          <h2 className="">
+            {chat.members?.filter((m) => m.memberChatStatus?.online).length}
+            roleplayer(s) online
+          </h2>
+        </div>
+      )}
       {/* ENCART RP BOX */}
       RP BOX
       <div className="">
@@ -209,40 +311,49 @@ const Chat = () => {
       <div className="container__messages">
         <p>Les messages : </p>
         {messages &&
-          messages.map((message) => (
-            <div key={message.id}>
-              <div className="">
+          messages.map((message, index) => {
+            const prevMessage = messages[index - 1];
+            const sameCharacter =
+              prevMessage &&
+              prevMessage.characterAlias?.id === message.characterAlias?.id;
+
+            return (
+              <div key={message.id}>
                 <div className="">
-                  <img
-                    src={`http://localhost:8000/${message.author?.memberUser?.avatarUrl}`}
-                    alt=""
-                    style={{
-                      width: "40px",
-                      maxHeight: "40px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <img
-                    src={`http://localhost:8000/${message.characterAlias?.avatarUrl}`}
-                    alt=""
-                    style={{
-                      width: "40px",
-                      maxHeight: "40px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <h3 className="">{message.characterAlias?.name}</h3>
-                  <span className="">
-                    {new Date(message.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  {!sameCharacter && (
+                    <div className="">
+                      <img
+                        src={`http://localhost:8000/${message.author?.memberUser?.avatarUrl}`}
+                        alt=""
+                        style={{
+                          width: "40px",
+                          maxHeight: "40px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <img
+                        src={`http://localhost:8000/${message.characterAlias?.avatarUrl}`}
+                        alt=""
+                        style={{
+                          width: "40px",
+                          maxHeight: "40px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <h3 className="">{message.characterAlias?.name}</h3>
+                      <span className="">
+                        {new Date(message.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  <p className="">{message.content}</p>
                 </div>
-                <p className="">{message.content}</p>
               </div>
-            </div>
-          ))}
+            );
+          })}
       </div>
       {/* INPUTS */}
       <div className="">
