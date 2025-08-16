@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ChatMessage from "../../Components/ChatMessage/ChatMessage";
 import { useParams } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
@@ -12,6 +12,8 @@ const Chat = () => {
   const [selectedPlace, setSelectedPlace] = useState();
   const [messageContent, setMessageContent] = useState("");
   const [lastMessage, setLastMessage] = useState();
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeout = useRef(null);
 
   // Premier useEffect pour l'abonnement aux events Chat + Messages
   // Se lance au montage du composant
@@ -194,6 +196,27 @@ const Chat = () => {
     }
   };
 
+  const setWritingStatus = async (writing) => {
+    if (!chat || !user) return;
+    const myMember = chat.members?.find(
+      (member) => member.memberUser.id === user.id
+    );
+    if (!myMember) return;
+
+    try {
+      await fetch(`http://localhost:8000${myMember.memberChatStatus["@id"]}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/merge-patch+json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isWriting: writing }),
+      });
+    } catch (err) {
+      console.error("Erreur setWritingStatus:", err);
+    }
+  };
+
   const updateCurrentPlace = async (placeId) => {
     if (!user) return;
 
@@ -251,6 +274,8 @@ const Chat = () => {
       console.log("Message envoyé :", data);
 
       setMessageContent("");
+      setIsTyping(false);
+      setWritingStatus(false);
     } catch (error) {
       console.error("Erreur lors de l'envoi du message :", error);
     }
@@ -354,6 +379,23 @@ const Chat = () => {
               </div>
             );
           })}
+        {/* INDICATION IS WRITING */}
+        {chat && (
+          <div className="text-sm italic text-gray-500">
+            {chat &&
+              chat.members
+                .filter(
+                  (m) =>
+                    m.memberUser.id !== user?.id &&
+                    m.memberChatStatus?.writing === true
+                )
+                .map((m) => (
+                  <p key={m.id}>
+                    {m.memberUser.username} est en train d’écrire...
+                  </p>
+                ))}
+          </div>
+        )}
       </div>
       {/* INPUTS */}
       <div className="">
@@ -397,7 +439,23 @@ const Chat = () => {
           type="text"
           placeholder="Écrire un message..."
           value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
+          onChange={(e) => {
+            setMessageContent(e.target.value);
+
+            if (!isTyping) {
+              setIsTyping(true);
+              setWritingStatus(true);
+            }
+
+            // Clear l'ancien timer
+            if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+            // Après 5s sans frappe on met isWriting à false
+            typingTimeout.current = setTimeout(() => {
+              setIsTyping(false);
+              setWritingStatus(false);
+            }, 5000);
+          }}
           disabled={!selectedCharacter}
         />
         <button
