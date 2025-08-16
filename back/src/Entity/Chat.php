@@ -10,17 +10,26 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\State\ChatStateProvider;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['chat:read', 'chat:item:read']],
+    denormalizationContext: ['groups' => ['chat:edit']],
     operations: [
-        new Get(),
-        new Patch()
+        new Get(
+            provider: ChatStateProvider::class,
+            normalizationContext: ['groups' => ['chat:item:read']],
+            security: "is_granted('CHAT_VIEW', object)"
+        ),
+        new Patch(
+            normalizationContext: ['groups' => ['chat:read']],
+            denormalizationContext: ['groups' => ['chat:edit']],
+            security: "is_granted('CHAT_EDIT', object)"
+        )
     ]
 )]
 class Chat
@@ -28,31 +37,30 @@ class Chat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
+    #[Groups(['chat:read', 'chat:item:read'])]
     private ?int $id = null;
 
     /**
      * @var Collection<int, StoryMember>
      */
     #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'chat')]
-    #[Groups('read')]
+    #[Groups(['chat:item:read'])]
     private Collection $members;
 
     /**
      * @var Collection<int, Message>
      */
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'chat', orphanRemoval: true)]
-    #[Groups('read')]
     private Collection $messages;
 
     #[ORM\OneToOne(inversedBy: 'chat', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('read')]
+    #[Groups(['chat:item:read'])]
     private ?Story $story = null;
 
     #[ORM\OneToOne(inversedBy: 'chat', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['read', 'edit_write'])]
+    #[Groups(['chat:item:read', 'chat:edit'])]
     private ?Place $currentPlace = null;
 
     public function __construct()

@@ -19,27 +19,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StoryMemberRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['user:item:read', 'story:item:read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['member:read', 'user:item:read', 'story:item:read', 'chat:item:read', 'message:list:read']],
+    denormalizationContext: ['groups' => ['member:create', 'member:edit']],
     operations: [
-        new Get(),
-        new GetCollection(
-            uriTemplate: '/stories/{id}/story_members',
-            uriVariables: [
-                'id' => new Link(
-                    fromClass: Story::class,
-                    fromProperty: 'members'
-                )
-            ]
-        ),
         new Post(
             processor: StoryMemberStateProcessor::class,
-            security: "is_granted('ROLE_USER')",
-            denormalizationContext: ['groups' => ['create_write']]
+            normalizationContext: ['groups' => ['member:read']],
+            denormalizationContext: ['groups' => ['member:create']],
+            security: "is_granted('ROLE_USER')"
         ),
         new Patch(
-            security: "is_granted('STORY_MEMBER_EDIT', object)",
-            denormalizationContext: ['groups' => ['edit_write']]
+            normalizationContext: ['groups' => ['member:read']],
+            denormalizationContext: ['groups' => ['member:edit']],
+            security: "is_granted('STORY_MEMBER_EDIT', object)"
         ),
         new Delete(
             security: "is_granted('STORY_MEMBER_DELETE', object)"
@@ -51,35 +43,33 @@ class StoryMember
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:item:read', 'read', 'story:item:read'])]
+    #[Groups(['member:read', 'user:item:read', 'story:item:read', 'chat:item:read', 'message:list:read', 'message:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['read', 'edit_write'])]
+    #[Groups(['member:read', 'member:edit'])]
     private ?bool $isAccepted = false;
 
     #[ORM\Column]
-    #[Groups(['read'])]
     private ?bool $isAuthor = null;
 
     #[ORM\ManyToOne(inversedBy: 'storyMemberships')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'story:item:read'])]
+    #[Groups(['story:item:read', 'chat:item:read', 'message:list:read', 'message:item:read'])]
     private ?User $memberUser = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read'])]
+    #[Groups(['chat:item:read'])]
     private ?MemberChatStatus $memberChatStatus = null;
 
     #[ORM\ManyToOne(inversedBy: 'members')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['user:item:read', 'read', 'create_write'])]
+    #[Groups(['user:item:read', 'member:create'])]
     #[ApiProperty(writableLink: false)]
     private ?Story $story = null;
 
     #[ORM\ManyToOne(inversedBy: 'members')]
-    #[Groups(['read'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Chat $chat = null;
 
@@ -99,7 +89,7 @@ class StoryMember
         return $this->id;
     }
 
-    #[Groups('story:item:read')]
+    #[Groups(['story:item:read'])]
     public function isAccepted(): ?bool
     {
         return $this->isAccepted;
@@ -112,7 +102,7 @@ class StoryMember
         return $this;
     }
 
-    #[Groups('user:item:read', 'story:item:read')]
+    #[Groups(['user:item:read', 'story:item:read'])]
     public function isAuthor(): ?bool
     {
         return $this->isAuthor;

@@ -7,7 +7,6 @@ use App\Enum\Access;
 use App\Enum\Audience;
 use App\Enum\Language;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
@@ -27,32 +26,34 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read', 'user:item:read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['story:read', 'story:item:read', 'story:list:read', 'user:item:read', 'chat:item:read']],
+    denormalizationContext: ['groups' => ['story:create', 'story:edit']],
     operations: [
         new Get(
             provider: StoryStateProvider::class,
             normalizationContext: ['groups' => ['story:item:read']],
-            security: "is_granted('STORY_VIEW', object)",
+            security: "is_granted('STORY_VIEW', object)"
         ),
         new GetCollection(
-            normalizationContext: ['groups' => ['story:list:read']],
+            normalizationContext: ['groups' => ['story:list:read']]
         ),
         new Post(
             processor: StoryStateProcessor::class,
-            security: "is_granted('ROLE_USER')",
-            validationContext: ['groups' => ['create']],
-            denormalizationContext: ['groups' => ['create_write']]
+            validationContext: ['groups' => ['story:create']],
+            normalizationContext: ['groups' => ['story:read']],
+            denormalizationContext: ['groups' => ['story:create']],
+            security: "is_granted('ROLE_USER')"
         ),
         new Patch(
             processor: StoryStateProcessor::class,
-            security: "is_granted('STORY_EDIT', object)",
-            validationContext: ['groups' => ['edit']],
-            denormalizationContext: ['groups' => ['edit_write']]
+            validationContext: ['groups' => ['story:edit']],
+            normalizationContext: ['groups' => ['story:read']],
+            denormalizationContext: ['groups' => ['story:edit']],
+            security: "is_granted('STORY_EDIT', object)"
         ),
         new Delete(
             security: "is_granted('STORY_DELETE', object)"
-        ),
+        )
     ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -67,7 +68,7 @@ class Story
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:item:read', 'story:item:read', 'story:list:read'])]
+    #[Groups(['story:read', 'story:item:read', 'story:list:read', 'user:item:read', 'chat:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
@@ -75,66 +76,66 @@ class Story
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(
-        groups: ['create', 'edit']
+        groups: ['story:create', 'story:edit']
     )]
     #[Assert\Length(
         min: 3,
         max: 50,
         minMessage: 'The title must be at least {{ limit }} characters long.',
         maxMessage: 'The title cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['story:create', 'story:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the title.',
-        groups: ['create', 'edit']
+        groups: ['story:create', 'story:edit']
     )]
-    #[Groups(['user:item:read', 'story:item:read', 'story:list:read', 'create_write', 'edit_write'])]
+    #[Groups(['story:read', 'story:item:read', 'story:list:read', 'user:item:read', 'chat:item:read', 'story:create', 'story:edit'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         max: 1000,
         maxMessage: 'The description cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['story:create', 'story:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the description.',
-        groups: ['create', 'edit']
+        groups: ['story:create', 'story:edit']
     )]
     #[Assert\Regex(
         pattern: '/\S/',
         message: 'The description cannot be empty or contain only spaces.',
-        groups: ['create', 'edit']
+        groups: ['story:create', 'story:edit']
     )]
-    #[Groups(['story:item:read', 'story:list:read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:list:read', 'story:create', 'story:edit'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:item:read', 'story:item:read', 'story:list:read', 'create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:list:read', 'user:item:read', 'story:create', 'story:edit'])]
     private ?string $bannerImageUrl = null;
 
     #[ORM\Column]
-    #[Groups(['create_write', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:create', 'story:edit'])]
     private ?bool $isPublic = null;
 
     #[ORM\Column(enumType: Genre::class)]
-    #[Groups(['story:item:read', 'create_write', 'story:list:read', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:list:read', 'story:create', 'story:edit'])]
     private ?Genre $genreType = null;
 
     #[ORM\Column(enumType: Audience::class)]
-    #[Groups(['story:item:read', 'create_write', 'story:list:read', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:list:read', 'story:create', 'story:edit'])]
     private ?Audience $audienceType = null;
 
     #[ORM\Column(enumType: Access::class)]
-    #[Groups(['story:item:read', 'create_write', 'story:list:read', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:list:read', 'story:create', 'story:edit'])]
     private ?Access $accessType = null;
 
     #[ORM\Column(enumType: Language::class)]
-    #[Groups(['story:item:read', 'create_write', 'story:list:read', 'edit_write'])]
+    #[Groups(['story:item:read', 'story:list:read', 'story:create', 'story:edit'])]
     private ?Language $languageType = null;
 
     #[ORM\ManyToOne(inversedBy: 'authoredStories')]
@@ -167,7 +168,7 @@ class Story
      * @var Collection<int, Place>
      */
     #[ORM\OneToMany(targetEntity: Place::class, mappedBy: 'story', orphanRemoval: true)]
-    #[Groups(['story:item:read'])]
+    #[Groups(['story:item:read', 'chat:item:read'])]
     private Collection $places;
 
     public function __construct()
@@ -236,6 +237,7 @@ class Story
         return $this->isPublic;
     }
 
+    #[Groups(['story:create', 'story:edit'])]
     public function setIsPublic(bool $isPublic): static
     {
         $this->isPublic = $isPublic;

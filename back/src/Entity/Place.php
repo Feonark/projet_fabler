@@ -19,29 +19,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PlaceRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read', 'story:item:read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['place:read', 'place:item:read', 'story:item:read', 'chat:item:read']],
+    denormalizationContext: ['groups' => ['place:create', 'place:edit']],
     operations: [
-        new Get(),
-        new GetCollection(
-            uriTemplate: '/stories/{id}/places',
-            uriVariables: [
-                'id' => new Link(
-                    fromClass: Story::class,
-                    fromProperty: 'places'
-                )
-            ]
+        new Get(
+            normalizationContext: ['groups' => ['place:item:read']],
         ),
         new Post(
             processor: PlaceStateProcessor::class,
-            securityPostDenormalize: "is_granted('PLACE_CREATE', object)",
-            validationContext: ['groups' => ['create']],
-            denormalizationContext: ['groups' => ['create_write']]
+            validationContext: ['groups' => ['place:create']],
+            normalizationContext: ['groups' => ['place:read']],
+            denormalizationContext: ['groups' => ['place:create']],
+            securityPostDenormalize: "is_granted('PLACE_CREATE', object)"
         ),
         new Patch(
-            security: "is_granted('PLACE_EDIT', object)",
-            validationContext: ['groups' => ['edit']],
-            denormalizationContext: ['groups' => ['edit_write']]
+            validationContext: ['groups' => ['place:edit']],
+            normalizationContext: ['groups' => ['place:read']],
+            denormalizationContext: ['groups' => ['place:edit']],
+            security: "is_granted('PLACE_EDIT', object)"
         ),
         new Delete(
             security: "is_granted('PLACE_DELETE', object)"
@@ -53,63 +48,61 @@ class Place
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read', 'story:item:read'])]
+    #[Groups(['place:read', 'place:item:read', 'story:item:read', 'chat:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
-    #[Groups(['read'])]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(
-        groups: ['create', 'edit']
+        groups: ['place:create', 'place:edit']
     )]
     #[Assert\Length(
         min: 3,
         max: 50,
         minMessage: 'The title must be at least {{ limit }} characters long.',
         maxMessage: 'The title cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['place:create', 'place:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the title.',
-        groups: ['create', 'edit']
+        groups: ['place:create', 'place:edit']
     )]
-    #[Groups(['read', 'story:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['place:read', 'place:item:read', 'story:item:read', 'chat:item:read', 'place:create', 'place:edit'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(
         message: 'Description cannot be blank.',
-        groups: ['create', 'edit']
+        groups: ['place:create', 'place:edit']
     )]
     #[Assert\Length(
         max: 200,
         maxMessage: 'Description cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['place:create', 'place:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the title.',
-        groups: ['create', 'edit']
+        groups: ['place:create', 'place:edit']
     )]
-    #[Groups(['read', 'story:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['place:item:read', 'story:item:read', 'place:create', 'place:edit'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read', 'story:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['place:item:read', 'story:item:read', 'chat:item:read', 'place:create', 'place:edit'])]
     private ?string $placeImageUrl = null;
 
     #[ORM\OneToOne(mappedBy: 'currentPlace', cascade: ['persist', 'remove'])]
-    #[Groups('read')]
     private ?Chat $chat = null;
 
     #[ORM\ManyToOne(inversedBy: 'places')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'create_write'])]
+    #[Groups(['place:create'])]
     #[ApiProperty(readableLink: false, writableLink: false)]
     private ?Story $story = null;
 

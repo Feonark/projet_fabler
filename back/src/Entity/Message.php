@@ -21,10 +21,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[ApiResource(
     paginationEnabled: false,
     mercure: 'object.getMercureOptions()',
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['message:read', 'message:item:read', 'message:list:read']],
+    denormalizationContext: ['groups' => ['message:create', 'message:edit']],
     operations: [
-        new Get(),
+        new Get(
+            normalizationContext: ['groups' => ['message:item:read']],
+        ),
         new GetCollection(
             uriTemplate: '/chats/{id}/messages',
             uriVariables: [
@@ -32,13 +34,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                     fromClass: Chat::class,
                     fromProperty: 'messages'
                 )
-            ]
+            ],
+            normalizationContext: ['groups' => ['message:list:read']],
         ),
         new Post(
             processor: MessageStateProcessor::class,
+            validationContext: ['groups' => ['message:create']],
+            normalizationContext: ['groups' => ['message:item:read']],
+            denormalizationContext: ['groups' => ['message:create']],
             securityPostDenormalize: "is_granted('MESSAGE_CREATE', object)",
-            validationContext: ['groups' => ['create']],
-            denormalizationContext: ['groups' => ['create_write']]
         ),
         new Delete(
             security: "is_granted('MESSAGE_DELETE', object)"
@@ -50,40 +54,40 @@ class Message
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read')]
+    #[Groups(['message:read', 'message:item:read', 'message:list:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(
-        groups: ['create']
+        groups: ['message:create', 'message:edit']
     )]
     #[Assert\Length(
         max: 400,
         maxMessage: 'Message content cannot be longer than {{ limit }} characters.',
-        groups: ['create']
+        groups: ['message:create', 'message:edit']
     )]
-    #[Groups(['read', 'create_write'])]
+    #[Groups(['message:list:read', 'message:item:read', 'message:create', 'message:edit'])]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
-    #[Groups(['read', 'create_write'])]
+    #[Groups(['message:list:read', 'message:item:read', 'message:create'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'usedInMessages')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'create_write'])]
+    #[Groups(['message:list:read', 'message:item:read', 'message:create'])]
     #[ApiProperty(readableLink: true, writableLink: false)]
     private ?Character $characterAlias = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'create_write'])]
-    #[ApiProperty(readableLink: false, writableLink: false)]
+    #[Groups(['message:list:read', 'message:item:read', 'message:create'])]
+    #[ApiProperty(readableLink: true, writableLink: false)]
     private ?StoryMember $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'create_write'])]
+    #[Groups(['message:create'])]
     #[ApiProperty(readableLink: false, writableLink: false)]
     private ?Chat $chat = null;
 

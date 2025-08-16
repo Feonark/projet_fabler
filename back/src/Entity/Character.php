@@ -20,48 +20,29 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['read']],
-    denormalizationContext: ['groups' => ['write']],
+    normalizationContext: ['groups' => ['character:read', 'character:item:read', 'user:item:read', 'message:list:read']],
+    denormalizationContext: ['groups' => ['character:create', 'character:edit']],
     operations: [
         new Get(
+            normalizationContext: ['groups' => ['character:item:read']],
             security: "is_granted('ROLE_USER')"
-        ),
-        new GetCollection(
-            uriTemplate: '/users/{id}/characters',
-            uriVariables: [
-                'id' => new Link(
-                    fromClass: User::class,
-                    fromProperty: 'characters',
-                    security: "is_granted('ROLE_USER')"
-                )
-            ]
-        ),
-        new GetCollection(
-            uriTemplate: '/stories/{id}/characters',
-            uriVariables: [
-                'id' => new Link(
-                    fromClass: Story::class,
-                    fromProperty: 'characters',
-                    toClass: self::class,
-                    toProperty: 'usedInStories',
-                    security: "is_granted('ROLE_USER')"
-                )
-            ]
         ),
         new Post(
             processor: CharacterStateProcessor::class,
-            security: "is_granted('ROLE_USER')",
-            validationContext: ['groups' => ['create']],
-            denormalizationContext: ['groups' => ['create_write']]
+            validationContext: ['groups' => ['character:create']],
+            normalizationContext: ['groups' => ['character:read']],
+            denormalizationContext: ['groups' => ['character:create']],
+            security: "is_granted('ROLE_USER')"
         ),
         new Patch(
             processor: CharacterStateProcessor::class,
-            security: "is_granted('POST_EDIT', object)",
-            validationContext: ['groups' => ['edit']],
-            denormalizationContext: ['groups' => ['edit_write']]
+            validationContext: ['groups' => ['character:edit']],
+            normalizationContext: ['groups' => ['character:read']],
+            denormalizationContext: ['groups' => ['character:edit']],
+            security: "is_granted('CHARACTER_EDIT', object)"
         ),
         new Delete(
-            security: "is_granted('POST_DELETE', object)"
+            security: "is_granted('CHARACTER_DELETE', object)"
         )
     ]
 )]
@@ -70,75 +51,74 @@ class Character
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read', 'user:item:read'])]
+    #[Groups(['character:read', 'character:item:read', 'user:item:read', 'message:list:read', 'message:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 6, nullable: true)]
-    #[Groups('read')]
     private ?string $hashId = null;
 
     #[ORM\Column(length: 30)]
     #[Assert\NotBlank(
         message: 'Character name cannot be blank.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
     #[Assert\Length(
         min: 1,
         max: 30,
         minMessage: 'Character name must be at least {{ limit }} character long.',
         maxMessage: 'Character name cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the title.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
-    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['character:read', 'character:item:read', 'user:item:read', 'message:list:read', 'message:item:read', 'character:create', 'character:edit'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 40, nullable: true)]
     #[Assert\Length(
         max: 40,
         maxMessage: 'Title cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the title.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
-    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['character:item:read', 'user:item:read', 'character:create', 'character:edit'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(
         max: 2000,
         maxMessage: 'Biography cannot be longer than {{ limit }} characters.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
     #[Assert\Regex(
         pattern: '/<[^>]*>/',
         match: false,
         message: 'HTML tags are not allowed in the title.',
-        groups: ['create', 'edit']
+        groups: ['character:create', 'character:edit']
     )]
-    #[Groups(['read', 'create_write', 'edit_write'])]
+    #[Groups(['character:item:read', 'character:create', 'character:edit'])]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['character:item:read', 'user:item:read', 'message:list:read', 'message:item:read', 'character:create', 'character:edit'])]
     private ?string $portraitUrl = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read', 'user:item:read', 'create_write', 'edit_write'])]
+    #[Groups(['character:item:read', 'user:item:read', 'message:list:read', 'message:item:read', 'character:create', 'character:edit'])]
     private ?string $avatarUrl = null;
 
     #[ORM\ManyToOne(inversedBy: 'characters')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read'])]
+    #[Groups(['character:read'])]
     private ?User $owner = null;
 
     /**

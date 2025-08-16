@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 final class UserVoter extends Voter
 {
-    public const EDIT = 'POST_EDIT';
-    public const VIEW = 'POST_VIEW';
-    public const DELETE = 'POST_DELETE';
+    public const EDIT = 'USER_EDIT';
+    public const VIEW = 'USER_VIEW';
+    public const DELETE = 'USER_DELETE';
 
     protected function supports(string $attribute, mixed $subject): bool
     {

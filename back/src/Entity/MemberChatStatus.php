@@ -7,17 +7,25 @@ use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MemberChatStatusRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MemberChatStatusRepository::class)]
-#[ApiResource(operations: [
-    new Get(),
-    new Patch()
-])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['status:read', 'chat:item:read']],
+    denormalizationContext: ['groups' => ['status:edit']],
+    operations: [
+        new Patch(
+            normalizationContext: ['groups' => ['status:read']],
+            denormalizationContext: ['groups' => ['status:edit']],
+        )
+    ]
+)]
 class MemberChatStatus
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['status:read', 'chat:item:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -31,6 +39,7 @@ class MemberChatStatus
         return $this->id;
     }
 
+    #[Groups(['status:read', 'chat:item:read'])]
     public function isOnline(): ?bool
     {
         return $this->isOnline;
@@ -43,6 +52,7 @@ class MemberChatStatus
         return $this;
     }
 
+    #[Groups(['status:read', 'chat:item:read'])]
     public function isWriting(): ?bool
     {
         return $this->isWriting;

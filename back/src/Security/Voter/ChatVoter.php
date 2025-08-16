@@ -2,21 +2,20 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Chat;
 use App\Entity\User;
-use App\Entity\Story;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-final class StoryVoter extends Voter
+final class ChatVoter extends Voter
 {
-  public const VIEW = 'STORY_VIEW';
-  public const EDIT = 'STORY_EDIT';
-  public const DELETE = 'STORY_DELETE';
+  public const VIEW = 'CHAT_VIEW';
+  public const EDIT = 'CHAT_EDIT';
 
   protected function supports(string $attribute, mixed $subject): bool
   {
-    return in_array($attribute, [self::EDIT, self::VIEW, self::DELETE])
-      && $subject instanceof Story;
+    return in_array($attribute, [self::EDIT, self::VIEW])
+      && $subject instanceof Chat;
   }
 
   protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -30,36 +29,21 @@ final class StoryVoter extends Voter
 
     switch ($attribute) {
       case self::VIEW:
-
-        // Si story publique * peut voir
-        if ($subject->isPublic() === true) {
-          return true;
-        }
-
-        // Si story privée, soit auteur soit membre
+      case self::EDIT:
+        // On montre/édite si User
         if ($user instanceof User) {
 
-          // Auteur, voit
-          if ($subject->getAuthor() === $user) {
-            return true;
-          }
-
-          // Membre, voit
+          // Membre, voit/édite
           foreach ($subject->getMembers() as $member) {
             if ($member->getMemberUser() === $user) {
               return true;
             }
           }
         }
-
-        // Sinon on montre rien
         return false;
-
-      case self::EDIT:
-      case self::DELETE:
-        return $subject->getAuthor() === $user;
     }
 
+    // Sinon rien
     return false;
   }
 }
