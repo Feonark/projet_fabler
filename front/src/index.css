@@ -15,10 +15,37 @@ li {
 list-style-type: none;
 }
 
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge (webkit) */
+}
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: var(--primary-bg);
+  font-family: var(--font-family-inter);
+  height: 100%;
+  width: 100%;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
 /* General design */
 
 h1 {
-  font-size: 3.2rem;
+  font-size: var(--font-size-2xl);
 }
 
 h2 {
@@ -33,4 +60,10 @@ a {
   font-size: 1.6rem;
   background-color: lightgrey;
   padding: 8px;
+}
+
+button {
+  outline: none;
+  border: none;
+  background: transparent;
 }

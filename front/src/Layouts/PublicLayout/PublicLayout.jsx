@@ -5,16 +5,18 @@ import Navbar from "../../Components/Navbar/Navbar";
 
 const PublicLayout = () => {
   return (
-    <div className="container">
-      <header className="header">
+    <div className="layout__container">
+      <header className="layout__header">
         <Navbar />
       </header>
 
-      <main>
-        <Outlet />
-      </main>
+      <div className="layout__content">
+        <main className="layout__main">
+          <Outlet />
+        </main>
 
-      <footer>FooterContent</footer>
+        <footer className="layout__footer">FooterContent</footer>
+      </div>
     </div>
   );
 };

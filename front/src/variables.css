@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root { 
+    /* FONT FAMILY */
+  --font-family-inter: 'Inter', sans-serif;
+
+  /* COLORS (PRIMITIVES) */
+  --zinc-950: #09090B;
+  --zinc-900: #18181B;
+  --zinc-800: #27272A;
+  --zinc-700: #3F3F46;
+  --zinc-600: #52525C;
+  --zinc-500: #71717B;
+  --zinc-400: #9F9FA9;
+  --zinc-300: #D4D4D8;
+  --zinc-200: #E4E4E7;
+  --zinc-100: #F4F4F5;
+  --zinc-050: #FAFAFA;
+  --green-950: #032E15;
+  --green-900: #0D542B;
+  --green-500: #00C950;
+  --green-300: #7BF1A8;
+  --green-050: #F0FDF4;
+  --red-950: #460809;
+  --red-900: #82181A;
+  --red-500: #FB2C36;
+  --red-300: #FFA2A2;
+  --red-100: #FFE2E2;
+  --stone-400: #A6A09B;
+
+  /* COLORS (TOKENS) */
+  --text-color: var(--zinc-050);
+  --primary-bg: var(--zinc-900);
+  --secondary-bg: var(--zinc-800);
+  --border-color: var(--zinc-700);
+  --success-color: var(--green-500);
+  --error-color: var(--red-500);
+  --negative-action-color: var(--red-500);
+
+  /* FONT SIZES (PRIMITIVES) */
+  --font-size-sm: 1.2rem;
+  --font-size-md: 1.6rem;
+  --font-size-lg: 2.0rem;
+  --font-size-xl: 2.4rem;
+  --font-size-2xl: 3.2rem;
+
+  /* FONT SIZES (TOKENS) */
+  --title: var(--font-size-xl);
+  --subtitle: var(--font-size-xl);
+  --bodytitle: var(--font-size-lg);
+  --text: var(--font-size-md);
+
+  /* ICON SIZES (PRIMITIVES) */
+  --icon-size-sm: 1.2rem;
+  --icon-size-md: 1.6rem;
+  --icon-size-lg: 20px;
+  --icon-size-xl: 2.4rem;
+  --icon-size-2xl: 3.2rem;
+
+  /* ICON SIZES (TOKENS) */
+  --nav-icon: var(--icon-size-md);
+  --span-icon: var(--icon-size-md);
+  --nav-icon-dt: var(--icon-size-lg);
+
+  /* CORNER RADIUS (PRIMITIVES) */
+  --radius-sm: 0.8rem;
+  --radius-md: 1.2rem;
+  --radius-lg: 1.6rem;
+  --radius-xl: 2.4rem;
+  --radius-2xl: 3.2rem;
+
+  /* CORNER RADIUS (TOKENS) */
+  --nav-link: var(--radius-sm);
+}

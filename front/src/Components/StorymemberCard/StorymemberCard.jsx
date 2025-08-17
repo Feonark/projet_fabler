@@ -8,7 +8,7 @@ const StorymemberCard = ({ member, isAuthor, onDelete }) => {
     <div className="" key={member.id}>
       <p className="">
         {member.memberUser.username}{" "}
-        <span className="">{member.memberUser.id === user.id && "(You)"}</span>
+        <span className="">{member.memberUser.id === user?.id && "(You)"}</span>
       </p>
       <p className="">{member.author === true ? "Author" : "Member"}</p>
       {isAuthor && member.author === false ? (

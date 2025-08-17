@@ -1,3 +1,23 @@
-.container {
-  border: 1px solid red;
+.layout__container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+} 
+
+.layout__content {
+  margin-top: 76px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  
+  .layout__container {
+    flex-direction: row;
+  } 
+
+  .layout__content {
+    margin-top: 0;
+    margin-left: 122px;
+  }
 }
