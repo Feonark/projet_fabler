@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -20,7 +21,7 @@ const Navbar = () => {
       <nav className="navbar__nav">
         <Link to="/">Home</Link>
         <Link to="/stories/search">Search</Link>
-        <Link to="/profile">Profile</Link>
+        {token && <Link to="/profile">Profile</Link>}
       </nav>
       {isAuthenticated ? (
         <button onClick={handleLogout}>Logout</button>

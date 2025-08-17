@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { useAuth } from "../../Contexts/AuthContext";
 import "./Home.css";
 
 const Home = () => {
+  const { user } = useAuth();
   const [lastStories, setLastStories] = useState();
 
   useEffect(() => {
     fetchStories();
+    console.log(user);
   }, []);
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +36,21 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1 className="">Page Home</h1>
+      {/* Section welcome */}
+      {user && (
+        <div className="">
+          <h1 className="">Welcome, {user.username ?? "guest"}!</h1>
+        </div>
+      )}
+      {/* Section create story */}
+      <div className="">
+        <h1 className="">Wanna create your own story?</h1>
+        <p className="">
+          Create, publish and roleplay. Whenever you feel like it.
+        </p>
+        <Link to={user?.id ? "stories/new" : "login"}>Create a story</Link>
+      </div>
+      {/* Section latest stories */}
       {lastStories &&
         lastStories.map((story) => (
           <div className="" key={story.id}>
@@ -51,6 +68,19 @@ const Home = () => {
             <Link to={`/stories/${story.id}`}>Go to</Link>
           </div>
         ))}
+      {/* Section resume roleplay */}
+      {user &&
+        user.storyMemberships
+          ?.sort(() => Math.random() - 0.5)
+          .slice(0, 3)
+          .map((membership) => (
+            <div className="">
+              <h3 className="">{membership.story.title}</h3>
+              <span className="">
+                {membership.author === true ? "Author" : "Member"}
+              </span>
+            </div>
+          ))}
     </div>
   );
 };
