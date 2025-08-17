@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import ChatMessage from "../../Components/ChatMessage/ChatMessage";
+import ChatMessages from "../../Components/ChatMessages/ChatMessages";
 import { useParams } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
+import "./Chat.css";
 
 const Chat = () => {
   const { storyId } = useParams();
@@ -14,6 +15,7 @@ const Chat = () => {
   const [lastMessage, setLastMessage] = useState();
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeout = useRef(null);
+  const messagesEndRef = useRef(null);
 
   // Premier useEffect pour l'abonnement aux events Chat + Messages
   // Se lance au montage du composant
@@ -102,6 +104,11 @@ const Chat = () => {
       }
     };
   }, [chat?.id, user?.id, token]);
+
+  // Dernier useEffect pour le scroll automatique du chat lors du post d'un nouveau message
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // FETCHS
@@ -281,12 +288,16 @@ const Chat = () => {
     }
   };
 
+  function scrollToBottom() {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // UI
   ////////////////////////////////////////////////////////////////////////////////////////
 
   return (
-    <div className="chat">
+    <div className="chat__container">
       <h1>Page Chat de la Story {storyId}</h1>
       {chat && (
         <div className="">
@@ -333,69 +344,9 @@ const Chat = () => {
         )}
       </div>
       {/* MESSAGES */}
-      <div className="container__messages">
-        <p>Les messages : </p>
-        {messages &&
-          messages.map((message, index) => {
-            const prevMessage = messages[index - 1];
-            const sameCharacter =
-              prevMessage &&
-              prevMessage.characterAlias?.id === message.characterAlias?.id;
-
-            return (
-              <div key={message.id}>
-                <div className="">
-                  {!sameCharacter && (
-                    <div className="">
-                      <img
-                        src={`http://localhost:8000/${message.author?.memberUser?.avatarUrl}`}
-                        alt=""
-                        style={{
-                          width: "40px",
-                          maxHeight: "40px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <img
-                        src={`http://localhost:8000/${message.characterAlias?.avatarUrl}`}
-                        alt=""
-                        style={{
-                          width: "40px",
-                          maxHeight: "40px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <h3 className="">{message.characterAlias?.name}</h3>
-                      <span className="">
-                        {new Date(message.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  <p className="">{message.content}</p>
-                </div>
-              </div>
-            );
-          })}
-        {/* INDICATION IS WRITING */}
-        {chat && (
-          <div className="text-sm italic text-gray-500">
-            {chat &&
-              chat.members
-                .filter(
-                  (m) =>
-                    m.memberUser.id !== user?.id &&
-                    m.memberChatStatus?.writing === true
-                )
-                .map((m) => (
-                  <p key={m.id}>
-                    {m.memberUser.username} est en train d’écrire...
-                  </p>
-                ))}
-          </div>
-        )}
+      <div className="messages__container">
+        <ChatMessages messages={messages} chat={chat} user={user} />
+        <div ref={messagesEndRef} />
       </div>
       {/* INPUTS */}
       <div className="">

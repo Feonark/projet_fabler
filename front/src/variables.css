@@ -37,6 +37,16 @@
   --error-color: var(--red-500);
   --negative-action-color: var(--red-500);
 
+  /* FONT WEIGHT (PRIMITIVES) */
+  --font-regular: 300;
+  --font-medium: 400;
+  --font-semibold: 600;
+
+  /* FONT WEIGHT (TOKENS) */
+  --text-regular: var(--font-regular);
+  --text-medium: var(--font-medium);
+  --text-semibold: var(--font-semibold);
+
   /* FONT SIZES (PRIMITIVES) */
   --font-size-sm: 1.2rem;
   --font-size-md: 1.6rem;
@@ -45,10 +55,11 @@
   --font-size-2xl: 3.2rem;
 
   /* FONT SIZES (TOKENS) */
-  --title: var(--font-size-xl);
-  --subtitle: var(--font-size-xl);
-  --bodytitle: var(--font-size-lg);
-  --text: var(--font-size-md);
+  --title-size: var(--font-size-xl);
+  --subtitle-size: var(--font-size-xl);
+  --bodytitle-size: var(--font-size-lg);
+  --text-size: var(--font-size-md);
+  --span-size: var(--font-size-sm);
 
   /* ICON SIZES (PRIMITIVES) */
   --icon-size-sm: 1.2rem;
@@ -62,13 +73,16 @@
   --span-icon: var(--icon-size-md);
   --nav-icon-dt: var(--icon-size-lg);
 
-  /* CORNER RADIUS (PRIMITIVES) */
+  /* BORDER RADIUS (PRIMITIVES) */
   --radius-sm: 0.8rem;
   --radius-md: 1.2rem;
   --radius-lg: 1.6rem;
   --radius-xl: 2.4rem;
   --radius-2xl: 3.2rem;
 
-  /* CORNER RADIUS (TOKENS) */
+  /* BORDER RADIUS (TOKENS) */
   --nav-link: var(--radius-sm);
+  --message-content: var(--radius-sm);
+  --character-avatar: var(--radius-sm);
+  --chat-avatar: var(--radius-2xl);
 }

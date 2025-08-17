@@ -1,0 +1,13 @@
+
+.chat__container {
+  padding-inline: 8px;
+}
+
+.messages__container {
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  height: 300px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}

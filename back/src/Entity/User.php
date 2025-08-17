@@ -77,7 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'Your username can only contain letters and numbers (no spaces, dashes or special characters).',
         groups: ['user:create', 'user:edit']
     )]
-    #[Groups(['user:read', 'user:item:read', 'story:item:read', 'user:create', 'user:edit'])]
+    #[Groups(['user:read', 'user:item:read', 'story:item:read', 'user:create', 'chat:item:read', 'user:edit'])]
     private ?string $username = null;
 
     /**
