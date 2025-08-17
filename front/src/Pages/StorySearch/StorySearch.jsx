@@ -37,6 +37,9 @@ export default function StorySearch() {
     accessType: "",
   });
   const [stories, setStories] = useState([]);
+  const [pagination, setPagination] = useState({});
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const debounceRef = useRef(null);
   const abortRef = useRef(null);
   const DEBOUNCE_MS = 300;
@@ -44,20 +47,22 @@ export default function StorySearch() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      fetchStories();
+      fetchStories(page);
     }, DEBOUNCE_MS);
     return () => clearTimeout(debounceRef.current);
-  }, [filters]);
+  }, [filters, page]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // FETCH STORY
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  const fetchStories = async () => {
+  const fetchStories = async (page) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.append(key, value);
     });
+    params.append("page", page);
+    params.append("order[id]", "desc");
 
     try {
       if (abortRef.current) abortRef.current.abort();
@@ -73,6 +78,8 @@ export default function StorySearch() {
 
       const data = await res.json();
       setStories(data.member || []);
+      setPagination(data.view || {});
+      setTotalPages(Math.ceil(data.totalItems / 12));
     } catch (e) {
       if (e.name !== "AbortError") {
         console.error(e);
@@ -155,26 +162,50 @@ export default function StorySearch() {
       {stories && (
         <div className="">
           <h1>Stories</h1>
-          {stories
-            // .filter((story) => story.public === true)
-            .map((story) => (
+          {stories.map((story) => (
+            <div className="">
               <div className="">
-                <div className="">
-                  {story.public === true && (
-                    <h1 className="">PUBLIC {story.id}</h1>
-                  )}
-                  <span className="">{story.genreType}</span>
-                  <span className="">{story.audienceType}</span>
-                  <span className="">{story.languageType}</span>
-                  <span className="">{story.accessType}</span>
-                </div>
-                <div className="">
-                  <h2 className="">{story.title}</h2>
-                  <p className="">{story.description}</p>
-                </div>
-                <Link to={`/stories/${story.id}`}></Link>
+                {story.public === true && (
+                  <h1 className="">PUBLIC {story.id}</h1>
+                )}
+                <span className="">{story.genreType}</span>
+                <span className="">{story.audienceType}</span>
+                <span className="">{story.languageType}</span>
+                <span className="">{story.accessType}</span>
               </div>
-            ))}
+              <div className="">
+                <h2 className="">{story.title}</h2>
+                <p className="">{story.description}</p>
+              </div>
+              <Link to={`/stories/${story.id}`}>Go to</Link>
+            </div>
+          ))}
+        </div>
+      )}
+      {page && (
+        <div>
+          {/* Bouton début */}
+          {page > 1 && <button onClick={() => setPage(1)}>{"<<"}</button>}
+
+          {/* Bouton précédent */}
+          {pagination.previous && (
+            <button onClick={() => setPage(page - 1)}>Previous</button>
+          )}
+
+          {/* Num de page */}
+          <span>
+            Page {page} / {totalPages}
+          </span>
+
+          {/* Bouton suivant */}
+          {pagination.next && (
+            <button onClick={() => setPage(page + 1)}>Next</button>
+          )}
+
+          {/* Bouton fin */}
+          {page < totalPages && (
+            <button onClick={() => setPage(totalPages)}>{">>"}</button>
+          )}
         </div>
       )}
     </div>

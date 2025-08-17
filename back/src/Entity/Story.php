@@ -19,6 +19,7 @@ use App\Repository\StoryRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -26,6 +27,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
 #[ApiResource(
+    paginationEnabled: true,
+    paginationClientItemsPerPage: true,
+    paginationMaximumItemsPerPage: 12,
     normalizationContext: ['groups' => ['story:read', 'story:item:read', 'story:list:read', 'user:item:read', 'chat:item:read']],
     denormalizationContext: ['groups' => ['story:create', 'story:edit']],
     operations: [
@@ -56,13 +60,20 @@ use Symfony\Component\Validator\Constraints as Assert;
         )
     ]
 )]
-#[ApiFilter(SearchFilter::class, properties: [
-    'title' => 'ipartial',
-    'genreType' => 'exact',
-    'audienceType' => 'exact',
-    'languageType' => 'exact',
-    'accessType' => 'exact',
-])]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'title' => 'ipartial',
+        'genreType' => 'exact',
+        'audienceType' => 'exact',
+        'languageType' => 'exact',
+        'accessType' => 'exact',
+    ]
+)]
+#[ApiFilter(
+    OrderFilter::class,
+    properties: ['id' => 'DESC']
+)]
 class Story
 {
     #[ORM\Id]
