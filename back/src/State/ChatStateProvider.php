@@ -33,7 +33,7 @@ final class ChatStateProvider implements ProviderInterface
       ->leftJoin('c.members', 'm')
       ->addSelect('partial m.{id}')
       ->leftJoin('m.memberUser', 'mu')
-      ->addSelect('partial mu.{id, avatarUrl}')
+      ->addSelect('partial mu.{id, avatarUrl, username}')
       ->leftJoin('m.memberChatStatus', 'mcs')
       ->addSelect('partial mcs.{id, isOnline, isWriting}')
 

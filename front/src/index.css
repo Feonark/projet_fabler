@@ -67,3 +67,61 @@ button {
   border: none;
   background: transparent;
 }
+
+input, select {
+  background: var(--primary-bg);
+  color: var(--text-color);
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+  padding-inline: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--input-radius);
+  transition: border 200ms ease;
+  height: 44px;
+}
+
+input::placeholder {
+  color: var(--subtle-text);
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid var(--text-color);
+  box-shadow: none;
+}
+
+select {
+  padding-right: 40px;
+  appearance: none;
+  position: relative;
+}
+
+
+select:hover, select:focus {
+  border: 1px solid var(--text-color);
+  cursor: pointer;
+}
+
+select option {
+  color: var(--text-color);
+}
+
+select:has(option:first-child:checked) {
+  color: var(--subtle-text);
+}
+
+.select__container {
+  position: relative;
+  display: inline-block;
+}
+
+.select__icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--text-color);
+  pointer-events: none; 
+}

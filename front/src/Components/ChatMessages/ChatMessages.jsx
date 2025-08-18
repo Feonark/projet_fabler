@@ -44,22 +44,6 @@ const ChatMessages = ({ messages, chat, user }) => {
           );
         })}
       {/* INDICATION IS WRITING */}
-      {chat && (
-        <div className="writing__container">
-          {chat &&
-            chat.members
-              .filter(
-                (m) =>
-                  m.memberUser.id !== user?.id &&
-                  m.memberChatStatus?.writing === true
-              )
-              .map((m) => (
-                <p key={m.id}>
-                  {m.memberUser?.username} est en train d’écrire...
-                </p>
-              ))}
-        </div>
-      )}
     </>
   );
 };

@@ -1,7 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import ChatMessages from "../../Components/ChatMessages/ChatMessages";
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
+import {
+  Users,
+  MessageCircle,
+  DoorOpen,
+  SendHorizontal,
+  ChevronDown,
+} from "lucide-react";
 import "./Chat.css";
 
 const Chat = () => {
@@ -169,14 +176,11 @@ const Chat = () => {
   ////////////////////////////////////////////////////////////////////////////////////////
 
   const setOnlineStatus = async (online) => {
-    console.log("Called with:", online);
     if (!chat || !user) return;
     const myMember = chat.members?.find(
       (member) => member.memberUser.id === user.id
     );
-    console.log("N+1");
     if (!myMember) return;
-    console.log("N+2");
     try {
       const response = await fetch(
         `http://localhost:8000${myMember.memberChatStatus["@id"]}`,
@@ -193,11 +197,6 @@ const Chat = () => {
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status}`);
       }
-
-      const data = await response.json();
-      console.log("Et là ça met :", data);
-
-      console.log("N+3");
     } catch (err) {
       console.error("Erreur setOnlineStatus:", err);
     }
@@ -278,7 +277,6 @@ const Chat = () => {
       }
 
       const data = await response.json();
-      console.log("Message envoyé :", data);
 
       setMessageContent("");
       setIsTyping(false);
@@ -297,124 +295,257 @@ const Chat = () => {
   ////////////////////////////////////////////////////////////////////////////////////////
 
   return (
-    <div className="chat__container">
-      <h1>Page Chat de la Story {storyId}</h1>
-      {chat && (
-        <div className="">
-          <span className="">{chat.members?.length} roleplayers</span>
-          <h2 className="">
-            {chat.members?.filter((m) => m.memberChatStatus?.online).length}
-            roleplayer(s) online
-          </h2>
-        </div>
-      )}
-      {/* ENCART RP BOX */}
-      RP BOX
-      <div className="">
+    <div className="chat__supercontainer">
+      <div className="chat__container">
         {chat && (
-          <div className="">
-            <h2>Current place</h2>
-            <img
-              src={`http://localhost:8000/${chat.currentPlace?.placeImageUrl}`}
-              alt="Current place image"
-              style={{
-                width: "50px",
-                maxHeight: "160px",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-        )}
-        {lastMessage && (
-          <div className="">
-            <img
-              src={`http://localhost:8000/${lastMessage.characterAlias?.avatarUrl}`}
-              alt="Character avatar"
-              style={{
-                width: "50px",
-                maxHeight: "160px",
-                objectFit: "cover",
-              }}
-            />
-            <div className="">
-              <h1 className="">{lastMessage.characterAlias?.name}</h1>
-              <p className="">{lastMessage.content}</p>
+          // HEADER
+          <div className="chat__header">
+            <div className="chat__actions">
+              <Link to={`/stories/${storyId}`} className="action__link">
+                <DoorOpen className="action__icon" />
+              </Link>
+            </div>
+            <div className="chat__general">
+              <h1 className="chat__title">{chat.story?.title}</h1>
+              <div className="chat__infos">
+                <span className="chat__chip chat__members">
+                  <Users className="chip__icon" />
+                  <span className="chip__text">
+                    {chat.members?.length} roleplayers
+                  </span>
+                </span>
+
+                <span className="chat__chip chat__onlines">
+                  <MessageCircle id="chip__online" className="chip__icon" />
+                  <span className="chip__text">
+                    {
+                      chat.members?.filter((m) => m.memberChatStatus?.online)
+                        .length
+                    }
+                    {" online"}
+                  </span>
+                </span>
+              </div>
             </div>
           </div>
         )}
-      </div>
-      {/* MESSAGES */}
-      <div className="messages__container">
-        <ChatMessages messages={messages} chat={chat} user={user} />
-        <div ref={messagesEndRef} />
-      </div>
-      {/* INPUTS */}
-      <div className="">
-        <label htmlFor="currentPlace">Select a place</label>
-        <select
-          id="currentPlace"
-          value={selectedPlace}
-          onChange={(e) => {
-            updateCurrentPlace(e.target.value);
-            setSelectedPlace(e.target.value);
-            console.log("Selected place:", e.target.value);
-          }}
-        >
-          <option value="">-- Select --</option>
-          {chat &&
-            chat.story?.places?.map((place) => (
-              <option key={place.id} value={place.id}>
-                {place.title}
-              </option>
-            ))}
-        </select>
-      </div>
-      <div className="">
-        <label htmlFor="character">Choose a character :</label>
-        <select
-          id="character"
-          value={selectedCharacter}
-          onChange={(e) => setSelectedCharacter(e.target.value)}
-        >
-          <option value="">-- Select --</option>
-          {user &&
-            user.characters?.map((character) => (
-              <option key={character.id} value={character.id}>
-                {character.name}
-              </option>
-            ))}
-        </select>
-      </div>
-      <div className="message__input">
-        <input
-          type="text"
-          placeholder="Écrire un message..."
-          value={messageContent}
-          onChange={(e) => {
-            setMessageContent(e.target.value);
+        {/* ENCART RP BOX */}
+        <div className="rpbox__container">
+          {chat && (
+            <div
+              className="rpbox__background"
+              style={{
+                backgroundImage: `url(http://localhost:8000/${chat.currentPlace?.placeImageUrl})`,
+              }}
+            >
+              {lastMessage && (
+                <div className="rpbox__message-info">
+                  <img
+                    src={`http://localhost:8000/${lastMessage.characterAlias?.portraitUrl}`}
+                    className="rpbox__img"
+                    alt="Character avatar"
+                  />
+                  <div className="rpbox__message">
+                    <span className="rpbox__message-title">
+                      {lastMessage.characterAlias?.name}
+                    </span>
+                    <p className="rpbox__message-content">
+                      {lastMessage.content}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        {/* MESSAGES */}
 
-            if (!isTyping) {
-              setIsTyping(true);
-              setWritingStatus(true);
-            }
+        <div className="messages__container hidden-desktop">
+          {/* Messages */}
+          <ChatMessages messages={messages} chat={chat} user={user} />
+          <div ref={messagesEndRef} />
+        </div>
+        {/* Is writing indications */}
+        {chat &&
+          chat.members.some(
+            (member) =>
+              member.memberUser.id !== user?.id &&
+              member.memberChatStatus?.writing === true
+          ) && (
+            <div className="writing__container hidden-desktop">
+              {chat &&
+                chat.members
+                  .filter(
+                    (member) =>
+                      member.memberUser.id !== user?.id &&
+                      member.memberChatStatus?.writing === true
+                  )
+                  .map((member) => (
+                    <div key={member.id} className="writing__message">
+                      <img
+                        src={`http://localhost:8000/${member.memberUser?.avatarUrl}`}
+                        className="writing__userAvi"
+                      />
+                      <div className="">
+                        <span className="writing__content">
+                          {member.memberUser.username} is writing...
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+          )}
+        {/* INPUTS */}
+        <div className="inputs__container">
+          <div className="chat__options">
+            {/* Select place */}
+            <div className="select__container">
+              <label htmlFor="currentPlace"></label>
+              <select
+                id="currentPlace"
+                value={selectedPlace}
+                onChange={(e) => {
+                  updateCurrentPlace(e.target.value);
+                  setSelectedPlace(e.target.value);
+                }}
+              >
+                <option value="" disabled selected hidden>
+                  -- Select --
+                </option>
+                {chat &&
+                  chat.story?.places?.map((place) => (
+                    <option key={place.id} value={place.id}>
+                      {place.title}
+                    </option>
+                  ))}
+              </select>
+              <ChevronDown className="select__icon" />
+            </div>
+          </div>
 
-            // Clear l'ancien timer
-            if (typingTimeout.current) clearTimeout(typingTimeout.current);
+          {/* Select character */}
+          <div className="chat-response__container">
+            <div className="select__container">
+              <label htmlFor="character"></label>
+              <select
+                id="character"
+                className="character__select"
+                value={selectedCharacter}
+                onChange={(e) => setSelectedCharacter(e.target.value)}
+              >
+                <option value="">-- Select --</option>
+                {user &&
+                  user.characters?.map((character) => (
+                    <option key={character.id} value={character.id}>
+                      {character.name}
+                    </option>
+                  ))}
+              </select>
+              {selectedCharacter ? (
+                <img
+                  className="character-select__preview"
+                  src={`http://localhost:8000/${
+                    user.characters.find(
+                      (c) => c.id.toString() === selectedCharacter
+                    )?.avatarUrl
+                  }`}
+                  alt="Selected avatar"
+                />
+              ) : (
+                <div className="character-select__preview">?</div>
+              )}
+              <ChevronDown className="select__icon" />
+            </div>
 
-            // Après 5s sans frappe on met isWriting à false
-            typingTimeout.current = setTimeout(() => {
-              setIsTyping(false);
-              setWritingStatus(false);
-            }, 5000);
-          }}
-          disabled={!selectedCharacter}
-        />
-        <button
-          onClick={handleSend}
-          disabled={!selectedCharacter || !messageContent.trim()}
-        >
-          Send
-        </button>
+            {/* Input response */}
+            <div className="input__container">
+              <input
+                type="text"
+                placeholder="Type your response here..."
+                value={messageContent}
+                onChange={(e) => {
+                  setMessageContent(e.target.value);
+
+                  if (!isTyping) {
+                    setIsTyping(true);
+                    setWritingStatus(true);
+                  }
+
+                  // Clear l'ancien timer
+                  if (typingTimeout.current)
+                    clearTimeout(typingTimeout.current);
+
+                  // Après 5s sans frappe on met isWriting à false
+                  typingTimeout.current = setTimeout(() => {
+                    setIsTyping(false);
+                    setWritingStatus(false);
+                  }, 5000);
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    messageContent.trim() &&
+                    selectedCharacter
+                  ) {
+                    handleSend();
+                  }
+                }}
+                disabled={!selectedCharacter}
+                className="input"
+              />
+              <button
+                className="input__button"
+                onClick={handleSend}
+                disabled={!selectedCharacter || !messageContent.trim()}
+              >
+                <SendHorizontal className="button__icon" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/*  */}
+      {/*  */}
+      {/* MESSAGES CONTAINER FOR DESKTOP (THE OTHER ONE IS HIDDEN) */}
+      {/*  */}
+      {/*  */}
+      <div className="messages__container--desktop">
+        {/* MESSAGES */}
+        <div className="messages__container">
+          {/* Messages */}
+          <ChatMessages messages={messages} chat={chat} user={user} />
+          <div ref={messagesEndRef} />
+        </div>
+        {/* Is writing indications */}
+        {chat &&
+          chat.members.some(
+            (member) =>
+              member.memberUser.id !== user?.id &&
+              member.memberChatStatus?.writing === true
+          ) && (
+            <div className="writing__container">
+              {chat &&
+                chat.members
+                  .filter(
+                    (member) =>
+                      member.memberUser.id !== user?.id &&
+                      member.memberChatStatus?.writing === true
+                  )
+                  .map((member) => (
+                    <div key={member.id} className="writing__message">
+                      <img
+                        src={`http://localhost:8000/${member.memberUser?.avatarUrl}`}
+                        className="writing__userAvi"
+                      />
+                      <div className="">
+                        <span className="writing__content">
+                          {member.memberUser.username} is writing...
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+          )}
       </div>
     </div>
   );

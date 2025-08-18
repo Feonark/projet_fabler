@@ -30,10 +30,12 @@
 
   /* COLORS (TOKENS) */
   --text-color: var(--zinc-050);
+  --subtle-text: var(--zinc-500);
   --primary-bg: var(--zinc-900);
   --secondary-bg: var(--zinc-800);
   --border-color: var(--zinc-700);
   --success-color: var(--green-500);
+  --positive-color: var(--green-500);
   --error-color: var(--red-500);
   --negative-action-color: var(--red-500);
 
@@ -44,8 +46,10 @@
 
   /* FONT WEIGHT (TOKENS) */
   --text-regular: var(--font-regular);
+  --span-regular: var(--font-regular);
   --text-medium: var(--font-medium);
   --text-semibold: var(--font-semibold);
+  --title-semibold: var(--font-semibold);
 
   /* FONT SIZES (PRIMITIVES) */
   --font-size-sm: 1.2rem;
@@ -59,7 +63,12 @@
   --subtitle-size: var(--font-size-xl);
   --bodytitle-size: var(--font-size-lg);
   --text-size: var(--font-size-md);
+  --chip-size: var(--font-size-md);
   --span-size: var(--font-size-sm);
+  --rpbox-text: var(--font-size-xl);
+  --rpbox-title: var(--font-size-2xl);
+
+  --title-size-dt: var(--font-size-2xl);
 
   /* ICON SIZES (PRIMITIVES) */
   --icon-size-sm: 1.2rem;
@@ -82,7 +91,11 @@
 
   /* BORDER RADIUS (TOKENS) */
   --nav-link: var(--radius-sm);
+  --link-radius: var(--radius-sm);
   --message-content: var(--radius-sm);
   --character-avatar: var(--radius-sm);
   --chat-avatar: var(--radius-2xl);
+  --span-radius: var(--radius-sm);
+  --input-radius: var(--radius-sm);
+  --rpbox-radius: var(--radius-lg);
 }

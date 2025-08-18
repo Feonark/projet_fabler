@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250805101520 extends AbstractMigration
+final class Version20250818083815 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -36,6 +36,8 @@ final class Version20250805101520 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN message.created_at IS \'(DC2Type:time_immutable)\'');
         $this->addSql('CREATE TABLE place (id SERIAL NOT NULL, story_id INT NOT NULL, hash_id VARCHAR(6) DEFAULT NULL, title VARCHAR(50) NOT NULL, description TEXT NOT NULL, place_image_url VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_741D53CDAA5D4036 ON place (story_id)');
+        $this->addSql('CREATE TABLE refresh_tokens (id SERIAL NOT NULL, refresh_token VARCHAR(128) NOT NULL, username VARCHAR(255) NOT NULL, valid TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_9BACE7E1C74F2195 ON refresh_tokens (refresh_token)');
         $this->addSql('CREATE TABLE story (id SERIAL NOT NULL, author_id INT NOT NULL, hash_id VARCHAR(6) DEFAULT NULL, title VARCHAR(50) NOT NULL, description TEXT DEFAULT NULL, banner_image_url VARCHAR(255) DEFAULT NULL, is_public BOOLEAN NOT NULL, genre_type VARCHAR(255) NOT NULL, audience_type VARCHAR(255) NOT NULL, access_type VARCHAR(255) NOT NULL, language_type VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_EB560438F675F31B ON story (author_id)');
         $this->addSql('CREATE TABLE story_member (id SERIAL NOT NULL, member_user_id INT NOT NULL, member_chat_status_id INT NOT NULL, story_id INT NOT NULL, chat_id INT NOT NULL, is_accepted BOOLEAN NOT NULL, is_author BOOLEAN NOT NULL, PRIMARY KEY(id))');
@@ -87,6 +89,7 @@ final class Version20250805101520 extends AbstractMigration
         $this->addSql('DROP TABLE member_chat_status');
         $this->addSql('DROP TABLE message');
         $this->addSql('DROP TABLE place');
+        $this->addSql('DROP TABLE refresh_tokens');
         $this->addSql('DROP TABLE story');
         $this->addSql('DROP TABLE story_member');
         $this->addSql('DROP TABLE "user"');

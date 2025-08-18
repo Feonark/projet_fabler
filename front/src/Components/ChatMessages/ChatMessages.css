@@ -22,13 +22,6 @@
   border-radius: var(--character-avatar);
 }
 
-.message__userAvi {
-  width: 16px;
-  height: 16px;
-  object-fit: cover;
-  border-radius: var(--chat-avatar);
-}
-
 .message__right {
   width: 100%;
 }
