@@ -401,8 +401,8 @@ const Chat = () => {
         <div className="inputs__container">
           <div className="chat__options">
             {/* Select place */}
-            <div className="select__container">
-              <label htmlFor="currentPlace"></label>
+            <div className="chat-select__container">
+              <label htmlFor="currentPlace" />
               <select
                 id="currentPlace"
                 value={selectedPlace}
@@ -421,14 +421,14 @@ const Chat = () => {
                     </option>
                   ))}
               </select>
-              <ChevronDown className="select__icon" />
+              <ChevronDown className="chat-select__icon" />
             </div>
           </div>
 
           {/* Select character */}
           <div className="chat-response__container">
-            <div className="select__container">
-              <label htmlFor="character"></label>
+            <div className="chat-select__container">
+              <label htmlFor="character" />
               <select
                 id="character"
                 className="character__select"
@@ -456,11 +456,11 @@ const Chat = () => {
               ) : (
                 <div className="character-select__preview">?</div>
               )}
-              <ChevronDown className="select__icon" />
+              <ChevronDown className="chat-select__icon" />
             </div>
 
             {/* Input response */}
-            <div className="input__container">
+            <div className="chat-input__container">
               <input
                 type="text"
                 placeholder="Type your response here..."

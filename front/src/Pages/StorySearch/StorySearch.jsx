@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router";
+import { ChevronDown, Search } from "lucide-react";
+import StoryCard from "../../Components/StoryCard/StoryCard";
+import "./StorySearch.css";
 
 const GENRE_OPTIONS = [
   "FANTASY",
@@ -87,127 +90,172 @@ export default function StorySearch() {
     }
   };
 
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // OTHER
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const formatEnumLabel = (value) => {
+    return value
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   return (
-    <div>
-      <h1>Search Stories</h1>
-
-      {/* FORMULAIRE DE FILTRES */}
-      <div>
-        <h1>Filters</h1>
-        <input
-          type="text"
-          placeholder="Title..."
-          value={filters.title}
-          onChange={(e) => setFilters({ ...filters, title: e.target.value })}
-        />
-
-        <select
-          value={filters.genreType}
-          onChange={(e) =>
-            setFilters({ ...filters, genreType: e.target.value })
-          }
-        >
-          <option value="">All genres</option>
-          {GENRE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filters.audienceType}
-          onChange={(e) =>
-            setFilters({ ...filters, audienceType: e.target.value })
-          }
-        >
-          <option value="">All audiences</option>
-          {AUDIENCE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filters.languageType}
-          onChange={(e) =>
-            setFilters({ ...filters, languageType: e.target.value })
-          }
-        >
-          <option value="">All languages</option>
-          {LANGUAGE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filters.accessType}
-          onChange={(e) =>
-            setFilters({ ...filters, accessType: e.target.value })
-          }
-        >
-          <option value="">All accesses</option>
-          {ACCESS_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+    <div className="page__container">
+      <div className="page__title-header">
+        <h1 className="title">Search a story</h1>
       </div>
 
-      {/* LISTE DES RÉSULTATS */}
-      {stories && (
-        <div className="">
-          <h1>Stories</h1>
-          {stories.map((story) => (
-            <div className="">
-              <div className="">
-                {story.public === true && (
-                  <h1 className="">PUBLIC {story.id}</h1>
-                )}
-                <span className="">{story.genreType}</span>
-                <span className="">{story.audienceType}</span>
-                <span className="">{story.languageType}</span>
-                <span className="">{story.accessType}</span>
-              </div>
-              <div className="">
-                <h2 className="">{story.title}</h2>
-                <p className="">{story.description}</p>
-              </div>
-              <Link to={`/stories/${story.id}`}>Go to</Link>
+      <main className="search__main">
+        {/* FORMULAIRE DE FILTRES */}
+        <div className="search__container">
+          <input
+            className="search__input"
+            type="text"
+            placeholder="Type to search a story"
+            value={filters.title}
+            onChange={(e) => setFilters({ ...filters, title: e.target.value })}
+          />
+          <Search className="search__icon" />
+        </div>
+
+        <div className="search__content">
+          <div className="search__filters">
+            <h2 className="subtitle page__header">Filters</h2>
+
+            <div className="select__container">
+              <label className="input__label" htmlFor="genre">
+                Genre
+              </label>
+              <select
+                id="genre"
+                value={filters.genreType}
+                onChange={(e) =>
+                  setFilters({ ...filters, genreType: e.target.value })
+                }
+              >
+                <option value="">All genres</option>
+                {GENRE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="select__icon" />
             </div>
-          ))}
+
+            <div className="select__container">
+              <label className="input__label" htmlFor="audience">
+                Audience
+              </label>
+              <select
+                value={filters.audienceType}
+                onChange={(e) =>
+                  setFilters({ ...filters, audienceType: e.target.value })
+                }
+              >
+                <option value="">All audiences</option>
+                {AUDIENCE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="select__icon" />
+            </div>
+
+            <div className="select__container">
+              <label className="input__label" htmlFor="language">
+                Language
+              </label>
+              <select
+                value={filters.languageType}
+                onChange={(e) =>
+                  setFilters({ ...filters, languageType: e.target.value })
+                }
+              >
+                <option value="">All languages</option>
+                {LANGUAGE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="select__icon" />
+            </div>
+
+            <div className="select__container">
+              <label className="input__label" htmlFor="access">
+                Access
+              </label>
+              <select
+                value={filters.accessType}
+                onChange={(e) =>
+                  setFilters({ ...filters, accessType: e.target.value })
+                }
+              >
+                <option value="">All accesses</option>
+                {ACCESS_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="select__icon" />
+            </div>
+          </div>
+
+          {/* LISTE DES RÉSULTATS */}
+          {stories && (
+            <div className="">
+              <div className="page__header">
+                <h1 className="subtitle">Stories</h1>
+                <span className="count-chip">
+                  <span className="count-chip__count">
+                    {stories.length} results
+                  </span>
+                </span>
+              </div>
+
+              {stories.map((story) => (
+                <StoryCard story={story} formatEnumLabel={formatEnumLabel} />
+              ))}
+            </div>
+          )}
         </div>
-      )}
-      {page && (
-        <div>
-          {/* Bouton début */}
-          {page > 1 && <button onClick={() => setPage(1)}>{"<<"}</button>}
 
-          {/* Bouton précédent */}
-          {pagination.previous && (
-            <button onClick={() => setPage(page - 1)}>Previous</button>
-          )}
+        {page && (
+          <div>
+            {/* Bouton début */}
+            {page > 1 && <button onClick={() => setPage(1)}>{"<<"}</button>}
 
-          {/* Num de page */}
-          <span>
-            Page {page} / {totalPages}
-          </span>
+            {/* Bouton précédent */}
+            {pagination.previous && (
+              <button onClick={() => setPage(page - 1)}>Previous</button>
+            )}
 
-          {/* Bouton suivant */}
-          {pagination.next && (
-            <button onClick={() => setPage(page + 1)}>Next</button>
-          )}
+            {/* Num de page */}
+            <span>
+              Page {page} / {totalPages}
+            </span>
 
-          {/* Bouton fin */}
-          {page < totalPages && (
-            <button onClick={() => setPage(totalPages)}>{">>"}</button>
-          )}
-        </div>
-      )}
+            {/* Bouton suivant */}
+            {pagination.next && (
+              <button onClick={() => setPage(page + 1)}>Next</button>
+            )}
+
+            {/* Bouton fin */}
+            {page < totalPages && (
+              <button onClick={() => setPage(totalPages)}>{">>"}</button>
+            )}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

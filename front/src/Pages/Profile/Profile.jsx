@@ -79,7 +79,7 @@ const Profile = () => {
         </Link>
       </div>
       {userProfile?.createdAt && (
-        <div className="profile__main">
+        <main className="profile__main">
           {/* PROFILE CARD */}
           <div
             className="profile__card"
@@ -235,7 +235,7 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </div>
+        </main>
       )}
     </div>
   );

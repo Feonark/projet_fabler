@@ -86,13 +86,23 @@ input:focus {
   box-shadow: none;
 }
 
+.input__container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input__label {
+  font-size: var(--label-size);
+  font-weight: var(--label-semibold);
+}
+
 /* SELECTS */
 select {
   padding-right: 40px;
   appearance: none;
   position: relative;
 }
-
 
 select:hover, select:focus {
   border: 1px solid var(--text-color);
@@ -109,18 +119,41 @@ select:has(option:first-child:checked) {
 
 .select__container {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .select__icon {
   position: absolute;
   right: 12px;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(20%);
   width: 20px;
   height: 20px;
   color: var(--text-color);
   pointer-events: none; 
+}
+
+/* SEARCH */
+
+.search__container {
+  position: relative;
+  display: flex;
+}
+
+.search__input {
+  border-radius: var(--radius-2xl);
+  width: 100%;
+}
+
+.search__icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
 }
 
 /* BUTTONS */
@@ -213,6 +246,13 @@ button {
   margin-bottom: 84px;
 }
 
+.page__title-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-block: 48px;
+}
+
 .page__header {
   display: flex;
   justify-content: space-between;
@@ -258,7 +298,8 @@ button {
   padding-inline: 8px;
   border-radius: var(--span-radius);
   color: var(--text-color);
-  width: fit-content
+  width: fit-content;
+  height: fit-content;
 }
 
 .count-chip__count {
@@ -321,8 +362,9 @@ button {
 
 .card__chips {
   display: flex;
+  flex-wrap: wrap;
   width: fit-content;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   gap: 6px;
 }
@@ -340,11 +382,18 @@ button {
   background-color: var(--secondary-bg);
   font-size: var(--chip-size);
   font-weight: var(--chip-regular);
+  height: fit-content;
 }
 
 .card-chip__icon {
   width: var(--span-icon);
   height: var(--span-icon);
+}
+
+.card__infos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* RESPONSIVE DESKTOP */
@@ -353,6 +402,11 @@ button {
   .page__container {
     padding: 16px;
   }
+
+  .page__title-header {
+    padding-block: 64px;
+  }
+
 
   .title {
     font-size: var(--title-size-dt);

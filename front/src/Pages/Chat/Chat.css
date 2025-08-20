@@ -191,7 +191,7 @@
   gap: 8px;
 }
 
-.input__container {
+.chat-input__container {
   position: relative;
   display: inline-block;
   align-items: center;
@@ -228,6 +228,21 @@
   height: 16px;
 }
 
+.chat-select__container {
+  position: relative;
+  display: inline-block;
+}
+
+.chat-select__icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--text-color);
+  pointer-events: none; 
+}
 
 /* RESPONSIVE DESKTOP */
 @media (min-width: 768px) {

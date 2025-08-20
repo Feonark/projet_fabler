@@ -1,0 +1,41 @@
+.stories__title-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-block: 48px;
+}
+
+.search__content {
+  display: flex;
+  flex-direction: column;
+  padding-block: 16px;
+  gap: 32px;
+}
+
+.search__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+}
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 768px) {
+
+  .stories__title-header {
+    padding-block: 64px;
+  }
+
+  .search__content {
+    flex-direction: row;
+    padding-block: 32px;
+  }
+
+  .search__filters {
+    min-width: 328px;
+    height: fit-content;
+  }
+
+}

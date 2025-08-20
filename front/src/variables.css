@@ -56,6 +56,7 @@
   --subtitle-semibold: var(--font-semibold);
   --bodytitle-semibold: var(--font-semibold);
   --bodysubtitle-semibold: var(--font-semibold);
+  --label-semibold: var(--font-semibold);
 
   /* FONT SIZES (PRIMITIVES) */
   --font-size-sm: 1.2rem;
@@ -70,13 +71,13 @@
   --subtitle-size: var(--font-size-xl);
   --bodytitle-size: var(--font-size-xl);
   --bodysubtitle-size: var(--font-size-lg);
+  --label-size: var(--font-size-md);
   --text-size: var(--font-size-md);
   --chip-size: var(--font-size-md);
   --span-size: var(--font-size-sm);
   --chip-size: var(--font-size-md);
   --rpbox-text: var(--font-size-xl);
   --rpbox-title: var(--font-size-2xl);
-
   --title-size-dt: var(--font-size-2xl);
 
   /* ICON SIZES (PRIMITIVES) */
@@ -111,6 +112,7 @@
   --chat-avatar: var(--radius-2xl);
   --span-radius: var(--radius-sm);
   --input-radius: var(--radius-sm);
+  --search-input-radius: var(--radius-2xl);
   --rpbox-radius: var(--radius-lg);
   --banner-radius: var(--radius-lg);
 }
