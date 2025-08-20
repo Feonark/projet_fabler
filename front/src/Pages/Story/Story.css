@@ -1,0 +1,149 @@
+.header__author {
+  display: flex;
+  gap: 8px;
+}
+
+.banner__container {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 16px 48px 16px;
+  margin-top: 16px;
+  border-radius: var(--banner-radius);
+}
+
+.banner__description {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+  text-align: center;
+  line-height: 24px;
+  padding-block: 8px;
+}
+
+.author__icon {
+  color: var(--positive-color);
+}
+
+.invert-btn {
+  background-color: var(--invert-bg);
+  color: var(--text-invert);
+  transition: background 300ms ease;
+}
+
+.invert-btn:hover {
+  background-color: var(--secondary-invert-bg);
+  border: 1px solid transparent;
+}
+
+.invert-btn:disabled {
+  color: var(--subtle-text);
+  cursor: not-allowed;
+  opacity: 0.8; 
+}
+
+.members__container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 32px;
+}
+
+.members-accepted {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.members__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.member__card {
+  display: flex;
+  padding: 8px;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+}
+
+.member__content {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.member__avatar {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--user-avatar)
+}
+
+.member__infos {
+  display: flex;
+  flex-direction: column;
+}
+
+.member__username {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: var(--bodytitle-size);
+  font-weight: var(--bodytitle-semibold);
+}
+
+.member__role {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+}
+
+.member__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pending__container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.place__container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px; 
+}
+
+.place-cards__container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.place-btn {
+  width: 100%;
+}
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 768px) {
+
+  .content__container {
+    display: flex;
+    gap: 32px;
+  }
+
+  .members__container {
+    min-width: 300px;
+  }
+
+  .place__container {
+    width: 100%;
+  }
+
+}

@@ -1,0 +1,39 @@
+.place-card__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px;
+  border-radius: var(--card-radius);
+}
+
+.place-card__infos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.place-card__description {
+  font-weight: var(--text-regular)
+}
+
+.place-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.add-place__button {
+  width: 100%;
+  border: 1px solid var(--border-color);
+}
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 768px) {
+
+  .place-card__container {
+    flex-direction: row;
+    align-items: center;
+    gap: none;
+  }
+
+}

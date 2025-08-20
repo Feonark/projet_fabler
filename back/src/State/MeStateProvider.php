@@ -31,7 +31,7 @@ final class MeStateProvider implements ProviderInterface
             ->leftJoin('u.characters', 'c')
             ->addSelect('partial c.{id, name, title, portraitUrl, avatarUrl}')
             ->leftJoin('u.storyMemberships', 'sm')
-            ->addSelect('partial sm.{id, isAuthor}')
+            ->addSelect('partial sm.{id, isAuthor, isAccepted}')
             ->leftJoin('sm.story', 's')
             ->addSelect('partial s.{id, title, bannerImageUrl}')
             ->andWhere('u.id = :id')

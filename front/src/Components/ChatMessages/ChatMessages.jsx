@@ -25,7 +25,7 @@ const ChatMessages = ({ messages, chat, user }) => {
                 {!sameCharacter && (
                   <div className="message__header">
                     <span className="message__characterName">
-                      {message.characterAlias?.name}
+                      {message.characterAlias?.name ?? "[Deleted character]"}
                     </span>
                     <span className="message__createdAt">
                       {new Date(message.createdAt).toLocaleTimeString([], {

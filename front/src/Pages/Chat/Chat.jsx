@@ -13,7 +13,7 @@ import "./Chat.css";
 
 const Chat = () => {
   const { storyId } = useParams();
-  const { user, token } = useAuth();
+  const { user, token, getUser } = useAuth();
   const [chat, setChat] = useState();
   const [messages, setMessages] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState("");
@@ -28,6 +28,7 @@ const Chat = () => {
   // Se lance au montage du composant
   useEffect(() => {
     if (!token) return;
+    getUser();
     fetchMessages();
     fetchChat();
 
@@ -301,17 +302,18 @@ const Chat = () => {
           // HEADER
           <div className="chat__header">
             <div className="chat__actions">
-              <Link to={`/stories/${storyId}`} className="action__link">
-                <DoorOpen className="action__icon" />
+              <Link to={`/stories/${storyId}`} className="btn">
+                <DoorOpen className="" />
               </Link>
             </div>
             <div className="chat__general">
-              <h1 className="chat__title">{chat.story?.title}</h1>
+              <h1 className="title chat__title">{chat.story?.title}</h1>
               <div className="chat__infos">
                 <span className="chat__chip chat__members">
                   <Users className="chip__icon" />
                   <span className="chip__text">
-                    {chat.members?.length} roleplayers
+                    {chat.members?.filter((m) => m.accepted === true).length}{" "}
+                    roleplayers
                   </span>
                 </span>
 
@@ -410,7 +412,7 @@ const Chat = () => {
                 }}
               >
                 <option value="" disabled selected hidden>
-                  -- Select --
+                  -- Select place --
                 </option>
                 {chat &&
                   chat.story?.places?.map((place) => (
@@ -433,7 +435,7 @@ const Chat = () => {
                 value={selectedCharacter}
                 onChange={(e) => setSelectedCharacter(e.target.value)}
               >
-                <option value="">-- Select --</option>
+                <option value="">-- Select character --</option>
                 {user &&
                   user.characters?.map((character) => (
                     <option key={character.id} value={character.id}>

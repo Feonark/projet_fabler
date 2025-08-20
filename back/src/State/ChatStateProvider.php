@@ -31,7 +31,7 @@ final class ChatStateProvider implements ProviderInterface
       ->addSelect('partial sp.{id, title, placeImageUrl}')
 
       ->leftJoin('c.members', 'm')
-      ->addSelect('partial m.{id}')
+      ->addSelect('partial m.{id, isAccepted}')
       ->leftJoin('m.memberUser', 'mu')
       ->addSelect('partial mu.{id, avatarUrl, username}')
       ->leftJoin('m.memberChatStatus', 'mcs')

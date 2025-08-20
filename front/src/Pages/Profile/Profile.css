@@ -1,0 +1,140 @@
+.profile__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile__card {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+  padding: 24px 16px 24px 16px;
+  margin-top: 16px;
+  border-radius: var(--banner-radius);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.profile__description {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+  text-align: center;
+  line-height: 24px;
+  padding-block: 8px;
+}
+
+.header__left-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stories__container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+
+.stories-cards__container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.characters__container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+
+.chara-cards__container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.chara-card__container {
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--border-color);
+  transition: border 300ms ease;
+  background-color: var(--secondary-invert-bg);
+  overflow: hidden;
+  min-height: 256px;
+}
+
+.chara-card__avatar {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+}
+
+.chara-card__infos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chara-card__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chara-card__buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn__character {
+  width: 100%;
+}
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 768px) {
+
+  .profile__main {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .profile__card {
+    min-width: 328px;
+  }
+
+  .profile__content {
+    width: 100%;
+  }
+
+  .stories__container {
+    padding-top: 0;
+  }
+
+  .stories-cards__container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .chara-cards__container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+}

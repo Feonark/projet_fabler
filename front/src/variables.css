@@ -30,9 +30,12 @@
 
   /* COLORS (TOKENS) */
   --text-color: var(--zinc-050);
+  --text-invert: var(--zinc-900);
   --subtle-text: var(--zinc-500);
   --primary-bg: var(--zinc-900);
+  --invert-bg: var(--zinc-050);
   --secondary-bg: var(--zinc-800);
+  --secondary-invert-bg: var(--zinc-200);
   --border-color: var(--zinc-700);
   --success-color: var(--green-500);
   --positive-color: var(--green-500);
@@ -46,10 +49,13 @@
 
   /* FONT WEIGHT (TOKENS) */
   --text-regular: var(--font-regular);
-  --span-regular: var(--font-regular);
+  --chip-regular: var(--font-regular);
   --text-medium: var(--font-medium);
   --text-semibold: var(--font-semibold);
   --title-semibold: var(--font-semibold);
+  --subtitle-semibold: var(--font-semibold);
+  --bodytitle-semibold: var(--font-semibold);
+  --bodysubtitle-semibold: var(--font-semibold);
 
   /* FONT SIZES (PRIMITIVES) */
   --font-size-sm: 1.2rem;
@@ -60,26 +66,32 @@
 
   /* FONT SIZES (TOKENS) */
   --title-size: var(--font-size-xl);
+  --title-size-dt: var(--font-size-2xl);
   --subtitle-size: var(--font-size-xl);
-  --bodytitle-size: var(--font-size-lg);
+  --bodytitle-size: var(--font-size-xl);
+  --bodysubtitle-size: var(--font-size-lg);
   --text-size: var(--font-size-md);
   --chip-size: var(--font-size-md);
   --span-size: var(--font-size-sm);
+  --chip-size: var(--font-size-md);
   --rpbox-text: var(--font-size-xl);
   --rpbox-title: var(--font-size-2xl);
 
   --title-size-dt: var(--font-size-2xl);
 
   /* ICON SIZES (PRIMITIVES) */
+  --icon-size-xs: 0.8rem;
   --icon-size-sm: 1.2rem;
   --icon-size-md: 1.6rem;
-  --icon-size-lg: 20px;
+  --icon-size-lg: 2.0rem;
   --icon-size-xl: 2.4rem;
   --icon-size-2xl: 3.2rem;
 
   /* ICON SIZES (TOKENS) */
   --nav-icon: var(--icon-size-md);
   --span-icon: var(--icon-size-md);
+  --button-icon: var(--icon-size-md);
+  --button-icon: var(--icon-size-md);
   --nav-icon-dt: var(--icon-size-lg);
 
   /* BORDER RADIUS (PRIMITIVES) */
@@ -93,9 +105,12 @@
   --nav-link: var(--radius-sm);
   --link-radius: var(--radius-sm);
   --message-content: var(--radius-sm);
+  --user-avatar: var(--radius-sm);
   --character-avatar: var(--radius-sm);
+  --card-radius: var(--radius-md);
   --chat-avatar: var(--radius-2xl);
   --span-radius: var(--radius-sm);
   --input-radius: var(--radius-sm);
   --rpbox-radius: var(--radius-lg);
+  --banner-radius: var(--radius-lg);
 }

@@ -42,7 +42,12 @@ class Chat
     /**
      * @var Collection<int, StoryMember>
      */
-    #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'chat')]
+    #[ORM\OneToMany(
+        targetEntity: StoryMember::class,
+        mappedBy: 'chat',
+        cascade: ['remove'],
+        orphanRemoval: true
+    )]
     #[Groups(['chat:item:read'])]
     private Collection $members;
 

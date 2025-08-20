@@ -69,10 +69,16 @@ class StoryMemberStateProcessor implements ProcessorInterface
 
         if ($method === 'DELETE') {
             $story = $data->getStory();
+            $story = $data->getChat();
 
             if ($story) {
-                $story->removeMember($data); // retire de la collection
+                $story->removeMember($data);
                 $this->entityManager->persist($story);
+            }
+
+            if ($chat) {
+                $chat->removeMember($data);
+                $this->entityManager->persist($chat);
             }
 
             $this->entityManager->flush();

@@ -89,7 +89,7 @@ class StoryMember
         return $this->id;
     }
 
-    #[Groups(['story:item:read'])]
+    #[Groups(['story:item:read', 'chat:item:read', 'user:item:read'])]
     public function isAccepted(): ?bool
     {
         return $this->isAccepted;

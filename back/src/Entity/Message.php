@@ -74,13 +74,16 @@ class Message
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'usedInMessages')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(
+        nullable: true,
+        onDelete: "SET NULL"
+    )]
     #[Groups(['message:list:read', 'message:item:read', 'message:create'])]
     #[ApiProperty(readableLink: true, writableLink: false)]
     private ?Character $characterAlias = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     #[Groups(['message:list:read', 'message:item:read', 'message:create'])]
     #[ApiProperty(readableLink: true, writableLink: false)]
     private ?StoryMember $author = null;

@@ -3,6 +3,22 @@ import { useParams, Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
 import StorymemberCard from "../../Components/StorymemberCard/StorymemberCard";
 import PlaceCard from "../../Components/PlaceCard/PlaceCard";
+import {
+  Pencil,
+  Trash,
+  ArrowLeft,
+  LogOut,
+  Eye,
+  BadgeCheck,
+  BadgeX,
+  BookMarked,
+  Target,
+  Globe,
+  DoorClosed,
+  Check,
+  X,
+  SquarePlus,
+} from "lucide-react";
 import "./Story.css";
 
 const Story = () => {
@@ -16,7 +32,7 @@ const Story = () => {
 
   useEffect(() => {
     getStory();
-  }, [user]);
+  }, [user?.id]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // FETCH STORY
@@ -88,14 +104,6 @@ const Story = () => {
     return placeCount >= 10;
   };
 
-  const getCurrentStoryMemberId = () => {
-    if (!user || !story) return null;
-    const currentMember = story.members?.find(
-      (member) => member.memberUser.id === user.id
-    );
-    return currentMember?.id ?? null;
-  };
-
   ////////////////////////////////////////////////////////////////////////////////////////
   // CRUDs
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +132,7 @@ const Story = () => {
         throw new Error(`Erreur serveur : ${response.status}`);
       }
 
-      const data = await response.json();
+      await getStory();
     } catch (err) {
       console.error(err);
     }
@@ -223,6 +231,7 @@ const Story = () => {
         }
 
         alert("Story successfully deleted.");
+        getUser();
         navigate("/");
       } catch (err) {
         console.error(err);
@@ -259,22 +268,60 @@ const Story = () => {
     }
   };
 
-  return (
-    <div>
-      <h1>Page Story {storyId}</h1>
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // OTHER
+  ////////////////////////////////////////////////////////////////////////////////////////
 
-      <div className="">
+  const formatEnumLabel = (value) => {
+    return value
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  const getCurrentStoryMemberId = () => {
+    if (!user || !story) return null;
+    const currentMember = story.members?.find(
+      (member) => member.memberUser.id === user.id
+    );
+    return currentMember?.id ?? null;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  return (
+    <div className="story__container page__container">
+      <div className="story__header page__header">
+        <button
+          className="btn"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft className="btn__icon" />
+          <span className="btn-txt-display">Back</span>
+        </button>
         {checkIfAuthor() ? (
-          <div className="">
-            <Link to={`/stories/${storyId}/edit`}>Edit story</Link>
-            <button className="" onClick={() => deleteStory(storyId)}>
-              Delete story
+          <div className="header__author">
+            <Link className="btn" to={`/stories/${storyId}/edit`}>
+              <Pencil className="btn__icon" />
+              <span className="btn-txt-display">Edit profile</span>
+            </Link>
+            <button
+              className="btn btn-negative"
+              onClick={() => deleteStory(storyId)}
+            >
+              <Trash className="btn__icon btn__icon-negative" />
+              <span className="btn-txt-display">Delete story</span>
             </button>
           </div>
         ) : (
           checkIfAcceptedMember() && (
-            <button className="" onClick={() => quitStory()}>
-              Quit story
+            <button className="btn btn-negative" onClick={() => quitStory()}>
+              <LogOut className="btn__icon btn__icon-negative" />
+              <span className="btn-txt-display">Quit story</span>
             </button>
           )
         )}
@@ -282,60 +329,94 @@ const Story = () => {
 
       {/* BANDEAU */}
       {story && (
-        <div className="bannerImg">
-          <img
-            src={
-              `http://localhost:8000/${story.bannerImageUrl}` ??
-              `http://localhost:8000/uploads/banners/defaultBanner.jpg`
-            }
-            alt="Test"
-            style={{
-              width: "100%",
-              maxHeight: "300px",
-              objectFit: "cover",
-              borderRadius: "8px",
-            }}
-          />
-          <h1 className="">{story.title}</h1>
-          <div className="">
-            <span className="">
-              {story.public === true ? "Public" : "Private"}
+        <div
+          className="banner__container"
+          style={{
+            backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(http://localhost:8000/${story.bannerImageUrl})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <h1 className="title">{story.title}</h1>
+          <div className="banner__chips">
+            <span className="banner__chip">
+              <Eye className="chip__icon" />
+              <span className="chip__txt">
+                {story.public === true ? "Public" : "Private"}
+              </span>
             </span>
-            <span className="">
-              {checkIfAcceptedMember()
-                ? "You're a member"
-                : "You're not a member"}
+            <span className="banner__chip">
+              {checkIfAcceptedMember() ? (
+                <BadgeCheck className="chip__icon author__icon" />
+              ) : (
+                <BadgeX className="chip__icon"></BadgeX>
+              )}
+              <span className="chip__txt">
+                {checkIfAcceptedMember()
+                  ? "You're a member"
+                  : "You're not a member"}
+              </span>
             </span>
-            <span className="">{story.genreType}</span>
-            <span className="">{story.audienceType}</span>
-            <span className="">{story.languageType}</span>
-            <span className="">{story.accessType}</span>
+            <span className="banner__chip">
+              <BookMarked className="chip__icon" />
+              <span className="chip__txt">
+                {formatEnumLabel(`${story.genreType}`)}
+              </span>
+            </span>
+            <span className="banner__chip">
+              <Target className="chip__icon" />
+              <span className="chip__txt">
+                {formatEnumLabel(`${story.audienceType}`)}
+              </span>
+            </span>
+            <span className="banner__chip">
+              <Globe className="chip__icon" />
+              <span className="chip__txt">
+                {formatEnumLabel(`${story.languageType}`)}
+              </span>
+            </span>
+            <span className="banner__chip">
+              <DoorClosed className="chip__icon" />
+              <span className="chip__txt">
+                {formatEnumLabel(`${story.accessType}`)}
+              </span>
+            </span>
           </div>
-          <div className="">{story.description}</div>
+          <div className="banner__description">{story.description}</div>
           {checkIfAcceptedMember() ? (
-            <Link to={`/stories/${storyId}/chat`}>Enter RP Chat</Link>
+            <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
+              Enter RP Chat
+            </Link>
           ) : (
             <button
-              className=""
+              className="btn invert-btn"
               onClick={joinStory}
               disabled={checkIsMembersFull() || checkIfJoined()}
             >
-              Join this story
+              {checkIfJoined()
+                ? "You asked to join this story"
+                : "Join this story"}
             </button>
           )}
         </div>
       )}
 
-      <div className="">
+      <div className="content__container">
         {/* MEMBER SECTION */}
         {story && (
-          <div className="">
-            <div className="">
-              <div className="">
-                <h2 className="">Members</h2>
-                <span className="">{memberCount} / 5</span>
+          <div className="members__container">
+            <div className="members-accepted">
+              <div className="subtitle__header">
+                <h2 className="subtitle">Members</h2>
+                <span className="count-chip">
+                  <span className="count-chip__count">{memberCount}</span>
+                  <span className="count-chip__count count-chip__maxCount">
+                    / 5
+                  </span>
+                </span>
               </div>
-              <div className="">
+              <div className="members__cards">
                 {story.members
                   .filter((member) => member.accepted === true)
                   .map((member) => (
@@ -351,28 +432,46 @@ const Story = () => {
 
             {checkIfAuthor() ? (
               checkIfRequests() ? (
-                <div className="">
-                  <h2 className="">Requests to join</h2>
+                <div className="pending__container">
+                  <div className="subtitle__header">
+                    <h2 className="subtitle">Requests to join</h2>
+                  </div>
                   <div className="">
                     {story &&
                       story.members
                         .filter((member) => member.accepted === false)
                         .map((member) => (
-                          <div className="" key={member.id}>
-                            <p className="">{member.memberUser.username}</p>
-                            <p className="">wants to join</p>
-                            <button
-                              className=""
-                              onClick={() => addStoryMember(member.id)}
-                            >
-                              Accept
-                            </button>
-                            <button
-                              className=""
-                              onClick={() => deleteStoryMember(member.id)}
-                            >
-                              Deny
-                            </button>
+                          <div className="member__card" key={member.id}>
+                            <div className="member__content">
+                              <img
+                                src={`http://localhost:8000${member.memberUser?.avatarUrl}`}
+                                className="member__avatar"
+                                alt="User avatar"
+                              />
+                              <span className="member__infos">
+                                <span className="member__username">
+                                  {member.memberUser.username}
+                                </span>
+                                <span className="member__role">
+                                  wants to join
+                                </span>
+                              </span>
+                            </div>
+
+                            <div className="member__actions">
+                              <button
+                                className="btn btn-sm"
+                                onClick={() => addStoryMember(member.id)}
+                              >
+                                <Check className="btn__icon btn-sm__icon btn__icon-positive" />
+                              </button>
+                              <button
+                                className="btn btn-sm btn-negative"
+                                onClick={() => deleteStoryMember(member.id)}
+                              >
+                                <X className="btn__icon btn-sm__icon btn__icon-negative" />
+                              </button>
+                            </div>
                           </div>
                         ))}
                   </div>
@@ -388,13 +487,18 @@ const Story = () => {
 
         {/* PLACE SECTION */}
         {story && (
-          <div className="">
-            <div className="">
-              <h2 className="">Places</h2>
-              <span className="">{placeCount} / 10</span>
+          <div className="place__container">
+            <div className="subtitle__header">
+              <h2 className="subtitle">Places</h2>
+              <span className="count-chip">
+                <span className="count-chip__count">{placeCount}</span>
+                <span className="count-chip__count count-chip__maxCount">
+                  / 10
+                </span>
+              </span>
             </div>
 
-            <div className="">
+            <div className="place-cards__container">
               {story.places?.map((place) => (
                 <PlaceCard
                   key={place.id}
@@ -406,7 +510,13 @@ const Story = () => {
                 />
               ))}
               {checkIfAuthor() && !checkIsPlacesFull() && (
-                <Link to={`/stories/${storyId}/places/new`}>Add place</Link>
+                <Link
+                  className="btn btn-outline place-btn"
+                  to={`/stories/${storyId}/places/new`}
+                >
+                  <SquarePlus className="btn__icon" />
+                  <span className="">Add place</span>
+                </Link>
               )}
             </div>
           </div>

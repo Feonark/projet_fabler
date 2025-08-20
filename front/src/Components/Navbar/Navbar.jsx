@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../../Contexts/AuthContext";
 import { Link, useNavigate } from "react-router";
-import { House, Search, User, LogIn, LogOut } from "lucide-react";
+import { House, Search, User, LogIn, Power } from "lucide-react";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -38,7 +38,7 @@ const Navbar = () => {
               className="navbar__link"
               id="logout__link"
             >
-              <LogOut className="navbar__icon" />
+              <Power className="navbar__icon" />
             </button>
           ) : (
             <Link to="/login" className="navbar__link">
