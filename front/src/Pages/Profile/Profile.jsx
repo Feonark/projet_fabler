@@ -7,8 +7,9 @@ import {
   House,
   Cake,
   SquarePlus,
-  Trash,
 } from "lucide-react";
+import StoryCard from "../../Components/StoryCard/StoryCard";
+import CharacterCard from "../../Components/CharacterCard/CharacterCard";
 import "./Profile.css";
 
 const Profile = () => {
@@ -22,7 +23,7 @@ const Profile = () => {
     if (user) {
       setUserProfile(user);
     }
-  }, [user]);
+  }, [user?.id]);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // CRUDs
@@ -149,27 +150,11 @@ const Profile = () => {
                 {user.storyMemberships
                   ?.filter((membership) => membership.accepted == true)
                   .map((membership) => (
-                    <Link
-                      to={`/stories/${membership.story?.id}`}
-                      className="card__container"
+                    <StoryCard
                       key={membership.id}
-                      style={{
-                        backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(http://localhost:8000${membership.story?.bannerImageUrl})`,
-                        backgroundRepeat: "no-repeat",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    >
-                      <span className="card__chips">
-                        <span className="card__chip">
-                          <SquarePlus className="chip__icon" />
-                          <span className="">
-                            {membership.author === true ? "Author" : "Member"}
-                          </span>
-                        </span>
-                      </span>
-                      <h2 className="bodytitle">{membership.story?.title}</h2>
-                    </Link>
+                      story={membership.story}
+                      author={membership.author}
+                    />
                   ))}
               </div>
             </div>
@@ -195,42 +180,7 @@ const Profile = () => {
               </div>
               <div className="chara-cards__container">
                 {userProfile.characters?.map((character) => (
-                  <div
-                    className="chara-card__container"
-                    key={character.id}
-                    style={{
-                      backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(http://localhost:8000${character.portraitUrl})`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                    <img
-                      src={`http://localhost:8000${character.avatarUrl}`}
-                      className="chara-card__avatar"
-                      alt="Character avatar"
-                    />
-                    <div className="chara-card__infos">
-                      <div className="chara-card__titles">
-                        <span className="bodysubtitle">{character.title}</span>
-                        <span className="bodytitle">{character.name}</span>
-                      </div>
-                      <div className="chara-card__buttons">
-                        <Link
-                          className="btn btn-on-background btn__character"
-                          to={`/profile/characters/${character.id}/edit`}
-                        >
-                          <Pencil className="btn__icon" />
-                        </Link>
-                        <button
-                          className="btn btn-on-background btn__character"
-                          onClick={() => deleteCharacter(character.id)}
-                        >
-                          <Trash className="btn__icon btn__icon-negative" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <CharacterCard key={character.id} character={character} />
                 ))}
               </div>
             </div>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
+import { SquarePlus, Search } from "lucide-react";
 import "./Home.css";
+import StoryCard from "../../Components/StoryCard/StoryCard";
 
 const Home = () => {
   const { user } = useAuth();
@@ -9,7 +11,6 @@ const Home = () => {
 
   useEffect(() => {
     fetchStories();
-    console.log(user);
   }, []);
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -34,53 +35,101 @@ const Home = () => {
     }
   };
 
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // OTHER
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const formatEnumLabel = (value) => {
+    return value
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  const getCurrentStoryMemberId = () => {
+    if (!user || !story) return null;
+    const currentMember = story.members?.find(
+      (member) => member.memberUser.id === user.id
+    );
+    return currentMember?.id ?? null;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   return (
-    <div className="home-container">
+    <div className="page__container">
       {/* Section welcome */}
-      {user && (
-        <div className="">
-          <h1 className="">Welcome, {user.username ?? "guest"}!</h1>
-        </div>
-      )}
+      <div className="page__title-header">
+        <h1 className="title">Welcome home, {user?.username ?? "guest"}!</h1>
+      </div>
       {/* Section create story */}
-      <div className="">
-        <h1 className="">Wanna create your own story?</h1>
-        <p className="">
+      <div className="create-banner__container">
+        <h2 className="subtitle">Wanna create your own story?</h2>
+        <p className="create__description">
           Create, publish and roleplay. Whenever you feel like it.
         </p>
-        <Link to={user?.id ? "stories/new" : "login"}>Create a story</Link>
+        <Link
+          className="btn invert-btn"
+          to={user?.id ? "stories/new" : "login"}
+        >
+          <SquarePlus className="btn__icon invert-btn__icon" />
+          <span className="">Create a story</span>
+        </Link>
       </div>
       {/* Section latest stories */}
-      {lastStories &&
-        lastStories.map((story) => (
-          <div className="" key={story.id}>
-            <div className="">
-              {story.public === true && <h1 className="">PUBLIC {story.id}</h1>}
-              <span className="">{story.genreType}</span>
-              <span className="">{story.audienceType}</span>
-              <span className="">{story.languageType}</span>
-              <span className="">{story.accessType}</span>
-            </div>
-            <div className="">
-              <h2 className="">{story.title}</h2>
-              <p className="">{story.description}</p>
-            </div>
-            <Link to={`/stories/${story.id}`}>Go to</Link>
+      <div className="latest-stories__container">
+        <div className="subtitle__header">
+          <div className="header__left-content">
+            <h2 className="subtitle">Latest stories</h2>
           </div>
-        ))}
+
+          <Link className="btn btn-outline" to="/stories/search">
+            <Search className="chip__icon" />
+            <span className="btn-txt-display">See all</span>
+          </Link>
+        </div>
+        <div className="laststories-cards__container">
+          {lastStories &&
+            lastStories.map((story) => (
+              <StoryCard
+                key={story.id}
+                story={story}
+                formatEnumLabel={formatEnumLabel}
+              />
+            ))}
+        </div>
+      </div>
       {/* Section resume roleplay */}
-      {user &&
-        user.storyMemberships
-          ?.sort(() => Math.random() - 0.5)
-          .slice(0, 3)
-          .map((membership) => (
-            <div className="">
-              <h3 className="">{membership.story.title}</h3>
-              <span className="">
-                {membership.author === true ? "Author" : "Member"}
-              </span>
+      {user?.id && user?.storyMemberships?.some((m) => m.accepted) && (
+        <div className="resume__container">
+          <div className="subtitle__header">
+            <div className="header__left-content">
+              <h2 className="subtitle">Resume roleplay</h2>
             </div>
-          ))}
+
+            <Link className="btn btn-outline" to="/profile">
+              <Search className="chip__icon" />
+              <span className="btn-txt-display">See all</span>
+            </Link>
+          </div>
+          <div className="resume-cards__container">
+            {user.id &&
+              user.storyMemberships
+                .slice(0, 3)
+                .map((membership) =>
+                  membership.accepted ? (
+                    <StoryCard
+                      key={membership.id}
+                      story={membership.story}
+                      author={membership.author}
+                    />
+                  ) : null
+                )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

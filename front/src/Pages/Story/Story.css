@@ -26,23 +26,6 @@
   color: var(--positive-color);
 }
 
-.invert-btn {
-  background-color: var(--invert-bg);
-  color: var(--text-invert);
-  transition: background 300ms ease;
-}
-
-.invert-btn:hover {
-  background-color: var(--secondary-invert-bg);
-  border: 1px solid transparent;
-}
-
-.invert-btn:disabled {
-  color: var(--subtle-text);
-  cursor: not-allowed;
-  opacity: 0.8; 
-}
-
 .members__container {
   display: flex;
   flex-direction: column;

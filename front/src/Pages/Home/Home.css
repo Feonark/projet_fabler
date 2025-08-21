@@ -1,3 +1,59 @@
-.home-container {
-  background-color: pink;
+.create-banner__container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  background-color: var(--secondary-bg);
+  border-radius: var(--banner-radius);
+  padding: 48px 16px 48px 16px;
+}
+
+.create-banner__container h2 {
+  text-align: center;
+}
+
+.create__description {
+  font-size: var(--banner-desc-size);
+  font-weight: var(--text-regular);
+  text-align: center;
+}
+
+.latest-stories__container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px;
+}
+
+.laststories-cards__container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.resume__container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px;
+}
+
+.resume-cards__container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 768px) {
+
+  .laststories-cards__container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .resume-cards__container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
 }

@@ -307,7 +307,7 @@ const Story = () => {
           <div className="header__author">
             <Link className="btn" to={`/stories/${storyId}/edit`}>
               <Pencil className="btn__icon" />
-              <span className="btn-txt-display">Edit profile</span>
+              <span className="btn-txt-display">Edit story</span>
             </Link>
             <button
               className="btn btn-negative"
@@ -384,20 +384,26 @@ const Story = () => {
             </span>
           </div>
           <div className="banner__description">{story.description}</div>
-          {checkIfAcceptedMember() ? (
-            <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
-              Enter RP Chat
-            </Link>
+          {user?.id ? (
+            checkIfAcceptedMember() ? (
+              <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
+                Enter RP Chat
+              </Link>
+            ) : (
+              <button
+                className="btn invert-btn"
+                onClick={joinStory}
+                disabled={checkIsMembersFull() || checkIfJoined()}
+              >
+                {checkIfJoined()
+                  ? "You asked to join this story"
+                  : "Join this story"}
+              </button>
+            )
           ) : (
-            <button
-              className="btn invert-btn"
-              onClick={joinStory}
-              disabled={checkIsMembersFull() || checkIfJoined()}
-            >
-              {checkIfJoined()
-                ? "You asked to join this story"
-                : "Join this story"}
-            </button>
+            <Link to="/login" className="btn invert-btn">
+              Log in to join
+            </Link>
           )}
         </div>
       )}

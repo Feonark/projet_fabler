@@ -1,25 +1,8 @@
 import { Link } from "react-router";
-import {
-  ChevronDown,
-  Search,
-  Pencil,
-  Trash,
-  ArrowLeft,
-  LogOut,
-  Eye,
-  BadgeCheck,
-  BadgeX,
-  BookMarked,
-  Target,
-  Globe,
-  DoorClosed,
-  Check,
-  X,
-  SquarePlus,
-} from "lucide-react";
+import { BookMarked, Target, Globe, DoorClosed } from "lucide-react";
 import "./StoryCard.css";
 
-const StoryCard = ({ story, formatEnumLabel }) => {
+const StoryCard = ({ story, author, formatEnumLabel }) => {
   return (
     <Link
       className="card__container"
@@ -32,30 +15,46 @@ const StoryCard = ({ story, formatEnumLabel }) => {
       }}
     >
       <div className="card__chips">
-        <span className="card__chip">
-          <BookMarked className="card-chip__icon" />
-          {formatEnumLabel(`${story.genreType}`)}
-        </span>
-        <span className="card__chip">
-          <Target className="card-chip__icon" />
-          {formatEnumLabel(`${story.audienceType}`)}
-        </span>
-        <span className="card__chip">
-          <Globe className="card-chip__icon" />
-          {formatEnumLabel(`${story.languageType}`)}
-        </span>
-        <span className="card__chip">
-          <DoorClosed className="card-chip__icon" />
-          {formatEnumLabel(`${story.accessType}`)}
-        </span>
+        {author !== undefined && author !== null && (
+          <span className="card__chip">
+            <BookMarked className="card-chip__icon" />
+            <span>{author === true ? "Author" : "Member"}</span>
+          </span>
+        )}
+        {story.genreType && (
+          <span className="card__chip">
+            <BookMarked className="card-chip__icon" />
+            {formatEnumLabel(`${story.genreType}`)}
+          </span>
+        )}
+        {story.audienceType && (
+          <span className="card__chip">
+            <Target className="card-chip__icon" />
+            {formatEnumLabel(`${story.audienceType}`)}
+          </span>
+        )}
+        {story.languageType && (
+          <span className="card__chip">
+            <Globe className="card-chip__icon" />
+            {formatEnumLabel(`${story.languageType}`)}
+          </span>
+        )}
+        {story.accessType && (
+          <span className="card__chip">
+            <DoorClosed className="card-chip__icon" />
+            {formatEnumLabel(`${story.accessType}`)}
+          </span>
+        )}
       </div>
       <div className="card__infos">
         <h2 className="bodytitle">{story.title}</h2>
-        <p className="card__text">
-          {story.description.length > 150
-            ? `${story.description.substring(0, 150)}...`
-            : story.description}
-        </p>
+        {story.description && (
+          <p className="card__text">
+            {story.description.length > 150
+              ? `${story.description.substring(0, 150)}...`
+              : story.description}
+          </p>
+        )}
       </div>
     </Link>
   );

@@ -238,14 +238,34 @@ button {
   height: var(--button-icon);
 }
 
+.invert-btn {
+  background-color: var(--invert-bg);
+  color: var(--text-invert);
+  transition: background 300ms ease;
+}
+
+.invert-btn__icon {
+  color: var(--text-invert);
+}
+
+.invert-btn:hover {
+  background-color: var(--secondary-invert-bg);
+  border: 1px solid transparent;
+}
+
+.invert-btn:disabled {
+  background-color: var(--invert-bg);
+  color: var(--subtle-text);
+  cursor: not-allowed;
+  opacity: 0.8; 
+}
+
 .btn:disabled {
   cursor: not-allowed;
-  color: green;
 }
 
 .btn:disabled:hover {
   border: 1px solid transparent;
-  background: transparent;
 }
 
 .btn:disabled .btn__icon {

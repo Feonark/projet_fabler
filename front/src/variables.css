@@ -71,6 +71,7 @@
   --subtitle-size: var(--font-size-xl);
   --bodytitle-size: var(--font-size-xl);
   --bodysubtitle-size: var(--font-size-lg);
+  --banner-desc-size: var(--font-size-lg);
   --label-size: var(--font-size-md);
   --text-size: var(--font-size-md);
   --chip-size: var(--font-size-md);
