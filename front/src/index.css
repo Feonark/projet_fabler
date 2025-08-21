@@ -238,6 +238,20 @@ button {
   height: var(--button-icon);
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  color: green;
+}
+
+.btn:disabled:hover {
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.btn:disabled .btn__icon {
+  color: var(--subtle-text);
+}
+
 /* UI */
 
 .page__container {
@@ -379,6 +393,7 @@ button {
   padding-inline: 12px;
   padding-block: 4px;
   border-radius: var(--span-radius);
+  border: 1px solid var(--border-color);
   background-color: var(--secondary-bg);
   font-size: var(--chip-size);
   font-weight: var(--chip-regular);
@@ -394,6 +409,20 @@ button {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.card__text {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 1);
+}
+
+.pagination__container {
+  padding-top: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 
 /* RESPONSIVE DESKTOP */
@@ -416,6 +445,12 @@ button {
   
   .btn-txt-display {
     display: block;
+  }
+
+  .pagination__container {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
   }
 
 }

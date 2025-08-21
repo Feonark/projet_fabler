@@ -21,6 +21,13 @@
   border-radius: var(--card-radius);
 }
 
+.search-cards__container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding-top: 16px;
+}
+
 /* RESPONSIVE DESKTOP */
 @media (min-width: 768px) {
 
@@ -37,5 +44,11 @@
     min-width: 328px;
     height: fit-content;
   }
+
+  .search-cards__container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
 
 }

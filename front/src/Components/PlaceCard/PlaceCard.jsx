@@ -17,7 +17,7 @@ const PlaceCard = ({ storyId, placeId, place, isAuthor, onDelete }) => {
     >
       <div className="place-card__infos">
         <h3 className="place-card__title bodytitle">{place.title}</h3>
-        <p className="place-card__description">{place.description}</p>
+        <p className="card__text">{place.description}</p>
       </div>
       {isAuthor ? (
         <div className="place-card__actions">

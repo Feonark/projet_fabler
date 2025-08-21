@@ -1,6 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router";
-import { ChevronDown, Search } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  ChevronLast,
+  ChevronFirst,
+  Search,
+} from "lucide-react";
 import StoryCard from "../../Components/StoryCard/StoryCard";
 import "./StorySearch.css";
 
@@ -212,7 +219,7 @@ export default function StorySearch() {
 
           {/* LISTE DES RÉSULTATS */}
           {stories && (
-            <div className="">
+            <div className="search__results">
               <div className="page__header">
                 <h1 className="subtitle">Stories</h1>
                 <span className="count-chip">
@@ -222,37 +229,60 @@ export default function StorySearch() {
                 </span>
               </div>
 
-              {stories.map((story) => (
-                <StoryCard story={story} formatEnumLabel={formatEnumLabel} />
-              ))}
+              <div className="search-cards__container">
+                {stories.map((story) => (
+                  <StoryCard story={story} formatEnumLabel={formatEnumLabel} />
+                ))}
+              </div>
             </div>
           )}
         </div>
 
         {page && (
-          <div>
+          <div className="pagination__container">
             {/* Bouton début */}
-            {page > 1 && <button onClick={() => setPage(1)}>{"<<"}</button>}
+            <button
+              className="btn btn-sm"
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+            >
+              <ChevronFirst className="btn__icon btn-sm__icon" />
+            </button>
 
             {/* Bouton précédent */}
-            {pagination.previous && (
-              <button onClick={() => setPage(page - 1)}>Previous</button>
-            )}
+            <button
+              className="btn btn-sm"
+              onClick={() => setPage(page - 1)}
+              disabled={!pagination.previous}
+            >
+              <ChevronLeft className="btn__icon btn-sm__icon" />
+            </button>
 
             {/* Num de page */}
-            <span>
-              Page {page} / {totalPages}
+            <span className="count-chip">
+              <span className="count-chip__count">Page {page}</span>
+              <span className="count-chip__count count-chip__maxCount">
+                / {totalPages}
+              </span>
             </span>
 
             {/* Bouton suivant */}
-            {pagination.next && (
-              <button onClick={() => setPage(page + 1)}>Next</button>
-            )}
+            <button
+              className="btn btn-sm"
+              onClick={() => setPage(page + 1)}
+              disabled={!pagination.next}
+            >
+              <ChevronRight className="btn__icon btn-sm__icon" />
+            </button>
 
             {/* Bouton fin */}
-            {page < totalPages && (
-              <button onClick={() => setPage(totalPages)}>{">>"}</button>
-            )}
+            <button
+              className="btn btn-sm"
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+            >
+              <ChevronLast className="btn__icon btn-sm__icon" />
+            </button>
           </div>
         )}
       </main>

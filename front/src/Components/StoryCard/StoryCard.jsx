@@ -51,7 +51,11 @@ const StoryCard = ({ story, formatEnumLabel }) => {
       </div>
       <div className="card__infos">
         <h2 className="bodytitle">{story.title}</h2>
-        <p className="">{story.description}</p>
+        <p className="card__text">
+          {story.description.length > 150
+            ? `${story.description.substring(0, 150)}...`
+            : story.description}
+        </p>
       </div>
     </Link>
   );
