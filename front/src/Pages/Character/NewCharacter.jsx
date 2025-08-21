@@ -2,6 +2,7 @@ import { useState } from "react";
 import CharacterForm from "../../Components/CharacterForm/CharacterForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate } from "react-router";
+import { ArrowLeft } from "lucide-react";
 
 const NewCharacter = () => {
   const { token, getUser } = useAuth();
@@ -33,14 +34,28 @@ const NewCharacter = () => {
   };
 
   return (
-    <>
+    <div className="page__container form-page__container">
+      <div className="page__header form-page__header">
+        <button
+          className="btn"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft className="btn__icon" />
+          <span className="btn-txt-display">Back</span>
+        </button>
+      </div>
+      <div className="page__title-header">
+        <h1 className="title">Create a character</h1>
+      </div>
       <CharacterForm
         initialValues={null}
         onSubmit={handleCreate}
         submitLabel="Create"
         error={error}
       />
-    </>
+    </div>
   );
 };
 

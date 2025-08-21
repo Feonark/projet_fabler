@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 
 const GENRE_OPTIONS = [
   "FANTASY",
@@ -96,12 +97,13 @@ export default function StoryForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Story</h2>
+    <form className="form__container" onSubmit={handleSubmit}>
       {error && <p className="">{error}</p>}
 
-      <div>
-        <label htmlFor="title">Title</label>
+      <div className="input__container">
+        <label htmlFor="title" className="input__label">
+          Title <span className="asterisk">*</span>
+        </label>
         <input
           id="title"
           type="text"
@@ -110,103 +112,136 @@ export default function StoryForm({
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+        <span className="form__error"></span>
       </div>
 
-      <div>
-        <label htmlFor="description">Description</label>
+      <div className="input__container">
+        <label htmlFor="description" className="input__label">
+          Description
+        </label>
         <textarea
           id="description"
           value={description}
           placeholder="Describe your story here"
           onChange={(e) => setDescription(e.target.value)}
         />
+        <span className="form__error"></span>
       </div>
 
-      <div>
-        <label htmlFor="bannerFile">Upload Banner</label>
+      <div className="input__container">
+        <label htmlFor="bannerFile" className="input__label">
+          Banner picture
+        </label>
         <input
           id="bannerFile"
+          className="input-file"
           type="file"
           accept="image/*"
           onChange={(e) => setBannerFile(e.target.files[0] || null)}
         />
+        <span className="form__error"></span>
       </div>
 
       <div>
-        <label htmlFor="isPublic">IsPublic</label>
         <input
           id="isPublic"
           type="checkbox"
           checked={isPublic}
           onChange={(e) => setIsPublic(e.target.checked)}
         />
+        <label htmlFor="isPublic" className="input__label">
+          Public <span className="asterisk">*</span>
+        </label>
       </div>
 
-      <div>
-        <label htmlFor="genreType">GenreType</label>
-        <select
-          id="genreType"
-          value={genreType}
-          onChange={(e) => setGenreType(e.target.value)}
-          required
-        >
-          {GENRE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+      <div className="form__row">
+        <div className="select__container form-row__item">
+          <label htmlFor="genreType" className="input__label">
+            Genre <span className="asterisk">*</span>
+          </label>
+          <select
+            id="genreType"
+            value={genreType}
+            onChange={(e) => setGenreType(e.target.value)}
+            required
+          >
+            {GENRE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="select__icon" />
+        </div>
+
+        <div className="select__container form-row__item">
+          <label htmlFor="audienceType" className="input__label">
+            Audience <span className="asterisk">*</span>
+          </label>
+          <select
+            id="audienceType"
+            value={audienceType}
+            onChange={(e) => setAudienceType(e.target.value)}
+            required
+          >
+            {AUDIENCE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="select__icon" />
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="audienceType">AudienceType</label>
-        <select
-          id="audienceType"
-          value={audienceType}
-          onChange={(e) => setAudienceType(e.target.value)}
-          required
-        >
-          {AUDIENCE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+      <div className="form__row">
+        <div className="select__container form-row__item">
+          <label htmlFor="accessType" className="input__label">
+            Access <span className="asterisk">*</span>
+          </label>
+          <select
+            id="accessType"
+            value={accessType}
+            onChange={(e) => setAccessType(e.target.value)}
+            required
+          >
+            {ACCESS_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="select__icon" />
+        </div>
+
+        <div className="select__container form-row__item">
+          <label htmlFor="languageType" className="input__label">
+            Language <span className="asterisk">*</span>
+          </label>
+          <select
+            id="languageType"
+            value={languageType}
+            onChange={(e) => setLanguageType(e.target.value)}
+            required
+          >
+            {LANGUAGE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="select__icon" />
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="accessType">AccessType</label>
-        <select
-          id="accessType"
-          value={accessType}
-          onChange={(e) => setAccessType(e.target.value)}
-          required
-        >
-          {ACCESS_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      </div>
+      <button type="submit" className="btn invert-btn submit-btn">
+        {submitLabel}
+      </button>
 
-      <div>
-        <label htmlFor="languageType">LanguageType</label>
-        <select
-          id="languageType"
-          value={languageType}
-          onChange={(e) => setLanguageType(e.target.value)}
-          required
-        >
-          {LANGUAGE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <button type="submit">{submitLabel}</button>
+      <span className="form__text">
+        All fields marked with (<span className="asterisk">*</span>) are
+        mandatory.
+      </span>
     </form>
   );
 }

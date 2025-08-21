@@ -1,7 +1,7 @@
-import React from "react";
 import { useState } from "react";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, Link } from "react-router";
+import "./LoginForm.css";
 
 const LoginForm = () => {
   const { login } = useAuth();
@@ -39,36 +39,42 @@ const LoginForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <h2>LoginForm</h2>
-
+      <form className="form__container" onSubmit={handleSubmit}>
         {error && <p>{error}</p>}
 
-        <div>
-          <label>Username</label>
+        <div className="input__container">
+          <label className="input__label">Username</label>
           <input
             type="username"
+            placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
 
-        <div>
-          <label>Password</label>
+        <div className="input__container">
+          <label className="input__label">Password</label>
           <input
             type="password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
 
-        <button type="submit">Log in</button>
+        <button className="btn invert-btn submit-btn" type="submit">
+          Log in
+        </button>
+
+        <span className="form__text">
+          You don't have an account?{" "}
+          <Link className="register__link" to="/register">
+            Register now
+          </Link>
+        </span>
       </form>
-      <p>
-        You don't have an account? <Link to="/register">Register now</Link>
-      </p>
     </>
   );
 };

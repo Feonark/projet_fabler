@@ -2,6 +2,7 @@ import { useState } from "react";
 import StoryForm from "../../Components/StoryForm/StoryForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate } from "react-router";
+import { ArrowLeft } from "lucide-react";
 
 const NewStory = () => {
   const { token } = useAuth();
@@ -34,14 +35,28 @@ const NewStory = () => {
   };
 
   return (
-    <>
+    <div className="page__container form-page__container">
+      <div className="page__header form-page__header">
+        <button
+          className="btn"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft className="btn__icon" />
+          <span className="btn-txt-display">Back</span>
+        </button>
+      </div>
+      <div className="page__title-header">
+        <h1 className="title">Create a story</h1>
+      </div>
       <StoryForm
         initialValues={null}
         onSubmit={handleCreate}
         submitLabel="Create"
         error={error}
       />
-    </>
+    </div>
   );
 };
 

@@ -57,13 +57,12 @@ const PlaceForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Place</h2>
+    <form className="form__container" onSubmit={handleSubmit}>
       {error && <p className="">{error}</p>}
 
-      <div className="">
-        <label htmlFor="title" className="">
-          Title*
+      <div className="input__container">
+        <label htmlFor="title" className="input__label">
+          Title
         </label>
         <input
           id="title"
@@ -74,11 +73,12 @@ const PlaceForm = ({
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+        <span className="form__error"></span>
       </div>
 
-      <div className="">
-        <label htmlFor="description" className="">
-          Description*
+      <div className="input__container">
+        <label htmlFor="description" className="input__label">
+          Description
         </label>
         <textarea
           id="description"
@@ -87,21 +87,31 @@ const PlaceForm = ({
           placeholder="Describe your place here"
           onChange={(e) => setDescription(e.target.value)}
         />
+        <span className="form__error"></span>
       </div>
 
-      <div>
-        <label htmlFor="placeFile">Upload place image</label>
+      <div className="input__container">
+        <label htmlFor="placeFile" className="input__label">
+          Place picture
+        </label>
         <input
           id="placeFile"
+          className="input-file"
           type="file"
           accept="image/*"
           onChange={(e) => setPlaceFile(e.target.files[0] || null)}
         />
+        <span className="form__error"></span>
       </div>
 
-      <button type="submit" className="">
+      <button type="submit" className="btn invert-btn submit-btn">
         {submitLabel}
       </button>
+
+      <span className="form__text">
+        All fields marked with (<span className="asterisk">*</span>) are
+        mandatory.
+      </span>
     </form>
   );
 };

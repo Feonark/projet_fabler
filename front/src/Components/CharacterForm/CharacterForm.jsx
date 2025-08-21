@@ -88,13 +88,12 @@ const CharacterForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Character</h2>
+    <form onSubmit={handleSubmit} className="form__container">
       {error && <p className="">{error}</p>}
 
-      <div className="">
-        <label htmlFor="name" className="">
-          Name*
+      <div className="input__container">
+        <label htmlFor="name" className="input__label">
+          Name <span className="asterisk">*</span>
         </label>
         <input
           id="name"
@@ -107,9 +106,9 @@ const CharacterForm = ({
         />
       </div>
 
-      <div className="">
-        <label htmlFor="title" className="">
-          Title
+      <div className="input__container">
+        <label htmlFor="title" className="input__label">
+          Title <span className="asterisk">*</span>
         </label>
         <input
           id="title"
@@ -120,10 +119,11 @@ const CharacterForm = ({
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+        <span className="form__error"></span>
       </div>
 
-      <div className="">
-        <label htmlFor="bio" className="">
+      <div className="input__container">
+        <label htmlFor="bio" className="input__label">
           Bio
         </label>
         <textarea
@@ -133,31 +133,45 @@ const CharacterForm = ({
           placeholder="Describe your character here"
           onChange={(e) => setBio(e.target.value)}
         />
+        <span className="form__error"></span>
       </div>
 
-      <div>
-        <label htmlFor="portraitFile">Upload portrait</label>
+      <div className="input__container">
+        <label htmlFor="portraitFile" className="input__label">
+          Character portrait <span className="asterisk">*</span>
+        </label>
         <input
           id="portraitFile"
+          className="input-file"
           type="file"
           accept="image/*"
           onChange={(e) => setPortraitFile(e.target.files[0] || null)}
         />
+        <span className="form__error"></span>
       </div>
 
-      <div>
-        <label htmlFor="charaAvatarFile">Upload Banner</label>
+      <div className="input__container">
+        <label htmlFor="charaAvatarFile" className="input__label">
+          Character avatar <span className="asterisk">*</span>
+        </label>
         <input
           id="charaAvatarFile"
+          className="input-file"
           type="file"
           accept="image/*"
           onChange={(e) => setAvatarFile(e.target.files[0] || null)}
         />
+        <span className="form__error"></span>
       </div>
 
-      <button type="submit" className="">
+      <button type="submit" className="btn invert-btn submit-btn">
         {submitLabel}
       </button>
+
+      <span className="form__text">
+        All fields marked with (<span className="asterisk">*</span>) are
+        mandatory.
+      </span>
     </form>
   );
 };

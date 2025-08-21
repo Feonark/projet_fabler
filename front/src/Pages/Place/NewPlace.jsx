@@ -3,6 +3,7 @@ import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate } from "react-router";
 import PlaceForm from "../../Components/PlaceForm/PlaceForm";
 import { useParams } from "react-router";
+import { ArrowLeft } from "lucide-react";
 
 const NewPlace = () => {
   const { storyId } = useParams();
@@ -33,14 +34,28 @@ const NewPlace = () => {
   };
 
   return (
-    <>
+    <div className="page__container form-page__container">
+      <div className="page__header form-page__header">
+        <button
+          className="btn"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft className="btn__icon" />
+          <span className="btn-txt-display">Back</span>
+        </button>
+      </div>
+      <div className="page__title-header">
+        <h1 className="title">Create a place</h1>
+      </div>
       <PlaceForm
         initialValues={null}
         onSubmit={handleCreate}
         submitLabel="Create"
         error={error}
       />
-    </>
+    </div>
   );
 };
 

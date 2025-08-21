@@ -1,0 +1,7 @@
+.register__link {
+  padding: 0;
+  background: transparent;
+  color: var(--invert-bg);
+  font-size: var(--form-text-size);
+  font-weight: var(--text-semibold);
+  }

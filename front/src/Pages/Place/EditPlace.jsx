@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PlaceForm from "../../Components/PlaceForm/PlaceForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, useParams } from "react-router";
+import { ArrowLeft } from "lucide-react";
 
 const EditPlace = () => {
   const { storyId, placeId } = useParams();
@@ -47,14 +48,28 @@ const EditPlace = () => {
   };
 
   return (
-    <>
+    <div className="page__container form-page__container">
+      <div className="page__header form-page__header">
+        <button
+          className="btn"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft className="btn__icon" />
+          <span className="btn-txt-display">Back</span>
+        </button>
+      </div>
+      <div className="page__title-header">
+        <h1 className="title">Edit a place</h1>
+      </div>
       <PlaceForm
         initialValues={initialValues}
         onSubmit={handleUpdate}
         submitLabel="Update"
         error={error}
       />
-    </>
+    </div>
   );
 };
 

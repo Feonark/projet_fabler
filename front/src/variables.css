@@ -76,10 +76,9 @@
   --text-size: var(--font-size-md);
   --chip-size: var(--font-size-md);
   --span-size: var(--font-size-sm);
-  --chip-size: var(--font-size-md);
   --rpbox-text: var(--font-size-xl);
   --rpbox-title: var(--font-size-2xl);
-  --title-size-dt: var(--font-size-2xl);
+  --form-text-size: var(--font-size-sm);
 
   /* ICON SIZES (PRIMITIVES) */
   --icon-size-xs: 0.8rem;

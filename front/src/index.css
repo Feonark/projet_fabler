@@ -64,7 +64,11 @@ a {
 
 /* INPUTS */
 
-input, select {
+textarea {
+  resize: vertical; /* autorise que haut/bas */
+}
+
+input, select, textarea {
   background: var(--primary-bg);
   color: var(--text-color);
   font-size: var(--text-size);
@@ -76,14 +80,22 @@ input, select {
   height: 44px;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
   color: var(--subtle-text);
 }
 
-input:focus {
+input:focus, textarea:focus {
   outline: none;
   border: 1px solid var(--text-color);
   box-shadow: none;
+}
+
+.input-file {
+  display: flex !important;
+  width: 100%;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: white;
 }
 
 .input__container {
@@ -98,6 +110,7 @@ input:focus {
 }
 
 /* SELECTS */
+
 select {
   padding-right: 40px;
   appearance: none;
@@ -133,6 +146,10 @@ select:has(option:first-child:checked) {
   height: 20px;
   color: var(--text-color);
   pointer-events: none; 
+}
+
+.asterisk {
+  color: var(--error-color);
 }
 
 /* SEARCH */
@@ -272,6 +289,11 @@ button {
   color: var(--subtle-text);
 }
 
+.submit-btn {
+  margin-block: 16px;
+  width: 100%;
+}
+
 /* UI */
 
 .page__container {
@@ -291,6 +313,46 @@ button {
   display: flex;
   justify-content: space-between;
   padding-block: 16px;
+  width: 100%;
+}
+
+.form-page__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-page__header {
+  justify-content: left;
+}
+
+.form__container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 16px;
+}
+
+.form__row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row__item {
+  width: 100%;
+}
+
+.form__text {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  font-size: var(--form-text-size);
+  font-weight: var(--text-regular);
+}
+
+.form__error {
+  color: var(--error-color);
 }
 
 .title {
@@ -453,9 +515,16 @@ button {
   }
 
   .page__title-header {
-    padding-block: 64px;
+    padding-block: 96px;
   }
 
+  .form__container {
+    max-width: 512px;
+  }
+
+  .form__row {
+    flex-direction: row;
+  }
 
   .title {
     font-size: var(--title-size-dt);

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import CharacterForm from "../../Components/CharacterForm/CharacterForm";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, useParams } from "react-router";
+import { ArrowLeft } from "lucide-react";
 
 const EditCharacter = () => {
   const { characterId } = useParams();
@@ -53,14 +54,28 @@ const EditCharacter = () => {
   };
 
   return (
-    <>
+    <div className="page__container form-page__container">
+      <div className="page__header form-page__header">
+        <button
+          className="btn"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft className="btn__icon" />
+          <span className="btn-txt-display">Back</span>
+        </button>
+      </div>
+      <div className="page__title-header">
+        <h1 className="title">Edit a character</h1>
+      </div>
       <CharacterForm
         initialValues={initialValues}
         onSubmit={handleUpdate}
         submitLabel="Update"
         error={error}
       />
-    </>
+    </div>
   );
 };
 
