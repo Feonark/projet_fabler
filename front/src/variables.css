@@ -49,6 +49,7 @@
 
   /* FONT WEIGHT (TOKENS) */
   --text-regular: var(--font-regular);
+  --text-medium: var(--font-medium);
   --chip-regular: var(--font-regular);
   --text-medium: var(--font-medium);
   --text-semibold: var(--font-semibold);

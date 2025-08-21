@@ -2,13 +2,16 @@ import React from "react";
 import { Outlet, Link, useLocation } from "react-router";
 import "./PublicLayout.css";
 import Navbar from "../../Components/Navbar/Navbar";
+import Footer from "../../Components/Footer/Footer";
 
 const PublicLayout = () => {
   const location = useLocation();
   const hideFooterOn = ["/chat/:id", "/login"];
 
   const shouldHideFooter =
-    location.pathname.endsWith("/chat") || location.pathname === "/login";
+    location.pathname.endsWith("/chat") ||
+    location.pathname === "/login" ||
+    location.pathname === "/register";
 
   return (
     <div className="layout__container">
@@ -21,9 +24,7 @@ const PublicLayout = () => {
           <Outlet />
         </main>
 
-        {!shouldHideFooter && (
-          <footer className="layout__footer">FooterContent</footer>
-        )}
+        {!shouldHideFooter && <Footer />}
       </div>
     </div>
   );
