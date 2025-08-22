@@ -1,6 +1,61 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+const MAX_AVATAR_BYTES = 1000 * 1024; // 1Mo
+
+// Helpers dates
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const yearsAgoISO = (years) => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - years);
+  return d.toISOString().slice(0, 10);
+};
+
+// Regex
+const reUsername = /^[A-Za-z0-9]+$/;
+const reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const rePwUpper = /[A-Z]/;
+const rePwLower = /[a-z]/;
+const rePwDigit = /[0-9]/;
+const reHtmlTag = /<[^>]*>/;
+
+const extractBackFieldErrors = (errorData) => {
+  const out = {};
+
+  // Cas standard Api Platform: violations
+  if (Array.isArray(errorData?.violations)) {
+    errorData.violations.forEach((v) => {
+      const key = v.propertyPath || "global";
+      if (key !== "global") {
+        out[key] = [...(out[key] || []), v.message];
+      }
+    });
+  }
+
+  // // Cas "Unique violation" Doctrine/PostgreSQL
+  const text = [
+    errorData?.detail,
+    errorData?.description,
+    errorData?.["hydra:description"],
+    errorData?.message,
+    errorData?.title,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  // Match: Key (email)=(xxx) already exists.  OU  Key (username)=(xxx) already exists.
+  const uniqueRx = /Key\s*\(([^)]+)\)\s*=\s*\([^)]+\)\s*already exists/i;
+  const m = uniqueRx.exec(text);
+  if (m && m[1]) {
+    const field = m[1].trim();
+    if (field === "email" || field === "username") {
+      out[field] = [...(out[field] || []), "This is already used."];
+    }
+  }
+
+  return out;
+};
+
 const RegisterForm = () => {
   const navigate = useNavigate();
 
@@ -11,11 +66,181 @@ const RegisterForm = () => {
   const [description, setDescription] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [backFieldErrors, setBackFieldErrors] = useState({});
+
+  const setFieldError = (field, messages) => {
+    setFieldErrors((prev) => ({
+      ...prev,
+      [field]: Array.isArray(messages) ? messages : messages ? [messages] : [],
+    }));
+  };
+
+  const clearFieldError = (field) => {
+    setFieldErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // VALIDATION DES FIELDS
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const validateUsername = (val) => {
+    const errs = [];
+    if (!val || !val.trim()) errs.push("The username is required.");
+    if (val && val.length < 3)
+      errs.push("Your username must be at least 3 characters long.");
+    if (val && val.length > 30)
+      errs.push("Your username cannot be longer than 30 characters.");
+    if (val && !reUsername.test(val))
+      errs.push(
+        "Your username can only contain letters and numbers (no spaces, dashes or special characters)."
+      );
+    return errs;
+  };
+
+  const validatePassword = (val) => {
+    const errs = [];
+    if (!val || !val.trim()) errs.push("The password is required.");
+    if (val && val.length < 8)
+      errs.push("Your password must be at least 8 characters long.");
+    if (val && val.length > 50)
+      errs.push("Your username cannot be longer than 50 characters.");
+    if (val && !rePwUpper.test(val))
+      errs.push("At least one uppercase letter.");
+    if (val && !rePwLower.test(val))
+      errs.push("At least one lowercase letter.");
+    if (val && !rePwDigit.test(val)) errs.push("At least one number.");
+    if (val && reHtmlTag.test(val)) errs.push("HTML tags are not allowed.");
+    return errs;
+  };
+
+  const validateEmail = (val) => {
+    const errs = [];
+    if (!val || !val.trim()) errs.push("The email is required.");
+    if (val && val.length > 255)
+      errs.push("Email cannot be longer than 255 characters.");
+    if (val && !reEmail.test(val)) errs.push("Must be a valid email.");
+    return errs;
+  };
+
+  const validateBirthdate = (val) => {
+    if (!val) return [];
+    const errs = [];
+    const isoToday = todayISO();
+    const iso13 = yearsAgoISO(13);
+    const iso120 = yearsAgoISO(120);
+    if (val >= isoToday) errs.push("Birthdate must be in the past.");
+    if (val > iso13) errs.push("You must be at least 13 years old.");
+    if (val < iso120) errs.push("No human lives that long, elf.");
+    return errs;
+  };
+
+  const validateDescription = (val) => {
+    const errs = [];
+    if (val) {
+      if (val.trim().length === 0) errs.push("Description is required.");
+      if (val.length > 100)
+        errs.push("Your description cannot be longer than 100 characters.");
+      if (reHtmlTag.test(val)) errs.push("HTML tags are not allowed.");
+    }
+    return errs;
+  };
+
+  const validateAvatarFile = (file) => {
+    const errs = [];
+    if (file && file.size > MAX_AVATAR_BYTES)
+      errs.push("The profile picture can't exceed 1 Mo.");
+    return errs;
+  };
+
+  const validateAll = () => {
+    const newErrors = {};
+    const u = validateUsername(username);
+    if (u.length) newErrors.username = u;
+    const p = validatePassword(plainPassword);
+    if (p.length) newErrors.plainPassword = p;
+    const e = validateEmail(email);
+    if (e.length) newErrors.email = e;
+    const b = validateBirthdate(birthdate);
+    if (b.length) newErrors.birthdate = b;
+    const d = validateDescription(description);
+    if (d.length) newErrors.description = d;
+    const a = validateAvatarFile(avatarFile);
+    if (a.length) newErrors.avatarFile = a;
+    return newErrors;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLERS ONCHANGE DES FIELDS
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const onUsernameChange = (e) => {
+    const v = e.target.value;
+    setUsername(v);
+    const errs = validateUsername(v);
+    errs.length ? setFieldError("username", errs) : clearFieldError("username");
+    setBackFieldErrors((prev) => ({ ...prev, username: undefined }));
+  };
+  const onPasswordChange = (e) => {
+    const v = e.target.value;
+    setPlainPassword(v);
+    const errs = validatePassword(v);
+    errs.length
+      ? setFieldError("plainPassword", errs)
+      : clearFieldError("plainPassword");
+  };
+  const onEmailChange = (e) => {
+    const v = e.target.value;
+    setEmail(v);
+    const errs = validateEmail(v);
+    errs.length ? setFieldError("email", errs) : clearFieldError("email");
+    setBackFieldErrors((prev) => ({ ...prev, email: undefined }));
+  };
+  const onBirthdateChange = (e) => {
+    const v = e.target.value;
+    setBirthdate(v);
+    const errs = validateBirthdate(v);
+    errs.length
+      ? setFieldError("birthdate", errs)
+      : clearFieldError("birthdate");
+  };
+  const onDescriptionChange = (e) => {
+    const v = e.target.value;
+    setDescription(v);
+    const errs = validateDescription(v);
+    errs.length
+      ? setFieldError("description", errs)
+      : clearFieldError("description");
+  };
+  const onAvatarChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setAvatarFile(file);
+    const errs = validateAvatarFile(file);
+    errs.length
+      ? setFieldError("avatarFile", errs)
+      : clearFieldError("avatarFile");
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLESUBMIT
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSuccess(false);
+    setBackFieldErrors({});
+
+    const all = validateAll();
+    if (Object.keys(all).length > 0) {
+      setFieldErrors(all);
+      return;
+    }
 
     let finalAvatarUrl = avatarUrl;
 
@@ -31,19 +256,14 @@ const RegisterForm = () => {
           headers: { Accept: "application/ld+json" },
           body: fd,
         });
-
-        if (!uploadRes.ok) throw new Error("Upload failed");
+        if (!uploadRes.ok) throw new Error("Upload échoué");
         const uploadData = await uploadRes.json();
         finalAvatarUrl = uploadData.url;
-      } catch (err) {
-        console.error(err);
-        alert("Upload échoué");
+      } catch {
+        setFieldError("avatarFile", "Upload échoué.");
         return;
       }
     }
-
-    setError("");
-    setSuccess(false);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/users", {
@@ -63,25 +283,33 @@ const RegisterForm = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData["hydra:description"] ??
-            JSON.stringify(errorData.violations) ??
-            "Erreur lors de l'inscription"
-        );
+        let errorData = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          console.log(error);
+        }
+        const mapped = extractBackFieldErrors(errorData);
+        setBackFieldErrors(mapped);
+        return;
       }
 
       setSuccess(true);
-      const data = await response.json();
+      await response.json();
       navigate("/login");
-    } catch (err) {
-      setError(err.message);
-    }
+    } catch {}
   };
+
+  // sous chaque champ : on montre d’abord l’erreur front, sinon l’erreur back
+  const firstErr = (field) =>
+    fieldErrors[field]?.[0] || backFieldErrors[field]?.[0] || "";
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <form className="form__container" onSubmit={handleSubmit}>
-      {error && <p>{error}</p>}
       {success && <p>Inscription réussie !</p>}
 
       <div className="input__container">
@@ -92,10 +320,10 @@ const RegisterForm = () => {
           type="text"
           placeholder="e.g. GlassHollow95"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={onUsernameChange}
           required
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("username")}</span>
       </div>
 
       <div className="input__container">
@@ -106,10 +334,10 @@ const RegisterForm = () => {
           type="email"
           placeholder="e.g. glasshollow@domain.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={onEmailChange}
           required
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("email")}</span>
       </div>
 
       <div className="input__container">
@@ -120,21 +348,17 @@ const RegisterForm = () => {
           type="password"
           placeholder="••••••••••"
           value={plainPassword}
-          onChange={(e) => setPlainPassword(e.target.value)}
+          onChange={onPasswordChange}
           required
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("plainPassword")}</span>
       </div>
 
       <div className="form__row">
         <div className="input__container form-row__item">
           <label className="input__label">Birthdate</label>
-          <input
-            type="date"
-            value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
-          />
-          <span className="form__error"></span>
+          <input type="date" value={birthdate} onChange={onBirthdateChange} />
+          <span className="form__error">{firstErr("birthdate")}</span>
         </div>
 
         <div className="input__container form-row__item">
@@ -146,10 +370,10 @@ const RegisterForm = () => {
             type="file"
             className="input-file"
             accept="image/*"
-            onChange={(e) => setAvatarFile(e.target.files[0] || null)}
+            onChange={onAvatarChange}
           />
+          <span className="form__error">{firstErr("avatarFile")}</span>
         </div>
-        <span className="form__error"></span>
       </div>
 
       <div className="input__container">
@@ -157,9 +381,9 @@ const RegisterForm = () => {
         <textarea
           value={description}
           placeholder="e.g. I am here to roleplay!"
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={onDescriptionChange}
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("description")}</span>
       </div>
 
       <button className="btn invert-btn submit-btn" type="submit">

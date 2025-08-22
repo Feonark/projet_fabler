@@ -63,7 +63,7 @@ class Character
         groups: ['character:create', 'character:edit']
     )]
     #[Assert\Length(
-        min: 1,
+        min: 3,
         max: 30,
         minMessage: 'Character name must be at least {{ limit }} character long.',
         maxMessage: 'Character name cannot be longer than {{ limit }} characters.',
@@ -80,6 +80,7 @@ class Character
 
     #[ORM\Column(length: 40, nullable: true)]
     #[Assert\Length(
+        min: 3,
         max: 40,
         maxMessage: 'Title cannot be longer than {{ limit }} characters.',
         groups: ['character:create', 'character:edit']

@@ -28,6 +28,10 @@ const LANGUAGE_OPTIONS = [
   "DEUTSCH",
 ];
 
+// Regex
+const reHtmlTag = /<[^>]*>/;
+const reNonSpace = /\S/;
+
 export default function StoryForm({
   initialValues,
   onSubmit,
@@ -44,11 +48,15 @@ export default function StoryForm({
   const [accessType, setAccessType] = useState(ACCESS_OPTIONS[0]);
   const [languageType, setLanguageType] = useState(LANGUAGE_OPTIONS[0]);
 
+  const [fieldErrors, setFieldErrors] = useState({});
+
   useEffect(() => {
     if (!initialValues) return;
     setTitle(initialValues.title ?? "");
     setDescription(initialValues.description ?? "");
-    setBannerImgUrl(initialValues.bannerImgUrl ?? "");
+    setBannerImgUrl(
+      initialValues.bannerImgUrl ?? initialValues.bannerImageUrl ?? ""
+    );
     setIsPublic(Boolean(initialValues.isPublic));
     setGenreType(initialValues.genreType ?? GENRE_OPTIONS[0]);
     setAudienceType(initialValues.audienceType ?? AUDIENCE_OPTIONS[0]);
@@ -56,8 +64,143 @@ export default function StoryForm({
     setLanguageType(initialValues.languageType ?? LANGUAGE_OPTIONS[0]);
   }, [initialValues]);
 
+  const setFieldError = (field, messages) => {
+    setFieldErrors((prev) => ({
+      ...prev,
+      [field]: Array.isArray(messages) ? messages : messages ? [messages] : [],
+    }));
+  };
+  const clearFieldError = (field) => {
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // VALIDATION DES FIELDS
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const validateTitle = (val) => {
+    const errs = [];
+    if (!val || !val.trim()) errs.push("This value should not be blank.");
+    if (val && val.length < 3)
+      errs.push("The title must be at least 3 characters long.");
+    if (val && val.length > 50)
+      errs.push("The title cannot be longer than 50 characters.");
+    if (val && reHtmlTag.test(val))
+      errs.push("HTML tags are not allowed in the title.");
+    return errs;
+  };
+
+  const validateDescription = (val) => {
+    const errs = [];
+    if (val === "" || !reNonSpace.test(val)) {
+      errs.push("The description cannot be empty or contain only spaces.");
+    }
+    if (val && val.length > 1000)
+      errs.push("The description cannot be longer than 1000 characters.");
+    if (val && reHtmlTag.test(val))
+      errs.push("HTML tags are not allowed in the description.");
+    return errs;
+  };
+
+  const validateEnum = (val, allowed) => {
+    const errs = [];
+    if (!allowed.includes(val)) errs.push("This value is not valid.");
+    return errs;
+  };
+
+  const validateAll = () => {
+    const next = {};
+    const t = validateTitle(title);
+    if (t.length) next.title = t;
+    const d = validateDescription(description);
+    if (d.length) next.description = d;
+    const g = validateEnum(genreType, GENRE_OPTIONS);
+    if (g.length) next.genreType = g;
+    const a = validateEnum(audienceType, AUDIENCE_OPTIONS);
+    if (a.length) next.audienceType = a;
+    const ac = validateEnum(accessType, ACCESS_OPTIONS);
+    if (ac.length) next.accessType = ac;
+    const l = validateEnum(languageType, LANGUAGE_OPTIONS);
+    if (l.length) next.languageType = l;
+    return next;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLERS ONCHANGE DES FIELDS
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const onTitleChange = (e) => {
+    const v = e.target.value;
+    setTitle(v);
+    const errs = validateTitle(v);
+    errs.length ? setFieldError("title", errs) : clearFieldError("title");
+  };
+
+  const onDescriptionChange = (e) => {
+    const v = e.target.value;
+    setDescription(v);
+    const errs = validateDescription(v);
+    errs.length
+      ? setFieldError("description", errs)
+      : clearFieldError("description");
+  };
+
+  const onBannerFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setBannerFile(file);
+  };
+
+  const onGenreChange = (e) => {
+    const v = e.target.value;
+    setGenreType(v);
+    const errs = validateEnum(v, GENRE_OPTIONS);
+    errs.length
+      ? setFieldError("genreType", errs)
+      : clearFieldError("genreType");
+  };
+
+  const onAudienceChange = (e) => {
+    const v = e.target.value;
+    setAudienceType(v);
+    const errs = validateEnum(v, AUDIENCE_OPTIONS);
+    errs.length
+      ? setFieldError("audienceType", errs)
+      : clearFieldError("audienceType");
+  };
+
+  const onAccessChange = (e) => {
+    const v = e.target.value;
+    setAccessType(v);
+    const errs = validateEnum(v, ACCESS_OPTIONS);
+    errs.length
+      ? setFieldError("accessType", errs)
+      : clearFieldError("accessType");
+  };
+
+  const onLanguageChange = (e) => {
+    const v = e.target.value;
+    setLanguageType(v);
+    const errs = validateEnum(v, LANGUAGE_OPTIONS);
+    errs.length
+      ? setFieldError("languageType", errs)
+      : clearFieldError("languageType");
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLESUBMIT
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const all = validateAll();
+    if (Object.keys(all).length > 0) {
+      setFieldErrors(all);
+      return;
+    }
 
     let finalBannerUrl = bannerImgUrl;
 
@@ -73,18 +216,16 @@ export default function StoryForm({
           headers: { Accept: "application/ld+json" },
           body: fd,
         });
-
         if (!uploadRes.ok) throw new Error("Upload failed");
         const uploadData = await uploadRes.json();
         finalBannerUrl = uploadData.url;
       } catch (err) {
-        console.error(err);
-        alert("Upload échoué");
+        setFieldError("bannerFile", "Upload échoué.");
         return;
       }
     }
 
-    onSubmit({
+    onSubmit?.({
       title,
       description,
       bannerImageUrl: finalBannerUrl,
@@ -96,9 +237,15 @@ export default function StoryForm({
     });
   };
 
+  const firstErr = (field) => fieldErrors[field]?.[0] || "";
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   return (
     <form className="form__container" onSubmit={handleSubmit}>
-      {error && <p className="">{error}</p>}
+      {error && <p>{error}</p>}
 
       <div className="input__container">
         <label htmlFor="title" className="input__label">
@@ -109,23 +256,24 @@ export default function StoryForm({
           type="text"
           value={title}
           placeholder="Your story title here"
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={onTitleChange}
           required
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("title")}</span>
       </div>
 
       <div className="input__container">
         <label htmlFor="description" className="input__label">
-          Description
+          Description <span className="asterisk">*</span>
         </label>
         <textarea
           id="description"
           value={description}
           placeholder="Describe your story here"
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={onDescriptionChange}
+          required
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("description")}</span>
       </div>
 
       <div className="input__container">
@@ -137,9 +285,9 @@ export default function StoryForm({
           className="input-file"
           type="file"
           accept="image/*"
-          onChange={(e) => setBannerFile(e.target.files[0] || null)}
+          onChange={onBannerFileChange}
         />
-        <span className="form__error"></span>
+        <span className="form__error">{firstErr("bannerFile")}</span>
       </div>
 
       <div>
@@ -162,7 +310,7 @@ export default function StoryForm({
           <select
             id="genreType"
             value={genreType}
-            onChange={(e) => setGenreType(e.target.value)}
+            onChange={onGenreChange}
             required
           >
             {GENRE_OPTIONS.map((opt) => (
@@ -172,6 +320,7 @@ export default function StoryForm({
             ))}
           </select>
           <ChevronDown className="select__icon" />
+          <span className="form__error">{firstErr("genreType")}</span>
         </div>
 
         <div className="select__container form-row__item">
@@ -181,7 +330,7 @@ export default function StoryForm({
           <select
             id="audienceType"
             value={audienceType}
-            onChange={(e) => setAudienceType(e.target.value)}
+            onChange={onAudienceChange}
             required
           >
             {AUDIENCE_OPTIONS.map((opt) => (
@@ -191,6 +340,7 @@ export default function StoryForm({
             ))}
           </select>
           <ChevronDown className="select__icon" />
+          <span className="form__error">{firstErr("audienceType")}</span>
         </div>
       </div>
 
@@ -202,7 +352,7 @@ export default function StoryForm({
           <select
             id="accessType"
             value={accessType}
-            onChange={(e) => setAccessType(e.target.value)}
+            onChange={onAccessChange}
             required
           >
             {ACCESS_OPTIONS.map((opt) => (
@@ -212,6 +362,7 @@ export default function StoryForm({
             ))}
           </select>
           <ChevronDown className="select__icon" />
+          <span className="form__error">{firstErr("accessType")}</span>
         </div>
 
         <div className="select__container form-row__item">
@@ -221,7 +372,7 @@ export default function StoryForm({
           <select
             id="languageType"
             value={languageType}
-            onChange={(e) => setLanguageType(e.target.value)}
+            onChange={onLanguageChange}
             required
           >
             {LANGUAGE_OPTIONS.map((opt) => (
@@ -231,6 +382,7 @@ export default function StoryForm({
             ))}
           </select>
           <ChevronDown className="select__icon" />
+          <span className="form__error">{firstErr("languageType")}</span>
         </div>
       </div>
 
