@@ -357,6 +357,17 @@ button {
   font-weight: var(--text-regular);
 }
 
+.form__header-error {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+  color: var(--error-text);
+  background-color: var(--error-background);
+  border: 1px solid var(--error-border);
+  border-radius: var(--card-radius);
+  padding: 16px;
+}
+
+
 .form__error {
   color: var(--error-color);
 }

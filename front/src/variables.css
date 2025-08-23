@@ -41,6 +41,9 @@
   --positive-color: var(--green-500);
   --error-color: var(--red-500);
   --negative-action-color: var(--red-500);
+  --error-background: var(--red-950);
+  --error-text: var(--red-300);
+  --error-border: var(--red-900);
 
   /* FONT WEIGHT (PRIMITIVES) */
   --font-regular: 300;

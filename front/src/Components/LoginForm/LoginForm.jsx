@@ -40,7 +40,7 @@ const LoginForm = () => {
   return (
     <>
       <form className="form__container" onSubmit={handleSubmit}>
-        {error && <p>{error}</p>}
+        {error && <div className="form__header-error">{error}</div>}
 
         <div className="input__container">
           <label className="input__label">Username</label>
