@@ -19,7 +19,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 #[ApiResource(
-    paginationEnabled: false,
+    paginationEnabled: true,
+    paginationClientItemsPerPage: true,
+    order: ['createdAt' => 'DESC'],
     mercure: 'object.getMercureOptions()',
     normalizationContext: ['groups' => ['message:read', 'message:item:read', 'message:list:read']],
     denormalizationContext: ['groups' => ['message:create', 'message:edit']],
@@ -69,7 +71,7 @@ class Message
     #[Groups(['message:list:read', 'message:item:read', 'message:create', 'message:edit'])]
     private ?string $content = null;
 
-    #[ORM\Column(type: Types::TIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['message:list:read', 'message:item:read', 'message:create'])]
     private ?\DateTimeImmutable $createdAt = null;
 

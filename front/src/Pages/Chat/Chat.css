@@ -244,6 +244,15 @@
   pointer-events: none; 
 }
 
+.chat-btn__load-previous {
+  width: 100%;
+  font-size: var(--span-size);
+}
+
+.chat-btn__load-previous:hover {
+  border: 1px solid transparent;
+}
+
 /* RESPONSIVE DESKTOP */
 @media (min-width: 768px) {
   .chat__supercontainer {

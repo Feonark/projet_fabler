@@ -23,6 +23,11 @@ const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeout = useRef(null);
   const messagesEndRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [itemsPerPage] = useState(50);
+  const [totalItems, setTotalItems] = useState(0);
+  // juste pour empêcher l’auto-scroll quand on ajoute des pages plus anciennes
+  const skipScrollRef = useRef(false);
 
   // Premier useEffect pour l'abonnement aux events Chat + Messages
   // Se lance au montage du composant
@@ -115,6 +120,10 @@ const Chat = () => {
 
   // Dernier useEffect pour le scroll automatique du chat lors du post d'un nouveau message
   useEffect(() => {
+    if (skipScrollRef.current) {
+      skipScrollRef.current = false; // on n’auto-scroll pas cette fois
+      return;
+    }
     scrollToBottom();
   }, [messages]);
 
@@ -125,7 +134,7 @@ const Chat = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/chats/${storyId}/messages?order[createdAt]=asc`,
+        `http://localhost:8000/api/chats/${storyId}/messages?itemsPerPage=50`,
         {
           headers: {
             Accept: "application/ld+json",
@@ -139,7 +148,46 @@ const Chat = () => {
       }
 
       const data = await response.json();
-      setMessages(data.member);
+
+      const firstPage = (data.member || []).reverse(); // du plus ancien au plus récent
+      setMessages(firstPage);
+      setTotalItems(data.totalItems ?? firstPage.length);
+      setPage(1);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const loadNextPage = async () => {
+    // Si tout est chargé on fait rien
+    if (messages.length >= totalItems) return;
+
+    const nextPage = page + 1;
+    skipScrollRef.current = true; // On évite de sauter en bas
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/chats/${storyId}/messages?itemsPerPage=${itemsPerPage}&page=${nextPage}`,
+        {
+          headers: {
+            Accept: "application/ld+json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error(`Erreur serveur : ${response.status}`);
+
+      const data = await response.json();
+      const older = (data.member || []).reverse();
+
+      // anti-doublons si des SSE ont ajouté des messages entre-temps
+      setMessages((prev) => {
+        const seen = new Set(prev.map((m) => m.id));
+        const toPrepend = older.filter((m) => !seen.has(m.id));
+        return [...toPrepend, ...prev];
+      });
+
+      setPage(nextPage);
+      if (typeof data.totalItems === "number") setTotalItems(data.totalItems);
     } catch (err) {
       console.error(err);
     }
@@ -363,6 +411,15 @@ const Chat = () => {
         {/* MESSAGES */}
 
         <div className="messages__container hidden-desktop">
+          {messages.length < totalItems && (
+            <button
+              className="btn chat-btn__load-previous"
+              onClick={loadNextPage}
+            >
+              Load previous messages
+            </button>
+          )}
+
           {/* Messages */}
           <ChatMessages messages={messages} chat={chat} user={user} />
           <div ref={messagesEndRef} />
@@ -514,6 +571,15 @@ const Chat = () => {
       <div className="messages__container--desktop">
         {/* MESSAGES */}
         <div className="messages__container">
+          {messages.length < totalItems && (
+            <button
+              className="btn chat-btn__load-previous"
+              onClick={loadNextPage}
+            >
+              Load previous messages
+            </button>
+          )}
+
           {/* Messages */}
           <ChatMessages messages={messages} chat={chat} user={user} />
           <div ref={messagesEndRef} />
