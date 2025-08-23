@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import "./StoryForm.css";
 
 const GENRE_OPTIONS = [
   "FANTASY",
@@ -57,7 +58,7 @@ export default function StoryForm({
     setBannerImgUrl(
       initialValues.bannerImgUrl ?? initialValues.bannerImageUrl ?? ""
     );
-    setIsPublic(Boolean(initialValues.isPublic));
+    setIsPublic(Boolean(initialValues.public));
     setGenreType(initialValues.genreType ?? GENRE_OPTIONS[0]);
     setAudienceType(initialValues.audienceType ?? AUDIENCE_OPTIONS[0]);
     setAccessType(initialValues.accessType ?? ACCESS_OPTIONS[0]);
@@ -247,6 +248,18 @@ export default function StoryForm({
     <form className="form__container" onSubmit={handleSubmit}>
       {error && <p>{error}</p>}
 
+      <div className="check__input">
+        <input
+          id="isPublic"
+          type="checkbox"
+          checked={isPublic}
+          onChange={(e) => setIsPublic(e.target.checked)}
+        />
+        <label htmlFor="isPublic" className="input__label">
+          Public <span className="asterisk">*</span>
+        </label>
+      </div>
+
       <div className="input__container">
         <label htmlFor="title" className="input__label">
           Title <span className="asterisk">*</span>
@@ -288,18 +301,6 @@ export default function StoryForm({
           onChange={onBannerFileChange}
         />
         <span className="form__error">{firstErr("bannerFile")}</span>
-      </div>
-
-      <div>
-        <input
-          id="isPublic"
-          type="checkbox"
-          checked={isPublic}
-          onChange={(e) => setIsPublic(e.target.checked)}
-        />
-        <label htmlFor="isPublic" className="input__label">
-          Public <span className="asterisk">*</span>
-        </label>
       </div>
 
       <div className="form__row">

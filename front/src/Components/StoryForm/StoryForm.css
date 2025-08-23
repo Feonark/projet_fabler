@@ -1,0 +1,6 @@
+.check__input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+}
