@@ -9,12 +9,13 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 final class MessageVoter extends Voter
 {
+  public const VIEW = 'MESSAGE_VIEW';
   public const CREATE = 'MESSAGE_CREATE';
   public const DELETE = 'MESSAGE_DELETE';
 
   protected function supports(string $attribute, mixed $subject): bool
   {
-    return in_array($attribute, [self::DELETE, self::CREATE])
+    return in_array($attribute, [self::DELETE, self::CREATE, self::VIEW])
       && $subject instanceof Message;
   }
 
@@ -31,11 +32,32 @@ final class MessageVoter extends Voter
       return true;
     }
 
+    $userId = $user->getId();
+    if ($userId === null) {
+      return false;
+    }
+
     $chat = $subject->getChat();
     $story = $chat?->getStory();
     $storyMember = $subject->getAuthor();
 
     switch ($attribute) {
+      case self::VIEW:
+        if (!$chat) {
+          return false;
+        }
+
+        // Autorisé si l'utilisateur est membre accepté du chat
+        $isMember = $chat->getMembers()->exists(
+          fn($i, $member) =>
+          $member->getMemberUser()?->getId() === $userId
+            && (method_exists($member, 'isAccepted') ? $member->isAccepted() : true)
+        );
+
+        // Ou auteur de la story
+        $isStoryAuthor = $story && $story->getAuthor()?->getId() === $userId;
+        return $isMember || $isStoryAuthor;
+
       case self::CREATE:
         $character = $subject->getCharacterAlias();
         if ($character && $character->getOwner() !== $user) {

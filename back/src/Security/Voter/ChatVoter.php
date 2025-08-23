@@ -35,7 +35,7 @@ final class ChatVoter extends Voter
 
           // Membre, voit/édite
           foreach ($subject->getMembers() as $member) {
-            if ($member->getMemberUser() === $user) {
+            if ($member->getMemberUser()?->getId() === $user->getId() && $member->isAccepted()) {
               return true;
             }
           }

@@ -28,6 +28,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     operations: [
         new Get(
             normalizationContext: ['groups' => ['message:item:read']],
+            security: "is_granted('MESSAGE_VIEW', object)"
         ),
         new GetCollection(
             uriTemplate: '/chats/{id}/messages',

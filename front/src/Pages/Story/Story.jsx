@@ -54,6 +54,7 @@ const Story = () => {
       );
 
       if (!response.ok) {
+        navigate("/notfound");
         throw new Error(`Erreur serveur : ${response.status}`);
       }
 
@@ -294,15 +295,16 @@ const Story = () => {
   return (
     <div className="story__container page__container">
       <div className="story__header page__header">
-        <button
+        <Link
+          to="/stories/search"
           className="btn"
           onClick={() => {
             navigate(-1);
           }}
         >
           <ArrowLeft className="btn__icon" />
-          <span className="btn-txt-display">Back</span>
-        </button>
+          <span className="btn-txt-display">To stories</span>
+        </Link>
         {checkIfAuthor() ? (
           <div className="header__author">
             <Link className="btn" to={`/stories/${storyId}/edit`}>

@@ -15,6 +15,7 @@ import { AuthProvider } from "./Contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router";
 import PublicLayout from "./Layouts/PublicLayout/PublicLayout";
 import StorySearch from "./Pages/StorySearch/StorySearch";
+import NotFound from "./Pages/NotFound/NotFound";
 
 function App() {
   return (
@@ -48,6 +49,9 @@ function App() {
             />
 
             <Route path="stories/:storyId/chat" element={<Chat />} />
+
+            <Route path="/notfound" element={<NotFound />}></Route>
+            <Route path="*" element={<NotFound />}></Route>
           </Route>
         </Routes>
       </AuthProvider>

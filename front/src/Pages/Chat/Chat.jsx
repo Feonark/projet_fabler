@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import ChatMessages from "../../Components/ChatMessages/ChatMessages";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
 import {
   Users,
@@ -12,6 +12,7 @@ import {
 import "./Chat.css";
 
 const Chat = () => {
+  const navigate = useNavigate();
   const { storyId } = useParams();
   const { user, token, getUser } = useAuth();
   const [chat, setChat] = useState();
@@ -26,7 +27,7 @@ const Chat = () => {
   const [page, setPage] = useState(1);
   const [itemsPerPage] = useState(50);
   const [totalItems, setTotalItems] = useState(0);
-  // juste pour empêcher l’auto-scroll quand on ajoute des pages plus anciennes
+  // juste pour empêcher l’autoscroll quand on ajoute des pages plus anciennes
   const skipScrollRef = useRef(false);
 
   // Premier useEffect pour l'abonnement aux events Chat + Messages
@@ -144,6 +145,7 @@ const Chat = () => {
       );
 
       if (!response.ok) {
+        navigate("/notfound");
         throw new Error(`Erreur serveur : ${response.status}`);
       }
 
@@ -206,6 +208,7 @@ const Chat = () => {
       );
 
       if (!response.ok) {
+        navigate("/notfound");
         throw new Error(`Erreur serveur : ${response.status}`);
       }
 

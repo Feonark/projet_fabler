@@ -117,16 +117,16 @@ const Home = () => {
           <div className="resume-cards__container">
             {user.id &&
               user.storyMemberships
-                .slice(0, 3)
-                .map((membership) =>
-                  membership.accepted ? (
-                    <StoryCard
-                      key={membership.id}
-                      story={membership.story}
-                      author={membership.author}
-                    />
-                  ) : null
-                )}
+                .filter((m) => m.accepted)
+                .slice(-3) // prend les 3 derniers du tableau
+                .reverse()
+                .map((membership) => (
+                  <StoryCard
+                    key={membership.id}
+                    story={membership.story}
+                    author={membership.author}
+                  />
+                ))}
           </div>
         </div>
       )}
