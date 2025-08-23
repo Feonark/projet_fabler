@@ -31,7 +31,18 @@ class StoryMemberStateProcessor implements ProcessorInterface
             $user = $this->security->getUser();
 
             if (!$story || !$user) {
-                throw new BadRequestHttpException('Le paramètre "story" ou "user" est manquant ou invalide.');
+                throw new BadRequestHttpException('The parameter "user" or "story" is missing or invalid.');
+            }
+
+            $acceptedCount = 0;
+            foreach ($story->getMembers() as $member) {
+                if ($member->isAccepted()) {
+                    $acceptedCount++;
+                }
+            }
+
+            if ($acceptedCount >= 5) {
+                throw new BadRequestHttpException('This story already has 5 members.');
             }
 
             // Initialisation du statut de chat
@@ -64,6 +75,26 @@ class StoryMemberStateProcessor implements ProcessorInterface
 
                 case Access::CLOSED:
                     throw new \RuntimeException('You cannot join a closed story.');
+            }
+        }
+
+        if ($method === 'PATCH') {
+            $story = $data->getStory();
+            $user = $this->security->getUser();
+
+            if (!$story || !$user) {
+                throw new BadRequestHttpException('The parameter "user" or "story" is missing or invalid.');
+            }
+
+            $acceptedCount = 0;
+            foreach ($story->getMembers() as $member) {
+                if ($member->isAccepted()) {
+                    $acceptedCount++;
+                }
+            }
+
+            if ($acceptedCount > 5) {
+                throw new BadRequestHttpException('This story already has 5 members.');
             }
         }
 

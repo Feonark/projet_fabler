@@ -279,14 +279,20 @@ button {
 
 .btn:disabled {
   cursor: not-allowed;
+  color: var(--subtle-text);
 }
 
 .btn:disabled:hover {
   border: 1px solid transparent;
+  background: transparent;
 }
 
 .btn:disabled .btn__icon {
   color: var(--subtle-text);
+}
+
+.btn-outline:disabled:hover {
+  border: 1px solid var(--border-color);
 }
 
 .submit-btn {

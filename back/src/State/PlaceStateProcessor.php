@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class PlaceStateProcessor implements ProcessorInterface
 {
@@ -25,11 +26,16 @@ class PlaceStateProcessor implements ProcessorInterface
 
         $method = $context['request']?->getMethod();
         $user = $this->security->getUser();
+        $story = $data->getStory();
 
         if ($method === 'POST') {
 
-            if (!$user) {
+            if (!$user || !$story) {
                 return $data;
+            }
+
+            if ($story->getPlaces()->count() >= 10) {
+                throw new BadRequestHttpException('This story already got 10 places.');
             }
 
             $this->entityManager->persist($data);

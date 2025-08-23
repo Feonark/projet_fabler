@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CharacterStateProcessor implements ProcessorInterface
 {
@@ -27,7 +28,16 @@ class CharacterStateProcessor implements ProcessorInterface
         $user = $this->security->getUser();
 
         if ($method === 'POST') {
+            if (!$user) {
+                throw new BadRequestHttpException("Can't find user.");
+            }
+
+            if ($user->getCharacters()->count() >= 10) {
+                throw new BadRequestHttpException("You already got 10 characters.");
+            }
+
             $data->setOwner($user);
+
             $this->entityManager->persist($data);
             $this->entityManager->flush();
 

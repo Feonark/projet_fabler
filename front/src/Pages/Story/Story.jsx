@@ -442,7 +442,7 @@ const Story = () => {
                   <div className="subtitle__header">
                     <h2 className="subtitle">Requests to join</h2>
                   </div>
-                  <div className="">
+                  <div className="join__cards">
                     {story &&
                       story.members
                         .filter((member) => member.accepted === false)
@@ -468,6 +468,7 @@ const Story = () => {
                               <button
                                 className="btn btn-sm"
                                 onClick={() => addStoryMember(member.id)}
+                                disabled={checkIsMembersFull()}
                               >
                                 <Check className="btn__icon btn-sm__icon btn__icon-positive" />
                               </button>
@@ -515,15 +516,21 @@ const Story = () => {
                   onDelete={() => deletePlace(place.id)}
                 />
               ))}
-              {checkIfAuthor() && !checkIsPlacesFull() && (
-                <Link
-                  className="btn btn-outline place-btn"
-                  to={`/stories/${storyId}/places/new`}
-                >
-                  <SquarePlus className="btn__icon" />
-                  <span className="">Add place</span>
-                </Link>
-              )}
+              {checkIfAuthor() &&
+                (checkIsPlacesFull() ? (
+                  <button className="btn btn-outline place-btn" disabled>
+                    <SquarePlus className="btn__icon" />
+                    <span className="">Add place</span>
+                  </button>
+                ) : (
+                  <Link
+                    className="btn btn-outline place-btn"
+                    to={`/stories/${storyId}/places/new`}
+                  >
+                    <SquarePlus className="btn__icon" />
+                    <span className="">Add place</span>
+                  </Link>
+                ))}
             </div>
           </div>
         )}

@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
-import {
-  Pencil,
-  ArrowLeft,
-  House,
-  Cake,
-  SquarePlus,
-} from "lucide-react";
+import { Pencil, ArrowLeft, House, Cake, SquarePlus } from "lucide-react";
 import StoryCard from "../../Components/StoryCard/StoryCard";
 import CharacterCard from "../../Components/CharacterCard/CharacterCard";
 import "./Profile.css";
@@ -24,6 +18,14 @@ const Profile = () => {
       setUserProfile(user);
     }
   }, [user?.id]);
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // CHECKERSs
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const checkIsCharactersFull = () => {
+    return (userProfile?.characters?.length ?? 0) >= 10;
+  };
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // CRUDs
@@ -133,10 +135,8 @@ const Profile = () => {
                         user.storyMemberships?.filter(
                           (membership) => membership.accepted == true
                         ).length
-                      }
-                    </span>
-                    <span className="count-chip__count count-chip__maxCount">
-                      / 10
+                      }{" "}
+                      stories
                     </span>
                   </span>
                 </div>
@@ -173,14 +173,28 @@ const Profile = () => {
                     </span>
                   </span>
                 </div>
-                <Link className="btn btn-outline" to="/profile/characters/new">
-                  <SquarePlus className="chip__icon" />
-                  <span className="btn-txt-display">Create character</span>
-                </Link>
+                {checkIsCharactersFull() ? (
+                  <button className="btn btn-outline" disabled>
+                    <SquarePlus className="chip__icon" />
+                    <span className="btn-txt-display">Create character</span>
+                  </button>
+                ) : (
+                  <Link
+                    className="btn btn-outline"
+                    to="/profile/characters/new"
+                  >
+                    <SquarePlus className="chip__icon" />
+                    <span className="btn-txt-display">Create character</span>
+                  </Link>
+                )}
               </div>
               <div className="chara-cards__container">
                 {userProfile.characters?.map((character) => (
-                  <CharacterCard key={character.id} character={character} />
+                  <CharacterCard
+                    key={character.id}
+                    character={character}
+                    deleteCharacter={deleteCharacter}
+                  />
                 ))}
               </div>
             </div>

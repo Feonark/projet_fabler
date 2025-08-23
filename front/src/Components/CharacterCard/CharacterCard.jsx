@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Pencil, Trash } from "lucide-react";
 import "./CharacterCard.css";
 
-const CharacterCard = ({ character }) => {
+const CharacterCard = ({ character, deleteCharacter }) => {
   return (
     <div
       className="chara-card__container"

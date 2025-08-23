@@ -29,6 +29,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('ROLE_USER')"
         ),
         new Patch(
+            processor: StoryMemberStateProcessor::class,
             normalizationContext: ['groups' => ['member:read']],
             denormalizationContext: ['groups' => ['member:edit']],
             security: "is_granted('STORY_MEMBER_EDIT', object)"
