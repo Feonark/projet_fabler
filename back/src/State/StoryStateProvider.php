@@ -23,7 +23,7 @@ final class StoryStateProvider implements ProviderInterface
             ->select('partial s.{id, title, description, bannerImageUrl, isPublic, genreType, audienceType, accessType, languageType}')
             ->from(Story::class, 's')
             ->leftJoin('s.author', 'a')
-            ->addSelect('partial a.{id, username}')
+            ->addSelect('partial a.{id, username, avatarUrl}')
             ->leftJoin('s.members', 'm')
             ->addSelect('partial m.{id, isAccepted, isAuthor}')
             ->leftJoin('m.memberUser', 'mu')
