@@ -238,7 +238,7 @@ export default function StorySearch() {
           )}
         </div>
 
-        {page && (
+        {page && totalPages != 0 && (
           <div className="pagination__container">
             {/* Bouton début */}
             <button

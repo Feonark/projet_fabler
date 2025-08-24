@@ -44,10 +44,10 @@ export default function StoryForm({
   const [bannerImgUrl, setBannerImgUrl] = useState("");
   const [bannerFile, setBannerFile] = useState(null);
   const [isPublic, setIsPublic] = useState(false);
-  const [genreType, setGenreType] = useState(GENRE_OPTIONS[0]);
-  const [audienceType, setAudienceType] = useState(AUDIENCE_OPTIONS[0]);
-  const [accessType, setAccessType] = useState(ACCESS_OPTIONS[0]);
-  const [languageType, setLanguageType] = useState(LANGUAGE_OPTIONS[0]);
+  const [genreType, setGenreType] = useState("");
+  const [audienceType, setAudienceType] = useState("");
+  const [accessType, setAccessType] = useState("");
+  const [languageType, setLanguageType] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -59,10 +59,10 @@ export default function StoryForm({
       initialValues.bannerImgUrl ?? initialValues.bannerImageUrl ?? ""
     );
     setIsPublic(Boolean(initialValues.public));
-    setGenreType(initialValues.genreType ?? GENRE_OPTIONS[0]);
-    setAudienceType(initialValues.audienceType ?? AUDIENCE_OPTIONS[0]);
-    setAccessType(initialValues.accessType ?? ACCESS_OPTIONS[0]);
-    setLanguageType(initialValues.languageType ?? LANGUAGE_OPTIONS[0]);
+    setGenreType(initialValues.genreType ?? "");
+    setAudienceType(initialValues.audienceType ?? "");
+    setAccessType(initialValues.accessType ?? "");
+    setLanguageType(initialValues.languageType ?? "");
   }, [initialValues]);
 
   const setFieldError = (field, messages) => {
@@ -314,6 +314,7 @@ export default function StoryForm({
             onChange={onGenreChange}
             required
           >
+            <option value="">-- Select genre --</option>
             {GENRE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
@@ -334,6 +335,7 @@ export default function StoryForm({
             onChange={onAudienceChange}
             required
           >
+            <option value="">-- Select audience --</option>
             {AUDIENCE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
@@ -356,6 +358,7 @@ export default function StoryForm({
             onChange={onAccessChange}
             required
           >
+            <option value="">-- Select access --</option>
             {ACCESS_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
@@ -376,6 +379,7 @@ export default function StoryForm({
             onChange={onLanguageChange}
             required
           >
+            <option value="">-- Select language --</option>
             {LANGUAGE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
