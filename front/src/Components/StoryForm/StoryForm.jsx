@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import "./StoryForm.css";
 
+const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
+
 const GENRE_OPTIONS = [
   "FANTASY",
   "SCI_FICTION",
@@ -73,9 +75,9 @@ export default function StoryForm({
   };
   const clearFieldError = (field) => {
     setFieldErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
     });
   };
 
@@ -113,21 +115,30 @@ export default function StoryForm({
     return errs;
   };
 
+  const validateBanner = (file) => {
+    const errs = [];
+    if (file && file.size > MAX_BANNER_SIZE)
+      errs.push("The story banner can't exceed 1Mo.");
+    return errs;
+  };
+
   const validateAll = () => {
-    const next = {};
+    const newErrors = {};
     const t = validateTitle(title);
-    if (t.length) next.title = t;
+    if (t.length) newErrors.title = t;
     const d = validateDescription(description);
-    if (d.length) next.description = d;
+    if (d.length) newErrors.description = d;
     const g = validateEnum(genreType, GENRE_OPTIONS);
-    if (g.length) next.genreType = g;
+    if (g.length) newErrors.genreType = g;
     const a = validateEnum(audienceType, AUDIENCE_OPTIONS);
-    if (a.length) next.audienceType = a;
+    if (a.length) newErrors.audienceType = a;
     const ac = validateEnum(accessType, ACCESS_OPTIONS);
-    if (ac.length) next.accessType = ac;
+    if (ac.length) newErrors.accessType = ac;
     const l = validateEnum(languageType, LANGUAGE_OPTIONS);
-    if (l.length) next.languageType = l;
-    return next;
+    if (l.length) newErrors.languageType = l;
+    const b = validateBanner(bannerFile);
+    if (b.length) newErrors.bannerFile = b;
+    return newErrors;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +164,10 @@ export default function StoryForm({
   const onBannerFileChange = (e) => {
     const file = e.target.files?.[0] || null;
     setBannerFile(file);
+    const errs = validateBanner(file);
+    errs.length
+      ? setFieldError("bannerFile", errs)
+      : clearFieldError("bannerFile");
   };
 
   const onGenreChange = (e) => {
@@ -246,7 +261,7 @@ export default function StoryForm({
 
   return (
     <form className="form__container" onSubmit={handleSubmit}>
-      {error && <p>{error}</p>}
+      {error && <div className="form__header-error">{error}</div>}
 
       <div className="check__input">
         <input

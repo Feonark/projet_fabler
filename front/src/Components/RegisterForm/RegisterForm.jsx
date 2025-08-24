@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-const MAX_AVATAR_BYTES = 1000 * 1024; // 1Mo
+const MAX_AVATAR_SIZE = 1000 * 1024; // 1Mo
 
 // Helpers dates
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -154,8 +154,8 @@ const RegisterForm = () => {
 
   const validateAvatarFile = (file) => {
     const errs = [];
-    if (file && file.size > MAX_AVATAR_BYTES)
-      errs.push("The profile picture can't exceed 1 Mo.");
+    if (file && file.size > MAX_AVATAR_SIZE)
+      errs.push("The profile picture can't exceed 1Mo.");
     return errs;
   };
 
@@ -187,6 +187,7 @@ const RegisterForm = () => {
     errs.length ? setFieldError("username", errs) : clearFieldError("username");
     setBackFieldErrors((prev) => ({ ...prev, username: undefined }));
   };
+
   const onPasswordChange = (e) => {
     const v = e.target.value;
     setPlainPassword(v);
@@ -195,6 +196,7 @@ const RegisterForm = () => {
       ? setFieldError("plainPassword", errs)
       : clearFieldError("plainPassword");
   };
+
   const onEmailChange = (e) => {
     const v = e.target.value;
     setEmail(v);
@@ -202,6 +204,7 @@ const RegisterForm = () => {
     errs.length ? setFieldError("email", errs) : clearFieldError("email");
     setBackFieldErrors((prev) => ({ ...prev, email: undefined }));
   };
+
   const onBirthdateChange = (e) => {
     const v = e.target.value;
     setBirthdate(v);
@@ -210,6 +213,7 @@ const RegisterForm = () => {
       ? setFieldError("birthdate", errs)
       : clearFieldError("birthdate");
   };
+
   const onDescriptionChange = (e) => {
     const v = e.target.value;
     setDescription(v);
@@ -218,6 +222,7 @@ const RegisterForm = () => {
       ? setFieldError("description", errs)
       : clearFieldError("description");
   };
+
   const onAvatarChange = (e) => {
     const file = e.target.files?.[0] || null;
     setAvatarFile(file);
@@ -311,6 +316,7 @@ const RegisterForm = () => {
   return (
     <form className="form__container" onSubmit={handleSubmit}>
       {success && <p>Inscription réussie !</p>}
+      {error && <div className="form__header-error">{error}</div>}
 
       <div className="input__container">
         <label className="input__label">

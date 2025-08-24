@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
+const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
+
 // Regex
 const reHtmlTag = /<[^>]*>/;
 
@@ -36,9 +38,9 @@ const PlaceForm = ({
 
   const clearFieldError = (field) => {
     setFieldErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
     });
   };
 
@@ -65,6 +67,13 @@ const PlaceForm = ({
       errs.push("Description cannot be longer than 200 characters.");
     if (val && reHtmlTag.test(val))
       errs.push("HTML tags are not allowed in the description.");
+    return errs;
+  };
+
+  const validateBanner = (file) => {
+    const errs = [];
+    if (file && file.size > MAX_BANNER_SIZE)
+      errs.push("The place picture can't exceed 1Mo.");
     return errs;
   };
 
@@ -100,6 +109,10 @@ const PlaceForm = ({
   const onPlaceFileChange = (e) => {
     const file = e.target.files?.[0] || null;
     setPlaceFile(file);
+    const errs = validateBanner(file);
+    errs.length
+      ? setFieldError("placeFile", errs)
+      : clearFieldError("placeFile");
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////

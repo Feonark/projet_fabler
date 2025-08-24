@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+const MAX_AVATAR_SIZE = 1000 * 1024; // 1Mo
+const MAX_PORTRAIT_SIZE = 1000 * 1024; // 1Mo
+
 // Regex
 const reHtmlTag = /<[^>]*>/;
 
@@ -36,9 +39,9 @@ const CharacterForm = ({
   };
   const clearFieldError = (field) => {
     setFieldErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
     });
   };
 
@@ -82,28 +85,32 @@ const CharacterForm = ({
   const validatePortrait = (file, url) => {
     const errs = [];
     if (!file && !url) errs.push("Portrait is required.");
+    if (file && file.size > MAX_PORTRAIT_SIZE)
+      errs.push("The character portrait can't exceed 1Mo.");
     return errs;
   };
 
   const validateAvatar = (file, url) => {
     const errs = [];
     if (!file && !url) errs.push("Avatar is required.");
+    if (file && file.size > MAX_AVATAR_SIZE)
+      errs.push("The character avatar can't exceed 1Mo.");
     return errs;
   };
 
   const validateAll = () => {
-    const next = {};
+    const newErrors = {};
     const n = validateName(name);
-    if (n.length) next.name = n;
+    if (n.length) newErrors.name = n;
     const t = validateTitle(title);
-    if (t.length) next.title = t;
+    if (t.length) newErrors.title = t;
     const b = validateBio(bio);
-    if (b.length) next.bio = b;
+    if (b.length) newErrors.bio = b;
     const p = validatePortrait(portraitFile, portraitUrl);
-    if (p.length) next.portraitFile = p;
+    if (p.length) newErrors.portraitFile = p;
     const a = validateAvatar(avatarFile, avatarUrl);
-    if (a.length) next.avatarFile = a;
-    return next;
+    if (a.length) newErrors.avatarFile = a;
+    return newErrors;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -116,35 +123,37 @@ const CharacterForm = ({
     const errs = validateName(v);
     errs.length ? setFieldError("name", errs) : clearFieldError("name");
   };
+
   const onTitleChange = (e) => {
     const v = e.target.value;
     setTitle(v);
     const errs = validateTitle(v);
     errs.length ? setFieldError("title", errs) : clearFieldError("title");
   };
+
   const onBioChange = (e) => {
     const v = e.target.value;
     setBio(v);
     const errs = validateBio(v);
     errs.length ? setFieldError("bio", errs) : clearFieldError("bio");
   };
+
   const onPortraitChange = (e) => {
     const file = e.target.files?.[0] || null;
     setPortraitFile(file);
-    if (!file && !portraitUrl) {
-      setFieldError("portraitFile", "Portrait is required.");
-    } else {
-      clearFieldError("portraitFile");
-    }
+    const errs = validatePortrait(file);
+    errs.length
+      ? setFieldError("portraitFile", errs)
+      : clearFieldError("portraitFile");
   };
+
   const onAvatarChange = (e) => {
     const file = e.target.files?.[0] || null;
     setAvatarFile(file);
-    if (!file && !avatarUrl) {
-      setFieldError("avatarFile", "Avatar is required.");
-    } else {
-      clearFieldError("avatarFile");
-    }
+    const errs = validateAvatar(file);
+    errs.length
+      ? setFieldError("avatarFile", errs)
+      : clearFieldError("avatarFile");
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +232,7 @@ const CharacterForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="form__container">
-      {error && <p className="">{error}</p>}
+      {error && <div className="form__header-error">{error}</div>}
 
       <div className="input__container">
         <label htmlFor="name" className="input__label">
