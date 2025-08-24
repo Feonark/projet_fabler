@@ -232,8 +232,8 @@ const Story = () => {
         }
 
         alert("Story successfully deleted.");
+        navigate("/profile");
         getUser();
-        navigate("/");
       } catch (err) {
         console.error(err);
       }

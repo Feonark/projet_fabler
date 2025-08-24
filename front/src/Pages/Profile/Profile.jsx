@@ -111,12 +111,14 @@ const Profile = () => {
                   Joined on {user.createdAt.split("T")[0]}
                 </span>
               </span>
-              <span className="banner__chip">
-                <Cake className="chip__icon" />
-                <span className="chip__txt">
-                  {user.birthdate?.split("T")[0]}
+              {user.birthdate && (
+                <span className="banner__chip">
+                  <Cake className="chip__icon" />
+                  <span className="chip__txt">
+                    {user.birthdate?.split("T")[0]}
+                  </span>
                 </span>
-              </span>
+              )}
             </div>
             <div className="profile__description">
               {user.description ?? "No description"}

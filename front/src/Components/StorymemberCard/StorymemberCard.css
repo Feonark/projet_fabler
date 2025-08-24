@@ -1,0 +1,7 @@
+.member__card {
+  overflow: hidden;
+}
+
+.member__username {
+  flex-wrap: wrap;
+}

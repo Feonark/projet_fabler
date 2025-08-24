@@ -67,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\Length(
         min: 3,
-        max: 30,
+        max: 20,
         minMessage: 'Your username must be at least {{ limit }} characters long',
         maxMessage: 'Your username cannot be longer than {{ limit }} characters',
         groups: ['user:create', 'user:edit']

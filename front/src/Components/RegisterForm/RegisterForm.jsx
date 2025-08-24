@@ -67,6 +67,7 @@ const RegisterForm = () => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState({});
   const [backFieldErrors, setBackFieldErrors] = useState({});
@@ -95,7 +96,7 @@ const RegisterForm = () => {
     if (!val || !val.trim()) errs.push("The username is required.");
     if (val && val.length < 3)
       errs.push("Your username must be at least 3 characters long.");
-    if (val && val.length > 30)
+    if (val && val.length > 20)
       errs.push("Your username cannot be longer than 30 characters.");
     if (val && !reUsername.test(val))
       errs.push(

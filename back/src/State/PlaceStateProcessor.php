@@ -38,6 +38,10 @@ class PlaceStateProcessor implements ProcessorInterface
                 throw new BadRequestHttpException('This story already got 10 places.');
             }
 
+            if (!$data->getPlaceImageUrl()) {
+                $data->setPlaceImageUrl('/uploads/banners/banner-default.jpg');
+            }
+
             $this->entityManager->persist($data);
             $this->entityManager->flush();
 

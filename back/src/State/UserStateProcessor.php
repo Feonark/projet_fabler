@@ -33,6 +33,10 @@ class UserStateProcessor implements ProcessorInterface
             $data->setRoles(['ROLE_USER']);
             $data->setIsOnline(false);
             $data->setCreatedAt(new \DateTimeImmutable());
+
+            if (!$data->getAvatarUrl()) {
+                $data->setAvatarUrl('/uploads/avatars/avatar-default.jpg');
+            }
         }
 
         $this->entityManager->persist($data);

@@ -15,7 +15,10 @@ const ChatMessages = ({ messages, chat, user }) => {
               {!sameCharacter && (
                 <div className="message__left">
                   <img
-                    src={`http://localhost:8000/${message.characterAlias?.avatarUrl}`}
+                    src={`http://localhost:8000/${
+                      message.characterAlias?.avatarUrl ??
+                      "/uploads/avatars/avatar-default.jpg"
+                    }`}
                     className="message__charaAvi"
                   />
                 </div>

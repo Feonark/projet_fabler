@@ -32,6 +32,11 @@ class StoryStateProcessor implements ProcessorInterface
         if ($method === 'POST') {
             // D'abord, je mets l'utilisateur qui créée la story en auteur
             $data->setAuthor($user);
+
+            if (!$data->getBannerImageUrl()) {
+                $data->setBannerImageUrl('/uploads/banners/banner-default.jpg');
+            }
+
             $this->entityManager->persist($data);
             $this->entityManager->flush();
 
