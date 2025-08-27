@@ -369,6 +369,8 @@ button {
 
 
 .form__error {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
   color: var(--error-color);
 }
 
