@@ -1,17 +1,12 @@
-# front/Dockerfile
-FROM node:20
-
+# Étape 1 : build de l'app React
+FROM node:20-alpine as build
 WORKDIR /app
-
-# Copie les fichiers nécessaires pour l’installation
 COPY package*.json ./
-
-# Installation des dépendances
-RUN npm install
-
-# Copie du reste du code
+RUN npm ci
 COPY . .
+RUN npm run build
 
-EXPOSE 3000
-
-CMD ["npm", "run", "dev", "--", "--host"]
+# Étape 2 : serveur nginx
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf

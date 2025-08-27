@@ -10,15 +10,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Copy files to VPS
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H -p 52346 51.77.159.52 >> ~/.ssh/known_hosts
-        rsync -avz -e "ssh -p 52346" --delete ./ ubuntu@51.77.159.52:/var/www/html/
+      - name: Setup SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 52346 -H 51.77.159.52 >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          ssh -i ~/.ssh/id_rsa -p 52346 ubuntu@51.77.159.52 "echo ✅ SSH OK"
+
+      - name: Rsync project files to VPS
+        run: |
+          rsync -avz --exclude-from='.rsyncignore' -e "ssh -p 52346 -i ~/.ssh/id_rsa" --delete ./ ubuntu@51.77.159.52:/home/ubuntu/projet_fabler
+
+      - name: Create .env.prod on VPS
+        env:
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          APP_ENV: ${{ secrets.APP_ENV }}
+          APP_DEBUG: ${{ secrets.APP_DEBUG }}
+          APP_UPLOADS_BASE: ${{ secrets.APP_UPLOADS_BASE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
+          MERCURE_URL: ${{ secrets.MERCURE_URL }}
+          MERCURE_PUBLIC_URL: ${{ secrets.MERCURE_PUBLIC_URL }}
+          MERCURE_JWT_SECRET: ${{ secrets.MERCURE_JWT_SECRET }}
+          MERCURE_PUBLISH_ALLOWED_ORIGINS: ${{ secrets.MERCURE_PUBLISH_ALLOWED_ORIGINS }}
+          MERCURE_SUBSCRIBE_ALLOWED_ORIGINS: ${{ secrets.MERCURE_SUBSCRIBE_ALLOWED_ORIGINS }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -p 52346 ubuntu@51.77.159.52 "echo '\
+          APP_SECRET=$APP_SECRET
+          APP_ENV=$APP_ENV
+          APP_DEBUG=$APP_DEBUG
+          APP_UPLOADS_BASE=$APP_UPLOADS_BASE
+          DATABASE_URL=$DATABASE_URL
+
+          JWT_SECRET_KEY=$JWT_SECRET_KEY
+          JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY
+          JWT_PASSPHRASE=$JWT_PASSPHRASE
+
+          MERCURE_URL=$MERCURE_URL
+          MERCURE_PUBLIC_URL=$MERCURE_PUBLIC_URL
+          MERCURE_JWT_SECRET=$MERCURE_JWT_SECRET
+          MERCURE_PUBLISH_ALLOWED_ORIGINS=$MERCURE_PUBLISH_ALLOWED_ORIGINS
+          MERCURE_SUBSCRIBE_ALLOWED_ORIGINS=$MERCURE_SUBSCRIBE_ALLOWED_ORIGINS
+
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_DB=$POSTGRES_DB' > /home/ubuntu/projet_fabler/back/.env.prod"

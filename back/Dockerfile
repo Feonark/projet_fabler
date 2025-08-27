@@ -1,6 +1,7 @@
+# back/Dockerfile
 FROM php:8.3-fpm
 
-# 1. Installer les dépendances système + extensions PHP
+# 1. Installer dépendances système + extensions PHP
 RUN apt-get update \
     && apt-get install -y \
         git \
@@ -21,12 +22,18 @@ RUN apt-get update \
 # 2. Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# 3. Configuration du projet
+# 3. Configuration Symfony
 WORKDIR /var/www
 COPY . .
 
-# 4. Installer les dépendances PHP
-RUN composer install --no-interaction --no-scripts
+# 4. Installer dépendances PHP en prod
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
+# 5. Fixer les permissions pour Symfony (cache + logs)
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var
+
+# 6. php-fpm écoute sur 9000
 EXPOSE 9000
+
 CMD ["php-fpm"]
