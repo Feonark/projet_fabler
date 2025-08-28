@@ -9,7 +9,9 @@ const PlaceCard = ({ storyId, placeId, place, isAuthor, onDelete }) => {
       className="place-card__container"
       key={place.id}
       style={{
-        backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(http://localhost:8000/${place.placeImageUrl})`,
+        backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(${
+          import.meta.env.VITE_API_URL
+        }/${place.placeImageUrl})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",

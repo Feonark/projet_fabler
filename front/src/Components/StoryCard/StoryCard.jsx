@@ -8,7 +8,9 @@ const StoryCard = ({ story, author, formatEnumLabel }) => {
       className="card__container"
       to={`/stories/${story.id}`}
       style={{
-        backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(http://localhost:8000${story.bannerImageUrl})`,
+        backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(${
+          import.meta.env.VITE_API_URL
+        }${story.bannerImageUrl})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",

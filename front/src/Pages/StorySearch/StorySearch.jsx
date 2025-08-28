@@ -80,7 +80,7 @@ export default function StorySearch() {
       abortRef.current = controller;
 
       const res = await fetch(
-        `http://localhost:8000/api/stories?${params.toString()}`,
+        `${import.meta.env.VITE_API_URL}/api/stories?${params.toString()}`,
         { signal: controller.signal }
       );
 

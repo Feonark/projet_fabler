@@ -257,11 +257,14 @@ const RegisterForm = () => {
       fd.append("folder", "avatars");
 
       try {
-        const uploadRes = await fetch("http://localhost:8000/api/images", {
-          method: "POST",
-          headers: { Accept: "application/ld+json" },
-          body: fd,
-        });
+        const uploadRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/images`,
+          {
+            method: "POST",
+            headers: { Accept: "application/ld+json" },
+            body: fd,
+          }
+        );
         if (!uploadRes.ok) throw new Error("Upload échoué");
         const uploadData = await uploadRes.json();
         finalAvatarUrl = uploadData.url;
@@ -272,21 +275,24 @@ const RegisterForm = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/ld+json",
-          Accept: "application/ld+json",
-        },
-        body: JSON.stringify({
-          username,
-          plainPassword,
-          email,
-          birthdate: birthdate === "" ? null : birthdate,
-          description,
-          avatarUrl: finalAvatarUrl,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/ld+json",
+            Accept: "application/ld+json",
+          },
+          body: JSON.stringify({
+            username,
+            plainPassword,
+            email,
+            birthdate: birthdate === "" ? null : birthdate,
+            description,
+            avatarUrl: finalAvatarUrl,
+          }),
+        }
+      );
 
       if (!response.ok) {
         let errorData = {};

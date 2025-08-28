@@ -18,9 +18,12 @@ const EditStory = () => {
 
   const fetchStory = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/stories/${storyId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/stories/${storyId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!res.ok) throw new Error("Unable to fetch story.");
       const data = await res.json();
       setInitialValues(data);
@@ -32,14 +35,17 @@ const EditStory = () => {
   const handleUpdate = async (payload) => {
     setError("");
     try {
-      const res = await fetch(`http://localhost:8000/api/stories/${storyId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/merge-patch+json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/stories/${storyId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/merge-patch+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
       if (!res.ok) throw new Error("Update failed.");
       navigate(`/stories/${storyId}`);
     } catch (e) {

@@ -14,7 +14,7 @@ const NewPlace = () => {
   const handleCreate = async (payload) => {
     setError("");
     try {
-      const res = await fetch("http://localhost:8000/api/places", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/places`, {
         method: "POST",
         headers: {
           "Content-Type": "application/ld+json",

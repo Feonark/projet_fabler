@@ -18,7 +18,7 @@ const EditPlace = () => {
 
   const fetchPlace = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/places/${placeId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/places/${placeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Unable to fetch place.");
@@ -32,7 +32,7 @@ const EditPlace = () => {
   const handleUpdate = async (payload) => {
     setError("");
     try {
-      const res = await fetch(`http://localhost:8000/api/places/${placeId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/places/${placeId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/merge-patch+json",

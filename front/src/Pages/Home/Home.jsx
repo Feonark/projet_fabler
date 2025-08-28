@@ -20,7 +20,9 @@ const Home = () => {
   const fetchStories = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/stories?itemsPerPage=4&order[id]=desc`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/stories?itemsPerPage=4&order[id]=desc`,
         {}
       );
 

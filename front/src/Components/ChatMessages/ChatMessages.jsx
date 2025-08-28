@@ -15,7 +15,7 @@ const ChatMessages = ({ messages, chat, user }) => {
               {!sameCharacter && (
                 <div className="message__left">
                   <img
-                    src={`http://localhost:8000/${
+                    src={`${import.meta.env.VITE_API_URL}/${
                       message.characterAlias?.avatarUrl ??
                       "/uploads/avatars/avatar-default.jpg"
                     }`}
