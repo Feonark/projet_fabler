@@ -37,8 +37,8 @@ jobs:
           APP_DEBUG: ${{ secrets.APP_DEBUG }}
           APP_UPLOADS_BASE: ${{ secrets.APP_UPLOADS_BASE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          # JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          # JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
           JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
           MERCURE_URL: ${{ secrets.MERCURE_URL }}
           MERCURE_PUBLIC_URL: ${{ secrets.MERCURE_PUBLIC_URL }}
@@ -56,8 +56,8 @@ jobs:
           APP_UPLOADS_BASE=$APP_UPLOADS_BASE
           DATABASE_URL=$DATABASE_URL
 
-          JWT_SECRET_KEY=$JWT_SECRET_KEY
-          JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY
+          JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
+          JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
           JWT_PASSPHRASE=$JWT_PASSPHRASE
 
           MERCURE_URL=$MERCURE_URL
@@ -69,3 +69,22 @@ jobs:
           POSTGRES_USER=$POSTGRES_USER
           POSTGRES_PASSWORD=$POSTGRES_PASSWORD
           POSTGRES_DB=$POSTGRES_DB' > /home/ubuntu/projet_fabler/back/.env.prod"
+
+      - name: Create JWT keys on VPS
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -p 52346 ubuntu@51.77.159.52 "\
+            mkdir -p /home/ubuntu/projet_fabler/back/config/jwt && \
+            printf '%s\n' \"$JWT_SECRET_KEY\" > /home/ubuntu/projet_fabler/back/config/jwt/private.pem && \
+            printf '%s\n' \"$JWT_PUBLIC_KEY\" > /home/ubuntu/projet_fabler/back/config/jwt/public.pem && \
+            chmod 640 /home/ubuntu/projet_fabler/back/config/jwt/private.pem && \
+            chmod 644 /home/ubuntu/projet_fabler/back/config/jwt/public.pem && \
+            sudo docker exec php chown www-data:www-data /var/www/config/jwt/private.pem /var/www/config/jwt/public.pem"
+
+      - name: Verify JWT keys
+        run: |
+          ssh -i ~/.ssh/id_rsa -p 52346 ubuntu@51.77.159.52 "\
+            openssl rsa -in /home/ubuntu/projet_fabler/back/config/jwt/private.pem -check -noout && \
+            openssl rsa -in /home/ubuntu/projet_fabler/back/config/jwt/private.pem -pubout | diff - /home/ubuntu/projet_fabler/back/config/jwt/public.pem || echo '⚠️ Public key does not match private key'"
