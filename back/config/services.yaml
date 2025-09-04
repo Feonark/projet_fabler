@@ -16,6 +16,17 @@ services:
     App\:
         resource: "../src/"
 
+    App\Controller:
+        resource: "../src/Controller/"
+        tags: ["controller.service_arguments"]
+
+    App\Mercure\LoggingHub:
+        decorates: "mercure.hub.default"
+        decoration_inner_name: 'App\Mercure\LoggingHub.inner'
+        arguments:
+            - '@App\Mercure\LoggingHub.inner'
+        public: true
+
     App\Doctrine\StoryQueryExtension:
         tags:
             - { name: api_platform.doctrine.orm.query_extension.collection }

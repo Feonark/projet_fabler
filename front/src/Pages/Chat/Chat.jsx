@@ -30,78 +30,134 @@ const Chat = () => {
   // juste pour empêcher l’autoscroll quand on ajoute des pages plus anciennes
   const skipScrollRef = useRef(false);
 
-  // Premier useEffect pour l'abonnement aux events Chat + Messages
-  // Se lance au montage du composant
   useEffect(() => {
     if (!token) return;
     getUser();
     fetchMessages();
     fetchChat();
 
-    const url = new URL("http://localhost/.well-known/mercure");
-    url.searchParams.append(
-      "topic",
-      `http://localhost:8000/api/chats/${storyId}/messages`
-    );
-    url.searchParams.append(
-      "topic",
-      `http://localhost:8000/api/chats/${storyId}`
-    );
+    let es;
 
-    const es = new EventSource(url);
-    es.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data["@type"] === "Message") {
-        setMessages((prev) => [...prev, data]);
-        setLastMessage(data);
-      } else if (data["@type"] === "Chat") {
-        setChat(data);
-        if (data.currentPlace) {
-          setSelectedPlace(data.currentPlace.id.toString());
-        }
+    const setupMercure = async () => {
+      try {
+        // Demande au back de poser le cookie mercureAuthorization
+        await fetch(`${import.meta.env.VITE_API_URL}/api/mercure-auth`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }, // ton JWT utilisateur
+          credentials: "include", // accepte le Set-Cookie cross-domain
+        });
+
+        const url = new URL("https://mercure.fabler.fr/.well-known/mercure");
+        url.searchParams.append(
+          "topic",
+          `${import.meta.env.VITE_API_URL}/api/chats/${storyId}/messages`
+        );
+        url.searchParams.append(
+          "topic",
+          `${import.meta.env.VITE_API_URL}/api/chats/${storyId}`
+        );
+
+        es = new EventSource(url.toString(), { withCredentials: true });
+
+        es.onopen = () => console.log("✅ Connexion Mercure établie");
+        es.onerror = (err) => {
+          console.error(
+            "❌ Erreur EventSource:",
+            err,
+            "readyState=",
+            es.readyState
+          );
+          if (es.readyState === EventSource.CLOSED) {
+            console.warn("🔌 Connexion Mercure fermée");
+          }
+        };
+        es.onmessage = (e) => {
+          console.log("RAW Mercure event:", e);
+          console.log("DATA:", e.data);
+          const data = JSON.parse(e.data);
+
+          if (data["@type"] === "Message") {
+            setMessages((prev) => [...prev, data]);
+            setLastMessage(data);
+          } else if (data["@type"] === "Chat") {
+            setChat(data);
+            if (data.currentPlace) {
+              setSelectedPlace(data.currentPlace.id.toString());
+            }
+          }
+        };
+      } catch (err) {
+        console.error("❌ Erreur setup Mercure:", err);
       }
     };
 
-    return () => es.close();
+    setupMercure();
+
+    return () => {
+      if (es) {
+        console.log("🔌 Fermeture connexion Mercure");
+        es.close();
+      }
+    };
   }, [storyId, token]);
 
-  // Deuxième useEffect, séparé du premier car on écoute Chat lorsqu'il a fini d'être fetch (plus précisément ses membres)
-  // On s'abonne aux events de MemberChatStatus
+  // Deuxième useEffect : abonnement aux events MemberChatStatus
   useEffect(() => {
     if (!token || !chat?.members) return;
 
-    const url = new URL("http://localhost/.well-known/mercure");
-    chat.members.forEach((member) => {
-      if (member.memberChatStatus?.["@id"]) {
-        url.searchParams.append(
-          "topic",
-          `http://localhost:8000${member.memberChatStatus["@id"]}`
-        );
-      }
-    });
-
-    const es = new EventSource(url);
-    es.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data["@type"] === "MemberChatStatus") {
-        setChat((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            members: prev.members.map((member) =>
-              member.memberChatStatus?.id === data.id
-                ? {
-                    ...member,
-                    memberChatStatus: { ...member.memberChatStatus, ...data },
-                  }
-                : member
-            ),
-          };
+    let es;
+    (async () => {
+      try {
+        const url = new URL("https://mercure.fabler.fr/.well-known/mercure");
+        chat.members.forEach((member) => {
+          if (member.memberChatStatus?.["@id"]) {
+            url.searchParams.append(
+              "topic",
+              `${import.meta.env.VITE_API_URL}${member.memberChatStatus["@id"]}`
+            );
+          }
         });
-      }
-    };
 
-    return () => es.close();
+        es = new EventSource(url.toString(), { withCredentials: true });
+        es.onerror = (err) => {
+          console.error(
+            "❌ Erreur EventSource:",
+            err,
+            "readyState=",
+            es.readyState
+          );
+          if (es.readyState === EventSource.CLOSED) {
+            console.warn("🔌 Connexion Mercure fermée");
+          }
+        };
+        es.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          if (data["@type"] === "MemberChatStatus") {
+            setChat((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                members: prev.members.map((member) =>
+                  member.memberChatStatus?.id === data.id
+                    ? {
+                        ...member,
+                        memberChatStatus: {
+                          ...member.memberChatStatus,
+                          ...data,
+                        },
+                      }
+                    : member
+                ),
+              };
+            });
+          }
+        };
+      } catch (err) {
+        console.error("Erreur abonnement Mercure (MemberChatStatus):", err);
+      }
+    })();
+
+    return () => es?.close();
   }, [token, chat?.members?.map((m) => m.memberChatStatus?.["@id"]).join(",")]);
 
   // Troisième useEffect pour la gestion online/offline
@@ -135,7 +191,9 @@ const Chat = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/chats/${storyId}/messages?itemsPerPage=50`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/chats/${storyId}/messages?itemsPerPage=50`,
         {
           headers: {
             Accept: "application/ld+json",
@@ -168,7 +226,9 @@ const Chat = () => {
     skipScrollRef.current = true; // On évite de sauter en bas
     try {
       const response = await fetch(
-        `http://localhost:8000/api/chats/${storyId}/messages?itemsPerPage=${itemsPerPage}&page=${nextPage}`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/chats/${storyId}/messages?itemsPerPage=${itemsPerPage}&page=${nextPage}`,
         {
           headers: {
             Accept: "application/ld+json",
@@ -198,7 +258,7 @@ const Chat = () => {
   const fetchChat = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/chats/${storyId}`,
+        `${import.meta.env.VITE_API_URL}/api/chats/${storyId}`,
         {
           headers: {
             Accept: "application/ld+json",
@@ -235,7 +295,7 @@ const Chat = () => {
     if (!myMember) return;
     try {
       const response = await fetch(
-        `http://localhost:8000${myMember.memberChatStatus["@id"]}`,
+        `${import.meta.env.VITE_API_URL}${myMember.memberChatStatus["@id"]}`,
         {
           method: "PATCH",
           headers: {
@@ -262,14 +322,17 @@ const Chat = () => {
     if (!myMember) return;
 
     try {
-      await fetch(`http://localhost:8000${myMember.memberChatStatus["@id"]}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/merge-patch+json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ isWriting: writing }),
-      });
+      await fetch(
+        `${import.meta.env.VITE_API_URL}${myMember.memberChatStatus["@id"]}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/merge-patch+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ isWriting: writing }),
+        }
+      );
     } catch (err) {
       console.error("Erreur setWritingStatus:", err);
     }
@@ -280,7 +343,7 @@ const Chat = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/chats/${chat.id}`,
+        `${import.meta.env.VITE_API_URL}/api/chats/${chat.id}`,
         {
           method: "PATCH",
           headers: {
@@ -315,14 +378,17 @@ const Chat = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/api/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/ld+json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/ld+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status}`);
@@ -388,13 +454,17 @@ const Chat = () => {
             <div
               className="rpbox__background"
               style={{
-                backgroundImage: `url(http://localhost:8000/${chat.currentPlace?.placeImageUrl})`,
+                backgroundImage: `url(${import.meta.env.VITE_API_URL}/${
+                  chat.currentPlace?.placeImageUrl
+                })`,
               }}
             >
               {lastMessage && (
                 <div className="rpbox__message-info">
                   <img
-                    src={`http://localhost:8000/${lastMessage.characterAlias?.portraitUrl}`}
+                    src={`${import.meta.env.VITE_API_URL}/${
+                      lastMessage.characterAlias?.portraitUrl
+                    }`}
                     className="rpbox__img"
                     alt="Character avatar"
                   />
@@ -445,7 +515,9 @@ const Chat = () => {
                   .map((member) => (
                     <div key={member.id} className="writing__message">
                       <img
-                        src={`http://localhost:8000/${member.memberUser?.avatarUrl}`}
+                        src={`${import.meta.env.VITE_API_URL}/${
+                          member.memberUser?.avatarUrl
+                        }`}
                         className="writing__userAvi"
                       />
                       <div className="">
@@ -506,7 +578,7 @@ const Chat = () => {
               {selectedCharacter ? (
                 <img
                   className="character-select__preview"
-                  src={`http://localhost:8000/${
+                  src={`${import.meta.env.VITE_API_URL}/${
                     user.characters.find(
                       (c) => c.id.toString() === selectedCharacter
                     )?.avatarUrl
@@ -605,7 +677,9 @@ const Chat = () => {
                   .map((member) => (
                     <div key={member.id} className="writing__message">
                       <img
-                        src={`http://localhost:8000/${member.memberUser?.avatarUrl}`}
+                        src={`${import.meta.env.VITE_API_URL}/${
+                          member.memberUser?.avatarUrl
+                        }`}
                         className="writing__userAvi"
                       />
                       <div className="">

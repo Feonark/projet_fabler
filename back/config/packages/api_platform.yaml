@@ -14,4 +14,4 @@ api_platform:
                 type: header
     mercure:
         enabled: true
-        hub_url: "default"
+        hub_url: "%env(MERCURE_URL)%"

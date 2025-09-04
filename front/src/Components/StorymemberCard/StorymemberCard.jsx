@@ -10,7 +10,7 @@ const StorymemberCard = ({ member, isAuthor, onDelete }) => {
     <div className="member__card" key={member.id}>
       <div className="member__content">
         <img
-          src={`http://localhost:8000${member.memberUser?.avatarUrl}`}
+          src={`${import.meta.env.VITE_API_URL}${member.memberUser?.avatarUrl}`}
           className="member__avatar"
           alt="User avatar"
         />

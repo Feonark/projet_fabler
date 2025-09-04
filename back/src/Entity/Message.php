@@ -164,14 +164,12 @@ class Message
 
     public function getMercureOptions(): array
     {
-        $topic1 = '@=iri(object.getChat(), ' . UrlGeneratorInterface::ABSOLUTE_URL . ') ~ "/messages"';
-        // $topic2 = '@=iri(object, ' . UrlGeneratorInterface::ABSOLUTE_URL . ')';
+        $topic = '@=iri(object.getChat()) ~ "/messages"';
 
         return [
             'private' => false,
             'topics' => [
-                $topic1,
-                // $topic2
+                $topic,
             ],
         ];
     }

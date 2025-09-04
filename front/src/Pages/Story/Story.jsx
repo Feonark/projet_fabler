@@ -49,7 +49,7 @@ const Story = () => {
       }
 
       const response = await fetch(
-        `http://localhost:8000/api/stories/${storyId}`,
+        `${import.meta.env.VITE_API_URL}/api/stories/${storyId}`,
         { headers }
       );
 
@@ -118,16 +118,19 @@ const Story = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/story_members`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/ld+json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          story: `/api/stories/${storyId}`,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/story_members`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/ld+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            story: `/api/stories/${storyId}`,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status}`);
@@ -144,7 +147,7 @@ const Story = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/story_members/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/story_members/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -187,7 +190,7 @@ const Story = () => {
     if (confirm("Are you sure?")) {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/story_members/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/story_members/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -217,7 +220,7 @@ const Story = () => {
     if (confirm("You're about to delete this story. Are you sure?")) {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/stories/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/stories/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -245,13 +248,16 @@ const Story = () => {
 
     if (confirm("You're about to delete this place. Are you sure?")) {
       try {
-        const response = await fetch(`http://localhost:8000/api/places/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/ld+json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/places/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/ld+json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Erreur serveur : ${response.status}`);
@@ -334,7 +340,9 @@ const Story = () => {
         <div
           className="banner__container"
           style={{
-            backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(http://localhost:8000/${story.bannerImageUrl})`,
+            backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(${
+              import.meta.env.VITE_API_URL
+            }/${story.bannerImageUrl})`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -452,7 +460,9 @@ const Story = () => {
                           <div className="member__card" key={member.id}>
                             <div className="member__content">
                               <img
-                                src={`http://localhost:8000${member.memberUser?.avatarUrl}`}
+                                src={`${import.meta.env.VITE_API_URL}${
+                                  member.memberUser?.avatarUrl
+                                }`}
                                 className="member__avatar"
                                 alt="User avatar"
                               />

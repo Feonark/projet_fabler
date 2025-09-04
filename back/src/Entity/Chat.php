@@ -164,7 +164,7 @@ class Chat
 
     public function getMercureOptions(): array
     {
-        $topic1 = '@=iri(object, ' . UrlGeneratorInterface::ABSOLUTE_URL . ')';
+        $topic1 = '@=iri(object)';
 
         return [
             'private' => false,

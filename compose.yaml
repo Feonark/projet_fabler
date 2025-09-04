@@ -6,17 +6,21 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=hugo.thivel@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--providers.file.filename=/dynamic/traefik_dynamic.yml"
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_letsencrypt:/letsencrypt
+      - ./traefik_dynamic.yml:/dynamic/traefik_dynamic.yml:ro
     restart: unless-stopped
     networks:
       - fabler_net
@@ -58,6 +62,7 @@ services:
     volumes:
       - ./back:/var/www
       - ./back/Caddyfile:/etc/caddy/Caddyfile
+      - uploads_data:/var/www/public/uploads
     depends_on:
       - php
     labels:
@@ -74,8 +79,8 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile
-    depends_on:
-      - php
+      args:
+        - VITE_API_URL=https://api.fabler.fr
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.front.rule=Host(`app.fabler.fr`)"
@@ -83,14 +88,26 @@ services:
       - "traefik.http.routers.front.tls.certresolver=myresolver"
     networks:
       - fabler_net
+    depends_on:
+      - php
 
   mercure:
     container_name: mercure
     image: dunglas/mercure
     restart: unless-stopped
+    env_file:
+      - ./back/.env.prod
     environment:
-      MERCURE_PUBLISHER_JWT_KEY: "!ChangeThisMercureHubJWTSecretKey!"
-      MERCURE_SUBSCRIBER_JWT_KEY: "!ChangeThisMercureHubJWTSecretKey!"
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISH_ALLOWED_ORIGINS: "https://app.fabler.fr https://mercure.fabler.fr https://api.fabler.fr"
+      MERCURE_SUBSCRIBE_ALLOWED_ORIGINS: "https://app.fabler.fr https://mercure.fabler.fr https://api.fabler.fr"
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins https://app.fabler.fr https://mercure.fabler.fr https://api.fabler.fr
+        publish_allowed_topics .*
+        subscribe_allowed_topics .*
+        heartbeat 10s
+        access_control_allow_origin https://app.fabler.fr https://api.fabler.fr https://mercure.fabler.fr
+        access_control_allow_credentials true
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost/healthz"]
       timeout: 5s
@@ -101,9 +118,13 @@ services:
       - "traefik.http.routers.mercure.rule=Host(`mercure.fabler.fr`)"
       - "traefik.http.routers.mercure.entrypoints=websecure"
       - "traefik.http.routers.mercure.tls.certresolver=myresolver"
+      - "traefik.http.services.mercure.loadbalancer.server.port=80"
+      - "traefik.http.services.mercure.loadbalancer.serversTransport=mercure-sse@file"
+      - "traefik.http.middlewares.force-h1.headers.customrequestheaders.Upgrade="
+      - "traefik.http.middlewares.force-h1.headers.customrequestheaders.Connection=keep-alive"
+      - "traefik.http.routers.mercure.middlewares=force-h1"
     volumes:
       - mercure_data:/data
-      - mercure_config:/config
     networks:
       - fabler_net
 
@@ -111,7 +132,6 @@ volumes:
   traefik_letsencrypt:
   database_data:
   mercure_data:
-  mercure_config:
   uploads_data:
 
 networks:

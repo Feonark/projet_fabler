@@ -1,5 +1,17 @@
 :80 {
     root * /var/www/public
-    php_fastcgi php:9000
+    
+    # Configuration pour proxy HTTPS via Traefik
+    request_header X-Forwarded-Proto https
+    request_header X-Forwarded-Port 443
+    
+    php_fastcgi php:9000 {
+        env PATH /usr/local/bin:/usr/bin:/bin
+        # Forcer HTTPS dans les headers transmis à PHP
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-Port 443
+    }
+    
     file_server
 }

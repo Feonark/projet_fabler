@@ -1,0 +1,7 @@
+http:
+  serversTransports:
+    mercure-sse:
+      forwardingTimeouts:
+        dialTimeout: 30s
+        responseHeaderTimeout: 0s
+        idleConnTimeout: 0s

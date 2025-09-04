@@ -8,14 +8,16 @@ const CharacterCard = ({ character, deleteCharacter }) => {
       className="chara-card__container"
       key={character.id}
       style={{
-        backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(http://localhost:8000${character.portraitUrl})`,
+        backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(${
+          import.meta.env.VITE_API_URL
+        }${character.portraitUrl})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
       <img
-        src={`http://localhost:8000${character.avatarUrl}`}
+        src={`${import.meta.env.VITE_API_URL}${character.avatarUrl}`}
         className="chara-card__avatar"
         alt="Character avatar"
       />

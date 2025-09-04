@@ -178,11 +178,14 @@ const CharacterForm = ({
       fd.append("folder", "portraits");
 
       try {
-        const uploadRes = await fetch("http://localhost:8000/api/images", {
-          method: "POST",
-          headers: { Accept: "application/ld+json" },
-          body: fd,
-        });
+        const uploadRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/images`,
+          {
+            method: "POST",
+            headers: { Accept: "application/ld+json" },
+            body: fd,
+          }
+        );
 
         if (!uploadRes.ok) throw new Error("Upload failed");
         const uploadData = await uploadRes.json();
@@ -200,11 +203,14 @@ const CharacterForm = ({
       fd.append("folder", "avatars");
 
       try {
-        const uploadRes = await fetch("http://localhost:8000/api/images", {
-          method: "POST",
-          headers: { Accept: "application/ld+json" },
-          body: fd,
-        });
+        const uploadRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/images`,
+          {
+            method: "POST",
+            headers: { Accept: "application/ld+json" },
+            body: fd,
+          }
+        );
 
         if (!uploadRes.ok) throw new Error("Upload failed");
         const uploadData = await uploadRes.json();

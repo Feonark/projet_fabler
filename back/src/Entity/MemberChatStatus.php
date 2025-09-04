@@ -71,7 +71,7 @@ class MemberChatStatus
 
     public function getMercureOptions(): array
     {
-        $topic = '@=iri(object, ' . UrlGeneratorInterface::ABSOLUTE_URL . ')';
+        $topic = '@=iri(object)';
 
         return [
             'private' => false,

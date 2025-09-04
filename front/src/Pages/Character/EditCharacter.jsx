@@ -18,7 +18,7 @@ const EditCharacter = () => {
   const fetchCharacter = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/characters/${characterId}`,
+        `${import.meta.env.VITE_API_URL}/api/characters/${characterId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -35,7 +35,7 @@ const EditCharacter = () => {
     setError("");
     try {
       const res = await fetch(
-        `http://localhost:8000/api/characters/${characterId}`,
+        `${import.meta.env.VITE_API_URL}/api/characters/${characterId}`,
         {
           method: "PATCH",
           headers: {

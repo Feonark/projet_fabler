@@ -48,6 +48,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          CORS_ALLOW_ORIGIN: ${{ secrets.CORS_ALLOW_ORIGIN }}
         run: |
           ssh -i ~/.ssh/id_rsa -p 52346 ubuntu@51.77.159.52 "echo '\
           APP_SECRET=$APP_SECRET
@@ -63,12 +64,23 @@ jobs:
           MERCURE_URL=$MERCURE_URL
           MERCURE_PUBLIC_URL=$MERCURE_PUBLIC_URL
           MERCURE_JWT_SECRET=$MERCURE_JWT_SECRET
+          MERCURE_PUBLISHER_JWT_KEY=$MERCURE_JWT_SECRET
+          MERCURE_SUBSCRIBER_JWT_KEY=$MERCURE_JWT_SECRET
           MERCURE_PUBLISH_ALLOWED_ORIGINS=$MERCURE_PUBLISH_ALLOWED_ORIGINS
           MERCURE_SUBSCRIBE_ALLOWED_ORIGINS=$MERCURE_SUBSCRIBE_ALLOWED_ORIGINS
 
           POSTGRES_USER=$POSTGRES_USER
           POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          POSTGRES_DB=$POSTGRES_DB' > /home/ubuntu/projet_fabler/back/.env.prod"
+          POSTGRES_DB=$POSTGRES_DB
+
+          CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN' > /home/ubuntu/projet_fabler/back/.env.prod"
+
+      - name: Fix uploads permissions
+        run: |
+          ssh -i ~/.ssh/id_rsa -p 52346 ubuntu@51.77.159.52 "\
+            sudo mkdir -p /home/ubuntu/projet_fabler/back/public/uploads/avatars && \
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/projet_fabler/back/public/uploads && \
+            sudo chmod -R 775 /home/ubuntu/projet_fabler/back/public/uploads"
 
       - name: Create JWT keys on VPS
         env:
@@ -79,9 +91,8 @@ jobs:
             mkdir -p /home/ubuntu/projet_fabler/back/config/jwt && \
             printf '%s\n' \"$JWT_SECRET_KEY\" > /home/ubuntu/projet_fabler/back/config/jwt/private.pem && \
             printf '%s\n' \"$JWT_PUBLIC_KEY\" > /home/ubuntu/projet_fabler/back/config/jwt/public.pem && \
-            chmod 640 /home/ubuntu/projet_fabler/back/config/jwt/private.pem && \
-            chmod 644 /home/ubuntu/projet_fabler/back/config/jwt/public.pem && \
-            sudo docker exec php chown www-data:www-data /var/www/config/jwt/private.pem /var/www/config/jwt/public.pem"
+            chmod 644 /home/ubuntu/projet_fabler/back/config/jwt/private.pem && \
+            chmod 644 /home/ubuntu/projet_fabler/back/config/jwt/public.pem"
 
       - name: Verify JWT keys
         run: |
