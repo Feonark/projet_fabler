@@ -167,7 +167,7 @@ class Chat
         $topic1 = '@=iri(object)';
 
         return [
-            'private' => false,
+            'private' => true,
             'topics' => [
                 $topic1,
             ],

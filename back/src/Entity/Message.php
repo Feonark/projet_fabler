@@ -167,7 +167,7 @@ class Message
         $topic = '@=iri(object.getChat()) ~ "/messages"';
 
         return [
-            'private' => false,
+            'private' => true,
             'topics' => [
                 $topic,
             ],

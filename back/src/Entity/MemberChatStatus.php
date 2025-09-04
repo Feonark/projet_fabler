@@ -74,7 +74,7 @@ class MemberChatStatus
         $topic = '@=iri(object)';
 
         return [
-            'private' => false,
+            'private' => true,
             'topics' => [$topic],
         ];
     }

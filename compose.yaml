@@ -99,15 +99,15 @@ services:
       - ./back/.env.prod
     environment:
       SERVER_NAME: ":80"
+      ANONYMOUS: 0
       MERCURE_PUBLISH_ALLOWED_ORIGINS: "https://app.fabler.fr https://mercure.fabler.fr https://api.fabler.fr"
       MERCURE_SUBSCRIBE_ALLOWED_ORIGINS: "https://app.fabler.fr https://mercure.fabler.fr https://api.fabler.fr"
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins https://app.fabler.fr https://mercure.fabler.fr https://api.fabler.fr
-        publish_allowed_topics .*
-        subscribe_allowed_topics .*
         heartbeat 10s
         access_control_allow_origin https://app.fabler.fr https://api.fabler.fr https://mercure.fabler.fr
         access_control_allow_credentials true
+        subscriptions
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost/healthz"]
       timeout: 5s
