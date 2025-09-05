@@ -8,6 +8,7 @@ import {
   DoorOpen,
   SendHorizontal,
   ChevronDown,
+  SquarePlus,
 } from "lucide-react";
 import "./Chat.css";
 
@@ -533,63 +534,83 @@ const Chat = () => {
         <div className="inputs__container">
           <div className="chat__options">
             {/* Select place */}
-            <div className="chat-select__container">
-              <label htmlFor="currentPlace" />
-              <select
-                id="currentPlace"
-                value={selectedPlace}
-                onChange={(e) => {
-                  updateCurrentPlace(e.target.value);
-                  setSelectedPlace(e.target.value);
-                }}
-              >
-                <option value="" disabled selected hidden>
-                  -- Select place --
-                </option>
-                {chat &&
-                  chat.story?.places?.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.title}
-                    </option>
-                  ))}
-              </select>
-              <ChevronDown className="chat-select__icon" />
-            </div>
+            {chat && chat.story?.places?.length > 0 && (
+              <div className="chat-select__container">
+                <label htmlFor="currentPlace" />
+                <select
+                  id="currentPlace"
+                  value={selectedPlace}
+                  onChange={(e) => {
+                    updateCurrentPlace(e.target.value);
+                    setSelectedPlace(e.target.value);
+                  }}
+                >
+                  <option value="" disabled selected hidden>
+                    -- Select place --
+                  </option>
+                  {chat &&
+                    chat.story?.places?.map((place) => (
+                      <option key={place.id} value={place.id}>
+                        {place.title}
+                      </option>
+                    ))}
+                </select>
+                <ChevronDown className="chat-select__icon" />
+              </div>
+            )}
           </div>
 
           {/* Select character */}
           <div className="chat-response__container">
-            <div className="chat-select__container">
-              <label htmlFor="character" />
-              <select
-                id="character"
-                className="character__select"
-                value={selectedCharacter}
-                onChange={(e) => setSelectedCharacter(e.target.value)}
-              >
-                <option value="">-- Select character --</option>
-                {user &&
-                  user.characters?.map((character) => (
+            {user && user?.characters?.length > 0 ? (
+              <div className="chat-select__container">
+                <label htmlFor="character" />
+                <select
+                  id="character"
+                  className="character__select"
+                  value={selectedCharacter}
+                  onChange={(e) => setSelectedCharacter(e.target.value)}
+                >
+                  <option value="">-- Select character --</option>
+                  {user?.characters?.map((character) => (
                     <option key={character.id} value={character.id}>
                       {character.name}
                     </option>
                   ))}
-              </select>
-              {selectedCharacter ? (
-                <img
-                  className="character-select__preview"
-                  src={`${import.meta.env.VITE_API_URL}/${
-                    user.characters.find(
-                      (c) => c.id.toString() === selectedCharacter
-                    )?.avatarUrl
-                  }`}
-                  alt="Selected avatar"
-                />
-              ) : (
-                <div className="character-select__preview">?</div>
-              )}
-              <ChevronDown className="chat-select__icon" />
-            </div>
+                </select>
+
+                {selectedCharacter ? (
+                  <img
+                    className="character-select__preview"
+                    src={`${import.meta.env.VITE_API_URL}/${
+                      user?.characters?.find(
+                        (c) => c.id.toString() === selectedCharacter
+                      )?.avatarUrl
+                    }`}
+                    alt="Selected avatar"
+                  />
+                ) : (
+                  <img
+                    className="character-select__preview"
+                    src={`${
+                      import.meta.env.VITE_API_URL
+                    }/uploads/avatars/avatar-default.jpg`}
+                    alt="Default avatar"
+                  />
+                )}
+                <ChevronDown className="chat-select__icon" />
+              </div>
+            ) : (
+              <div className="chat-select__container">
+                <Link
+                  className="btn btn-outline test"
+                  to={`/profile/characters/new`}
+                >
+                  <SquarePlus className="btn__icon" />
+                  <span className="btn__span">Create character</span>
+                </Link>
+              </div>
+            )}
 
             {/* Input response */}
             <div className="chat-input__container">

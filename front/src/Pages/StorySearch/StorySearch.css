@@ -21,6 +21,16 @@
   border-radius: var(--card-radius);
 }
 
+.search-filter__row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.search-filter__container {
+  width: 100%;
+}
+
 .search-cards__container {
     display: grid;
     grid-template-columns: 1fr;
@@ -28,16 +38,11 @@
     padding-top: 16px;
 }
 
-/* RESPONSIVE DESKTOP */
+/* RESPONSIVE TABLETTE */
 @media (min-width: 768px) {
 
   .stories__title-header {
     padding-block: 64px;
-  }
-
-  .search__content {
-    flex-direction: row;
-    padding-block: 32px;
   }
 
   .search__filters {
@@ -45,10 +50,47 @@
     height: fit-content;
   }
 
+  .search-filter__row {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .search-filter__container {
+    width: 100%;
+  }
+
+  .search__results {
+    width: 100%;
+  }
+
   .search-cards__container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+  }
+
 }
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 1224px) {
+
+  .search__content {
+    flex-direction: row;
+    padding-block: 32px;
+  }
+
+  .search-filter__row {
+    flex-direction: column;
+  }
+
+  .search-filter__container {
+    width: 100%;
+  }
+
+  .search-cards__container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
 
 }

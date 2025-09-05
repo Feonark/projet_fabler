@@ -255,6 +255,20 @@ button {
   height: var(--button-icon);
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  color: var(--subtle-text);
+}
+
+.btn:disabled:hover {
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.btn:disabled .btn__icon {
+  color: var(--subtle-text);
+}
+
 .invert-btn {
   background-color: var(--invert-bg);
   color: var(--text-invert);
@@ -277,17 +291,8 @@ button {
   opacity: 0.8; 
 }
 
-.btn:disabled {
-  cursor: not-allowed;
-  color: var(--subtle-text);
-}
-
-.btn:disabled:hover {
-  border: 1px solid transparent;
-  background: transparent;
-}
-
-.btn:disabled .btn__icon {
+.invert-btn:disabled:hover {
+  background-color: var(--invert-bg);
   color: var(--subtle-text);
 }
 

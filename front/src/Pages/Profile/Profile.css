@@ -103,8 +103,37 @@
   width: 100%;
 }
 
-/* RESPONSIVE DESKTOP */
+/* RESPONSIVE TABLETTE */
 @media (min-width: 768px) {
+
+  .profile__card {
+    min-width: 250px;
+  }
+
+  .profile__content {
+    width: 100%;
+  }
+
+  .stories__container {
+    padding-top: 0;
+  }
+
+  .stories-cards__container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .chara-cards__container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+}
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 1224px) {
 
   .profile__main {
     display: flex;
@@ -115,14 +144,6 @@
 
   .profile__card {
     min-width: 400px;
-  }
-
-  .profile__content {
-    width: 100%;
-  }
-
-  .stories__container {
-    padding-top: 0;
   }
 
   .stories-cards__container {

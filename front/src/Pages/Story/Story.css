@@ -119,13 +119,14 @@
   width: 100%;
 }
 
-/* RESPONSIVE DESKTOP */
+/* RESPONSIVE TABLETTE */
 @media (min-width: 768px) {
 
   .content__container {
     display: flex;
+    flex-direction: column;
     gap: 32px;
-  }
+  } 
 
   .members__container {
     min-width: 400px;
@@ -133,6 +134,15 @@
 
   .place__container {
     width: 100%;
+  }
+
+}
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 1224px) {
+
+  .content__container {
+    flex-direction: row;
   }
 
 }

@@ -135,85 +135,89 @@ export default function StorySearch() {
           <div className="search__filters">
             <h2 className="subtitle page__header">Filters</h2>
 
-            <div className="select__container">
-              <label className="input__label" htmlFor="genre">
-                Genre
-              </label>
-              <select
-                id="genre"
-                value={filters.genreType}
-                onChange={(e) =>
-                  setFilters({ ...filters, genreType: e.target.value })
-                }
-              >
-                <option value="">All genres</option>
-                {GENRE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="select__icon" />
+            <div className="search-filter__row">
+              <div className="select__container search-filter__container">
+                <label className="input__label" htmlFor="genre">
+                  Genre
+                </label>
+                <select
+                  id="genre"
+                  value={filters.genreType}
+                  onChange={(e) =>
+                    setFilters({ ...filters, genreType: e.target.value })
+                  }
+                >
+                  <option value="">All genres</option>
+                  {GENRE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="select__icon" />
+              </div>
+
+              <div className="select__container search-filter__container">
+                <label className="input__label" htmlFor="audience">
+                  Audience
+                </label>
+                <select
+                  value={filters.audienceType}
+                  onChange={(e) =>
+                    setFilters({ ...filters, audienceType: e.target.value })
+                  }
+                >
+                  <option value="">All audiences</option>
+                  {AUDIENCE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="select__icon" />
+              </div>
             </div>
 
-            <div className="select__container">
-              <label className="input__label" htmlFor="audience">
-                Audience
-              </label>
-              <select
-                value={filters.audienceType}
-                onChange={(e) =>
-                  setFilters({ ...filters, audienceType: e.target.value })
-                }
-              >
-                <option value="">All audiences</option>
-                {AUDIENCE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="select__icon" />
-            </div>
+            <div className="search-filter__row">
+              <div className="select__container search-filter__container">
+                <label className="input__label" htmlFor="language">
+                  Language
+                </label>
+                <select
+                  value={filters.languageType}
+                  onChange={(e) =>
+                    setFilters({ ...filters, languageType: e.target.value })
+                  }
+                >
+                  <option value="">All languages</option>
+                  {LANGUAGE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="select__icon" />
+              </div>
 
-            <div className="select__container">
-              <label className="input__label" htmlFor="language">
-                Language
-              </label>
-              <select
-                value={filters.languageType}
-                onChange={(e) =>
-                  setFilters({ ...filters, languageType: e.target.value })
-                }
-              >
-                <option value="">All languages</option>
-                {LANGUAGE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="select__icon" />
-            </div>
-
-            <div className="select__container">
-              <label className="input__label" htmlFor="access">
-                Access
-              </label>
-              <select
-                value={filters.accessType}
-                onChange={(e) =>
-                  setFilters({ ...filters, accessType: e.target.value })
-                }
-              >
-                <option value="">All accesses</option>
-                {ACCESS_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="select__icon" />
+              <div className="select__container search-filter__container">
+                <label className="input__label" htmlFor="access">
+                  Access
+                </label>
+                <select
+                  value={filters.accessType}
+                  onChange={(e) =>
+                    setFilters({ ...filters, accessType: e.target.value })
+                  }
+                >
+                  <option value="">All accesses</option>
+                  {ACCESS_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="select__icon" />
+              </div>
             </div>
           </div>
 
