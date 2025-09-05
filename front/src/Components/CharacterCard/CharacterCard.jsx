@@ -10,14 +10,22 @@ const CharacterCard = ({ character, deleteCharacter }) => {
       style={{
         backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(${
           import.meta.env.VITE_API_URL
-        }${character.portraitUrl})`,
+        }/${
+          character.portraitUrl
+            ? character.portraitUrl
+            : "uploads/banners/banner-default.jpg"
+        })`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
       <img
-        src={`${import.meta.env.VITE_API_URL}${character.avatarUrl}`}
+        src={`${import.meta.env.VITE_API_URL}${
+          character.avatarUrl
+            ? character.avatarUrl
+            : "uploads/avatars/avatar-default.jpg"
+        }`}
         className="chara-card__avatar"
         alt="Character avatar"
       />

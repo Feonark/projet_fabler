@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
+import { Upload, X } from "lucide-react";
 
 const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
 
@@ -206,13 +207,50 @@ const PlaceForm = ({
         <label htmlFor="placeFile" className="input__label">
           Place picture
         </label>
+
         <input
           id="placeFile"
           className="input-file"
           type="file"
-          accept="image/*"
+          accept=".jpg, .jpeg, .png, .bmp"
           onChange={onPlaceFileChange}
         />
+
+        {/* input upload custom + preview */}
+        <label htmlFor="placeFile" className="file-upload__trigger">
+          {placeFile || placeImgUrl ? (
+            <div className="file-upload__preview-wrapper">
+              <img
+                className="file-upload__preview-img"
+                src={
+                  placeFile
+                    ? URL.createObjectURL(placeFile)
+                    : `${import.meta.env.VITE_API_URL}/${placeImgUrl}`
+                }
+                alt="Place preview"
+              />
+              <button
+                type="button"
+                className="file-upload__remove"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPlaceFile(null);
+                  setPlaceImgUrl("");
+                }}
+              >
+                <X className="file-upload__remove-icon" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Upload className="file-upload__icon" />
+              <span className="file-upload__text">
+                Click here to upload a file
+              </span>
+            </>
+          )}
+        </label>
+
         <span className="form__error">{firstErr("placeFile")}</span>
       </div>
 

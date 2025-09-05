@@ -90,14 +90,6 @@ input:focus, textarea:focus {
   box-shadow: none;
 }
 
-.input-file {
-  display: flex !important;
-  width: 100%;
-  padding: 6px 12px;
-  cursor: pointer;
-  color: white;
-}
-
 .input__container {
   display: flex;
   flex-direction: column;
@@ -107,6 +99,92 @@ input:focus, textarea:focus {
 .input__label {
   font-size: var(--label-size);
   font-weight: var(--label-semibold);
+}
+
+.input__error {
+  border: 1px solid var(--error-color);
+}
+
+.input__error:focus {
+  border: 1px solid var(--error-color);
+}
+
+/* UPLOAD INPUT */
+
+.input-file {
+  display: none;
+}
+
+.file-upload__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text-color);
+  background: var(--secondary-bg);
+  transition: background 0.2s;
+  min-height: 80px; /* garde une zone cliquable même avec preview */
+}
+
+.file-upload__trigger:hover {
+  background: var(--hover-bg);
+}
+
+.file-upload__icon {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+}
+
+.file-upload__text {
+  font-size: var(--text-size);
+  font-weight: var(--text-regular);
+}
+
+.file-upload__preview-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.file-upload__preview-img {
+  max-height: 120px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.file-upload__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--primary-bg);
+  border: none;
+  border-radius: var(--input-radius);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.file-upload__remove-icon {
+  color: var(--invert-bg);
+  width: 16px;
+  height: 16px;
+  transition: color ease 300ms;
+}
+
+.file-upload__remove-icon:hover {
+  color: var(--negative-action-color);
+  width: 16px;
+  height: 16px;
 }
 
 /* SELECTS */

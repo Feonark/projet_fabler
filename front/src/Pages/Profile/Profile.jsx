@@ -89,14 +89,22 @@ const Profile = () => {
             style={{
               backgroundImage: `linear-gradient(rgba(35,35,35,0.8), rgba(35,35,35,0.8)), url(${
                 import.meta.env.VITE_API_URL
-              }${user.avatarUrl})`,
+              }${
+                user.avatarUrl
+                  ? user.avatarUrl
+                  : "uploads/avatars/avatar-default.jpg"
+              })`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           >
             <img
-              src={`${import.meta.env.VITE_API_URL}${user.avatarUrl}`}
+              src={`${import.meta.env.VITE_API_URL}${
+                user.avatarUrl
+                  ? user.avatarUrl
+                  : "uploads/avatars/avatar-default.jpg"
+              }`}
               alt="User avatar"
               style={{
                 width: "128px",

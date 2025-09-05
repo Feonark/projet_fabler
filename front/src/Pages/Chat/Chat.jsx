@@ -457,6 +457,8 @@ const Chat = () => {
               style={{
                 backgroundImage: `url(${import.meta.env.VITE_API_URL}/${
                   chat.currentPlace?.placeImageUrl
+                    ? chat.currentPlace.placeImageUrl
+                    : "uploads/banners/banner-default.jpg"
                 })`,
               }}
             >
@@ -518,6 +520,8 @@ const Chat = () => {
                       <img
                         src={`${import.meta.env.VITE_API_URL}/${
                           member.memberUser?.avatarUrl
+                            ? member.memberUser.avatarUrl
+                            : "uploads/avatars/avatar-default.jpg"
                         }`}
                         className="writing__userAvi"
                       />
@@ -646,7 +650,9 @@ const Chat = () => {
                   }
                 }}
                 disabled={!selectedCharacter}
-                className="input"
+                className={`input ${
+                  messageContent.length > 400 ? "input__error" : ""
+                }`}
               />
               <button
                 className="input__button"
@@ -700,6 +706,8 @@ const Chat = () => {
                       <img
                         src={`${import.meta.env.VITE_API_URL}/${
                           member.memberUser?.avatarUrl
+                            ? member.memberUser?.avatarUrl
+                            : "uploads/avatars/avatar-default.jpg"
                         }`}
                         className="writing__userAvi"
                       />

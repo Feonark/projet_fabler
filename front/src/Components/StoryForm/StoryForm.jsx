@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Upload, X } from "lucide-react";
 import "./StoryForm.css";
 
 const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
@@ -315,9 +315,45 @@ export default function StoryForm({
           id="bannerFile"
           className="input-file"
           type="file"
-          accept="image/*"
+          accept=".jpg, .jpeg, .png, .bmp"
           onChange={onBannerFileChange}
         />
+
+        {/* input upload custom + preview */}
+        <label htmlFor="bannerFile" className="file-upload__trigger">
+          {bannerFile || bannerImgUrl ? (
+            <div className="file-upload__preview-wrapper">
+              <img
+                className="file-upload__preview-img"
+                src={
+                  bannerFile
+                    ? URL.createObjectURL(bannerFile)
+                    : `${import.meta.env.VITE_API_URL}/${bannerImgUrl}`
+                }
+                alt="Banner preview"
+              />
+              <button
+                type="button"
+                className="file-upload__remove"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setBannerFile(null);
+                  setBannerImgUrl("");
+                }}
+              >
+                <X className="file-upload__remove-icon" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Upload className="file-upload__icon" />
+              <span className="file-upload__text">
+                Click here to upload a file
+              </span>
+            </>
+          )}
+        </label>
+
         <span className="form__error">{firstErr("bannerFile")}</span>
       </div>
 

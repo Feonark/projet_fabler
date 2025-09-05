@@ -354,6 +354,7 @@
   .rpbox__message-content {
     font-size: var(--rpbox-text);
     font-weight: var(--span-regular);
+    word-break: break-word;
   }
 
   .hidden-desktop {

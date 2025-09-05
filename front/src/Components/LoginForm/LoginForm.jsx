@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, Link } from "react-router";
+import { SquarePlus, X } from "lucide-react";
 import "./LoginForm.css";
 
 const LoginForm = () => {

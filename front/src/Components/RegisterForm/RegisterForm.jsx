@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { Upload, X } from "lucide-react";
 
 const MAX_AVATAR_SIZE = 1000 * 1024; // 1Mo
 
@@ -382,9 +383,45 @@ const RegisterForm = () => {
             id="avatarFile"
             type="file"
             className="input-file"
-            accept="image/*"
+            accept=".jpg, .jpeg, .png, .bmp"
             onChange={onAvatarChange}
           />
+
+          {/* input upload custom + preview */}
+          <label htmlFor="avatarFile" className="file-upload__trigger">
+            {avatarFile || avatarUrl ? (
+              <div className="file-upload__preview-wrapper">
+                <img
+                  className="file-upload__preview-img"
+                  src={
+                    avatarFile
+                      ? URL.createObjectURL(avatarFile)
+                      : `${import.meta.env.VITE_API_URL}/${avatarUrl}`
+                  }
+                  alt="Avatar preview"
+                />
+                <button
+                  type="button"
+                  className="file-upload__remove"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setAvatarFile(null);
+                    setAvatarUrl("");
+                  }}
+                >
+                  <X className="file-upload__remove-icon" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Upload className="file-upload__icon" />
+                <span className="file-upload__text">
+                  Click here to upload a file
+                </span>
+              </>
+            )}
+          </label>
+
           <span className="form__error">{firstErr("avatarFile")}</span>
         </div>
       </div>

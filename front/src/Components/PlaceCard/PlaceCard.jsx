@@ -11,7 +11,11 @@ const PlaceCard = ({ storyId, placeId, place, isAuthor, onDelete }) => {
       style={{
         backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(${
           import.meta.env.VITE_API_URL
-        }/${place.placeImageUrl})`,
+        }/${
+          place.placeImageUrl
+            ? place.placeImageUrl
+            : "uploads/banners/banner-default.jpg"
+        })`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",

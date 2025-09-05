@@ -294,6 +294,51 @@ const Story = () => {
     return currentMember?.id ?? null;
   };
 
+  function renderActionButton() {
+    // Si la story est fermée, seul un membre accepté peut entrer dans le chat
+    if (story?.accessType === "CLOSED") {
+      if (user?.id && checkIfAcceptedMember()) {
+        return (
+          <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
+            Enter RP Chat
+          </Link>
+        );
+      }
+      return null;
+    }
+
+    // Story ouverte, si c'est un user connecté
+    if (user?.id) {
+      // Si l'utilisateur est membre accepté, peut entrer dans le chat
+      if (checkIfAcceptedMember()) {
+        return (
+          <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
+            Enter RP Chat
+          </Link>
+        );
+      }
+
+      // Sinon, deux états possibles :
+      // A demandé à rejoindre, ou peut demander à rejoindre
+      return (
+        <button
+          className="btn invert-btn"
+          onClick={joinStory}
+          disabled={checkIsMembersFull() || checkIfJoined()}
+        >
+          {checkIfJoined() ? "You asked to join this story" : "Join this story"}
+        </button>
+      );
+    }
+
+    // Si utilisateur non connecté, redirection vers login
+    return (
+      <Link to="/login" className="btn invert-btn">
+        Log in to join
+      </Link>
+    );
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // UI
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -342,7 +387,11 @@ const Story = () => {
           style={{
             backgroundImage: `linear-gradient(rgba(35,35,35,0.6), rgba(35,35,35,0.6)), url(${
               import.meta.env.VITE_API_URL
-            }/${story.bannerImageUrl})`,
+            }/${
+              story.bannerImageUrl
+                ? story.bannerImageUrl
+                : "uploads/banners/banner-default.jpg"
+            })`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -394,27 +443,8 @@ const Story = () => {
             </span>
           </div>
           <div className="banner__description">{story.description}</div>
-          {user?.id ? (
-            checkIfAcceptedMember() ? (
-              <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
-                Enter RP Chat
-              </Link>
-            ) : (
-              <button
-                className="btn invert-btn"
-                onClick={joinStory}
-                disabled={checkIsMembersFull() || checkIfJoined()}
-              >
-                {checkIfJoined()
-                  ? "You asked to join this story"
-                  : "Join this story"}
-              </button>
-            )
-          ) : (
-            <Link to="/login" className="btn invert-btn">
-              Log in to join
-            </Link>
-          )}
+
+          {renderActionButton()}
         </div>
       )}
 
@@ -462,6 +492,8 @@ const Story = () => {
                               <img
                                 src={`${import.meta.env.VITE_API_URL}${
                                   member.memberUser?.avatarUrl
+                                    ? member.memberUser.avatarUrl
+                                    : "uploads/avatars/avatar-default.jpg"
                                 }`}
                                 className="member__avatar"
                                 alt="User avatar"
