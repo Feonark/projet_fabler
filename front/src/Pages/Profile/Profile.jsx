@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
-import { Pencil, ArrowLeft, House, Cake, SquarePlus } from "lucide-react";
+import {
+  Pencil,
+  ArrowLeft,
+  House,
+  Cake,
+  SquarePlus,
+  Trash,
+} from "lucide-react";
 import StoryCard from "../../Components/StoryCard/StoryCard";
 import CharacterCard from "../../Components/CharacterCard/CharacterCard";
 import "./Profile.css";
@@ -63,6 +70,40 @@ const Profile = () => {
     }
   };
 
+  const deleteUser = async () => {
+    if (!user) return;
+
+    if (
+      confirm(
+        "You're about to delete your account and all of its linked contents (stories, characters...). This action is irreversible. Are you sure?"
+      )
+    ) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/users/${user.id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/ld+json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Erreur serveur : ${response.status}`);
+        }
+
+        alert("Your account has been successfully deleted.");
+
+        localStorage.removeItem("token");
+        navigate("/");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
   return (
     <div className="profile__container page__container">
       {/* HEADER */}
@@ -76,10 +117,16 @@ const Profile = () => {
           <ArrowLeft className="btn__icon" />
           <span className="btn-txt-display">Back</span>
         </button>
-        <Link className="btn" to="#">
-          <Pencil className="btn__icon" />
-          <span className="btn-txt-display">Edit profile</span>
-        </Link>
+        <div className="profile-header__buttons">
+          <Link className="btn" to="#">
+            <Pencil className="btn__icon" />
+            <span className="btn-txt-display">Edit profile</span>
+          </Link>
+          <button className="btn btn-negative" onClick={deleteUser}>
+            <Trash className="btn__icon btn__icon-negative" />
+            <span className="btn-txt-display">Delete account</span>
+          </button>
+        </div>
       </div>
       {userProfile?.createdAt && (
         <main className="profile__main">

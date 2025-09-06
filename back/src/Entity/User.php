@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Post;
 use App\State\MeStateProvider;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserStateProcessor;
 use App\Repository\UserRepository;
@@ -46,6 +47,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['groups' => ['user:edit']],
             security: "is_granted('USER_EDIT', object)"
         ),
+        new Delete(
+            security: "is_granted('USER_DELETE', object)"
+        )
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -192,20 +196,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Character>
      */
-    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'owner')]
+    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'owner', cascade: ['remove'])]
     #[Groups(['user:item:read'])]
     private Collection $characters;
 
     /**
      * @var Collection<int, Story>
      */
-    #[ORM\OneToMany(targetEntity: Story::class, mappedBy: 'author')]
+    #[ORM\OneToMany(targetEntity: Story::class, mappedBy: 'author', cascade: ['remove'])]
     private Collection $authoredStories;
 
     /**
      * @var Collection<int, StoryMember>
      */
-    #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'memberUser')]
+    #[ORM\OneToMany(targetEntity: StoryMember::class, mappedBy: 'memberUser', cascade: ['remove'])]
     #[Groups(['user:item:read'])]
     private Collection $storyMemberships;
 
