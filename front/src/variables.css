@@ -119,4 +119,5 @@
   --search-input-radius: var(--radius-2xl);
   --rpbox-radius: var(--radius-lg);
   --banner-radius: var(--radius-lg);
+  --switch-radius: var(--radius-xl)
 }

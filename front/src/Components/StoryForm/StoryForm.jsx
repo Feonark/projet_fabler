@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronDown, Upload, X } from "lucide-react";
 import { LABELS } from "../../Utils/labels";
 import "./StoryForm.css";
+import Switch from "../Switch/Switch";
 
 const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
 
@@ -267,17 +268,12 @@ export default function StoryForm({
     <form className="form__container" onSubmit={handleSubmit}>
       {error && <div className="form__header-error">{error}</div>}
 
-      <div className="check__input">
-        <input
-          id="isPublic"
-          type="checkbox"
-          checked={isPublic}
-          onChange={(e) => setIsPublic(e.target.checked)}
-        />
-        <label htmlFor="isPublic" className="input__label">
-          Public <span className="asterisk">*</span>
-        </label>
-      </div>
+      <Switch
+        id="isPublic"
+        checked={isPublic}
+        onChange={setIsPublic}
+        label="Public"
+      />
 
       <div className="input__container">
         <label htmlFor="title" className="input__label">
