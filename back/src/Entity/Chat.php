@@ -62,8 +62,8 @@ class Chat
     #[Groups(['chat:item:read'])]
     private ?Story $story = null;
 
-    #[ORM\OneToOne(inversedBy: 'chat', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(inversedBy: 'chat')]
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     #[Groups(['chat:item:read', 'chat:edit'])]
     private ?Place $currentPlace = null;
 

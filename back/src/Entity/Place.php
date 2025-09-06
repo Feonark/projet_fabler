@@ -97,7 +97,7 @@ class Place
     #[Groups(['place:item:read', 'story:item:read', 'chat:item:read', 'place:create', 'place:edit'])]
     private ?string $placeImageUrl = null;
 
-    #[ORM\OneToOne(mappedBy: 'currentPlace', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'currentPlace')]
     private ?Chat $chat = null;
 
     #[ORM\ManyToOne(inversedBy: 'places')]
