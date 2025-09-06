@@ -24,7 +24,8 @@ const Chat = () => {
   const [lastMessage, setLastMessage] = useState();
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeout = useRef(null);
-  const messagesEndRef = useRef(null);
+  const messagesEndRefMobile = useRef(null);
+  const messagesEndRefDesktop = useRef(null);
   const [page, setPage] = useState(1);
   const [itemsPerPage] = useState(50);
   const [totalItems, setTotalItems] = useState(0);
@@ -406,7 +407,11 @@ const Chat = () => {
   };
 
   function scrollToBottom() {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (window.innerWidth >= 1224) {
+      messagesEndRefDesktop.current?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      messagesEndRefMobile.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -498,7 +503,7 @@ const Chat = () => {
 
           {/* Messages */}
           <ChatMessages messages={messages} chat={chat} user={user} />
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRefMobile} />
         </div>
         {/* Is writing indications */}
         {chat &&
@@ -684,7 +689,7 @@ const Chat = () => {
 
           {/* Messages */}
           <ChatMessages messages={messages} chat={chat} user={user} />
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRefDesktop} />
         </div>
         {/* Is writing indications */}
         {chat &&
