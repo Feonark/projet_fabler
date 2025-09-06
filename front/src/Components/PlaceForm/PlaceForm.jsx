@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { Upload, X } from "lucide-react";
+import { Upload, X, DiamondPlus } from "lucide-react";
 
 const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
 
@@ -151,7 +151,7 @@ const PlaceForm = ({
         const uploadData = await uploadRes.json();
         finalPlaceUrl = uploadData.url;
       } catch (err) {
-        setFieldError("placeFile", "Upload échoué.");
+        setFieldError("placeFile", "Please upload a valid image file.");
         return;
       }
     }
@@ -255,7 +255,8 @@ const PlaceForm = ({
       </div>
 
       <button type="submit" className="btn invert-btn submit-btn">
-        {submitLabel}
+        <DiamondPlus className="btn__icon invert-btn__icon" />
+        <span className="btn__text">{submitLabel}</span>
       </button>
 
       <span className="form__text">

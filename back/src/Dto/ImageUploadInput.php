@@ -10,9 +10,9 @@ final class ImageUploadInput
 
   #[Assert\NotNull]
   #[Assert\File(
-    maxSize: '5M',
-    extensions: ['jpg', 'png', 'bmp', 'webp'],
-    extensionsMessage: 'Please upload a valid file (jpg, png, bmp or webp)',
+    maxSize: '1M',
+    extensions: ['jpeg', 'jpg', 'png', 'bmp', 'webp'],
+    extensionsMessage: 'Please upload a valid image',
   )]
   public ?UploadedFile $file = null;
 

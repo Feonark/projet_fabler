@@ -19,6 +19,9 @@ import {
   Check,
   X,
   SquarePlus,
+  MessageSquareLock,
+  BookPlus,
+  LogIn,
 } from "lucide-react";
 import "./Story.css";
 
@@ -298,7 +301,8 @@ const Story = () => {
       if (user?.id && checkIfAcceptedMember()) {
         return (
           <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
-            Enter RP Chat
+            <MessageSquareLock className="btn__icon invert-btn__icon" />
+            <span className="btn__text">Enter RP Chat</span>
           </Link>
         );
       }
@@ -311,7 +315,8 @@ const Story = () => {
       if (checkIfAcceptedMember()) {
         return (
           <Link className="btn invert-btn" to={`/stories/${storyId}/chat`}>
-            Enter RP Chat
+            <MessageSquareLock className="btn__icon invert-btn__icon" />
+            <span className="btn__text">Enter RP Chat</span>
           </Link>
         );
       }
@@ -324,7 +329,12 @@ const Story = () => {
           onClick={joinStory}
           disabled={checkIsMembersFull() || checkIfJoined()}
         >
-          {checkIfJoined() ? "You asked to join this story" : "Join this story"}
+          <BookPlus className="btn__icon invert-btn__icon" />
+          <span className="btn__text">
+            {checkIfJoined()
+              ? "You asked to join this story"
+              : "Join this story"}
+          </span>
         </button>
       );
     }
@@ -332,7 +342,8 @@ const Story = () => {
     // Si utilisateur non connecté, redirection vers login
     return (
       <Link to="/login" className="btn invert-btn">
-        Log in to join
+        <LogIn className="btn__icon invert-btn__icon" />
+        <span className="btn__text">Log in to join</span>
       </Link>
     );
   }
@@ -562,7 +573,7 @@ const Story = () => {
                 (checkIsPlacesFull() ? (
                   <button className="btn btn-outline place-btn" disabled>
                     <SquarePlus className="btn__icon" />
-                    <span className="">Add place</span>
+                    <span className="btn__text">Add place</span>
                   </button>
                 ) : (
                   <Link
@@ -570,7 +581,7 @@ const Story = () => {
                     to={`/stories/${storyId}/places/new`}
                   >
                     <SquarePlus className="btn__icon" />
-                    <span className="">Add place</span>
+                    <span className="btn__text">Add place</span>
                   </Link>
                 ))}
             </div>

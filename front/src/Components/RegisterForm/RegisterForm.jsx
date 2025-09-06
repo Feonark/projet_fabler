@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Upload, X } from "lucide-react";
+import { Upload, X, DiamondPlus } from "lucide-react";
 
 const MAX_AVATAR_SIZE = 1000 * 1024; // 1Mo
 
@@ -266,11 +266,11 @@ const RegisterForm = () => {
             body: fd,
           }
         );
-        if (!uploadRes.ok) throw new Error("Upload échoué");
+        if (!uploadRes.ok) throw new Error("Please upload a valid image file.");
         const uploadData = await uploadRes.json();
         finalAvatarUrl = uploadData.url;
       } catch {
-        setFieldError("avatarFile", "Upload échoué.");
+        setFieldError("avatarFile", "Please upload a valid image file.");
         return;
       }
     }
@@ -437,7 +437,8 @@ const RegisterForm = () => {
       </div>
 
       <button className="btn invert-btn submit-btn" type="submit">
-        Register
+        <DiamondPlus className="btn__icon invert-btn__icon" />
+        <span className="btn__text">Register</span>
       </button>
 
       <span className="form__text">

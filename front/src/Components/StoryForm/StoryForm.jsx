@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, Upload, X } from "lucide-react";
+import { ChevronDown, Upload, X, DiamondPlus } from "lucide-react";
 import { LABELS } from "../../Utils/labels";
 import "./StoryForm.css";
 import Switch from "../Switch/Switch";
@@ -119,6 +119,7 @@ export default function StoryForm({
 
   const validateBanner = (file) => {
     const errs = [];
+
     if (file && file.size > MAX_BANNER_SIZE)
       errs.push("The story banner can't exceed 1Mo.");
     return errs;
@@ -241,7 +242,7 @@ export default function StoryForm({
         const uploadData = await uploadRes.json();
         finalBannerUrl = uploadData.url;
       } catch (err) {
-        setFieldError("bannerFile", "Upload échoué.");
+        setFieldError("bannerFile", "Please upload a valid image file.");
         return;
       }
     }
@@ -443,7 +444,8 @@ export default function StoryForm({
       </div>
 
       <button type="submit" className="btn invert-btn submit-btn">
-        {submitLabel}
+        <DiamondPlus className="btn__icon invert-btn__icon" />
+        <span className="btn__text">{submitLabel}</span>
       </button>
 
       <span className="form__text">

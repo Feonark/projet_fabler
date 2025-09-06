@@ -13,14 +13,12 @@ use App\State\ImageUploadStateProcessor;
   operations: [
     new Post(
       uriTemplate: '/images',
-      input: ImageUploadInput::class,
+      input: false,
       output: ImageUploadOutput::class,
       processor: ImageUploadStateProcessor::class,
-      deserialize: false,
-      validationContext: ['groups' => ['Default']],
       extraProperties: [
         'openapi_context' => [
-          'summary' => 'Upload d’une image (multipart/form-data)',
+          'summary' => 'Upload d\'une image (multipart/form-data)',
           'requestBody' => [
             'content' => [
               'multipart/form-data' => [
@@ -31,7 +29,7 @@ use App\State\ImageUploadStateProcessor;
                     'folder' => ['type' => 'string', 'enum' => ['avatars', 'banners', 'places', 'portraits']],
                     'filename' => ['type' => 'string'],
                   ],
-                  'required' => ['file', 'folder']
+                  'required' => ['file', 'folder'],
                 ]
               ]
             ]
@@ -39,7 +37,6 @@ use App\State\ImageUploadStateProcessor;
         ]
       ]
     )
-
   ]
 )]
 final class ImageUpload {}

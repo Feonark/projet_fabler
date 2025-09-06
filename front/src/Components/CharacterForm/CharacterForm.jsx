@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Upload, X } from "lucide-react";
+import { Upload, X, DiamondPlus } from "lucide-react";
 
 const MAX_AVATAR_SIZE = 1000 * 1024; // 1Mo
 const MAX_PORTRAIT_SIZE = 1000 * 1024; // 1Mo
@@ -192,7 +192,7 @@ const CharacterForm = ({
         const uploadData = await uploadRes.json();
         finalPortraitUrl = uploadData.url;
       } catch (err) {
-        setFieldError("portraitFile", "Upload échoué.");
+        setFieldError("portraitFile", "Please upload a valid image file.");
         return;
       }
     }
@@ -217,7 +217,7 @@ const CharacterForm = ({
         const uploadData = await uploadRes.json();
         finalAvatarUrl = uploadData.url;
       } catch (err) {
-        setFieldError("avatarFile", "Upload échoué.");
+        setFieldError("avatarFile", "Please upload a valid image file.");
         return;
       }
     }
@@ -385,7 +385,8 @@ const CharacterForm = ({
       </div>
 
       <button type="submit" className="btn invert-btn submit-btn">
-        {submitLabel}
+        <DiamondPlus className="btn__icon invert-btn__icon" />
+        <span className="btn__text">{submitLabel}</span>
       </button>
 
       <span className="form__text">

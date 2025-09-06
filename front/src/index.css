@@ -320,6 +320,11 @@ button {
   border: 1px solid var(--subtle-text);
 }
 
+.btn__text {
+  font-family: var(--font-family-inter);
+  font-weight: var(--text-medium);
+}
+
 .btn-txt-display {
   display: none;
 }
@@ -636,6 +641,8 @@ button {
   
   .btn-txt-display {
     display: block;
+    font-family: var(--font-family-inter);
+    font-weight: var(--text-medium);
   }
 
   .pagination__container {

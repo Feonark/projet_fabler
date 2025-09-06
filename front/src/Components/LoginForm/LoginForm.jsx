@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../Contexts/AuthContext";
 import { useNavigate, Link } from "react-router";
-import { SquarePlus, X } from "lucide-react";
+import { DiamondPlus } from "lucide-react";
 import "./LoginForm.css";
 
 const LoginForm = () => {
@@ -66,7 +66,8 @@ const LoginForm = () => {
         </div>
 
         <button className="btn invert-btn submit-btn" type="submit">
-          Log in
+          <DiamondPlus className="btn__icon invert-btn__icon" />
+          <span className="btn__text">Log in</span>
         </button>
 
         <span className="form__text">

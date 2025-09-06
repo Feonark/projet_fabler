@@ -75,7 +75,7 @@ const Home = () => {
           to={user?.id ? "stories/new" : "login"}
         >
           <SquarePlus className="btn__icon invert-btn__icon" />
-          <span className="">Create a story</span>
+          <span className="btn__text">Create a story</span>
         </Link>
       </div>
       {/* Section latest stories */}
