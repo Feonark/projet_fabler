@@ -155,7 +155,7 @@ const Profile = () => {
               alt="User avatar"
               style={{
                 width: "128px",
-                maxHeight: "128px",
+                height: "128px",
                 objectFit: "cover",
                 borderRadius: "8px",
               }}
