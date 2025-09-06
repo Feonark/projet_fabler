@@ -1,0 +1,381 @@
+import { useState, useEffect } from "react";
+import { Upload, X } from "lucide-react";
+
+const MAX_AVATAR_SIZE = 1000 * 1024; // 1Mo
+const reHtmlTag = /<[^>]*>/;
+
+// Helpers dates
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const yearsAgoISO = (years) => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - years);
+  return d.toISOString().slice(0, 10);
+};
+
+const ProfileForm = ({
+  initialValues,
+  onSubmit,
+  submitLabel = "Save",
+  error,
+}) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [description, setDescription] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [backFieldErrors, setBackFieldErrors] = useState({});
+
+  useEffect(() => {
+    if (!initialValues) return;
+    setUsername(initialValues.username ?? "");
+    setEmail(initialValues.email ?? "");
+    setDescription(initialValues.description ?? "");
+    setBirthdate(
+      initialValues.birthdate ? initialValues.birthdate.slice(0, 10) : ""
+    );
+    setAvatarUrl(initialValues.avatarUrl ?? "");
+  }, [initialValues]);
+
+  const setFieldError = (field, messages) => {
+    setFieldErrors((prev) => ({
+      ...prev,
+      [field]: Array.isArray(messages) ? messages : messages ? [messages] : [],
+    }));
+  };
+  const clearFieldError = (field) => {
+    setFieldErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // VALIDATION
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const validateUsername = (val) => {
+    const errs = [];
+    if (!val?.trim()) errs.push("Username cannot be blank.");
+    if (val && val.length < 3)
+      errs.push("Username must be at least 3 characters long.");
+    if (val && val.length > 30)
+      errs.push("Username cannot be longer than 30 characters.");
+    if (val && reHtmlTag.test(val))
+      errs.push("HTML tags are not allowed in username.");
+    return errs;
+  };
+
+  const validateEmail = (val) => {
+    const errs = [];
+    if (!val?.trim()) errs.push("Email cannot be blank.");
+    return errs;
+  };
+
+  const validateDescription = (val) => {
+    const errs = [];
+    if (val && val.length > 2000)
+      errs.push("Description cannot be longer than 2000 characters.");
+    if (val && reHtmlTag.test(val))
+      errs.push("HTML tags are not allowed in description.");
+    return errs;
+  };
+
+  const validateBirthdate = (val) => {
+    if (!val) return [];
+    const errs = [];
+    const isoToday = todayISO();
+    const iso13 = yearsAgoISO(13);
+    const iso120 = yearsAgoISO(120);
+    if (val >= isoToday) errs.push("Birthdate must be in the past.");
+    if (val > iso13) errs.push("You must be at least 13 years old.");
+    if (val < iso120) errs.push("No human lives that long, Elf.");
+    return errs;
+  };
+
+  const validateAvatar = (file, url) => {
+    const errs = [];
+    if (!file && !url) errs.push("Avatar is required.");
+    if (file && file.size > MAX_AVATAR_SIZE)
+      errs.push("Avatar cannot exceed 1Mo.");
+    return errs;
+  };
+
+  const validateAll = () => {
+    const newErrors = {};
+    const u = validateUsername(username);
+    if (u.length) newErrors.username = u;
+    const e = validateEmail(email);
+    if (e.length) newErrors.email = e;
+    const d = validateDescription(description);
+    if (d.length) newErrors.description = d;
+    const b = validateBirthdate(birthdate);
+    if (b.length) newErrors.birthdate = b;
+    const a = validateAvatar(avatarFile, avatarUrl);
+    if (a.length) newErrors.avatarFile = a;
+    return newErrors;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLERS ONCHANGE
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const onUsernameChange = (e) => {
+    const v = e.target.value;
+    setUsername(v);
+    const errs = validateUsername(v);
+    errs.length ? setFieldError("username", errs) : clearFieldError("username");
+    setBackFieldErrors((prev) => ({ ...prev, username: undefined }));
+  };
+
+  const onEmailChange = (e) => {
+    const v = e.target.value;
+    setEmail(v);
+    const errs = validateEmail(v);
+    errs.length ? setFieldError("email", errs) : clearFieldError("email");
+    setBackFieldErrors((prev) => ({ ...prev, email: undefined }));
+  };
+
+  const onDescriptionChange = (e) => {
+    const v = e.target.value;
+    setDescription(v);
+    const errs = validateDescription(v);
+    errs.length
+      ? setFieldError("description", errs)
+      : clearFieldError("description");
+  };
+
+  const onBirthdateChange = (e) => {
+    const v = e.target.value;
+    setBirthdate(v);
+    const errs = validateBirthdate(v);
+    errs.length
+      ? setFieldError("birthdate", errs)
+      : clearFieldError("birthdate");
+  };
+
+  const onAvatarChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setAvatarFile(file);
+    const errs = validateAvatar(file, avatarUrl);
+    errs.length
+      ? setFieldError("avatarFile", errs)
+      : clearFieldError("avatarFile");
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // BACK-END ERROR EXTRACTION
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const extractBackFieldErrors = (errorData) => {
+    const out = {};
+
+    if (Array.isArray(errorData?.violations)) {
+      errorData.violations.forEach((v) => {
+        const key = v.propertyPath || "global";
+        if (key !== "global") {
+          out[key] = [...(out[key] || []), v.message];
+        }
+      });
+    }
+
+    const text = [
+      errorData?.detail,
+      errorData?.description,
+      errorData?.["hydra:description"],
+      errorData?.message,
+      errorData?.title,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const uniqueRx = /Key\s*\(([^)]+)\)\s*=\s*\([^)]+\)\s*already exists/i;
+    const m = uniqueRx.exec(text);
+    if (m && m[1]) {
+      const field = m[1].trim();
+      if (field === "email" || field === "username") {
+        out[field] = [...(out[field] || []), "This is already used."];
+      }
+    }
+
+    return out;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // HANDLE SUBMIT
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setBackFieldErrors({});
+
+    const all = validateAll();
+    if (Object.keys(all).length > 0) {
+      setFieldErrors(all);
+      return;
+    }
+
+    let finalAvatarUrl = avatarUrl;
+
+    if (avatarFile) {
+      const fd = new FormData();
+      const extension = avatarFile.name?.split(".").pop() || "jpg";
+      fd.append("file", avatarFile, `avatar.${extension}`);
+      fd.append("folder", "avatars");
+
+      try {
+        const uploadRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/images`,
+          {
+            method: "POST",
+            headers: { Accept: "application/ld+json" },
+            body: fd,
+          }
+        );
+        if (!uploadRes.ok) throw new Error("Upload failed");
+        const uploadData = await uploadRes.json();
+        finalAvatarUrl = uploadData.url;
+      } catch {
+        setFieldError("avatarFile", "Upload échoué.");
+        return;
+      }
+    }
+
+    onSubmit?.({
+      username,
+      email,
+      description,
+      birthdate,
+      avatarUrl: finalAvatarUrl,
+    });
+  };
+
+  const firstErr = (field) =>
+    fieldErrors[field]?.[0] || backFieldErrors[field]?.[0] || "";
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // UI
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  return (
+    <form onSubmit={handleSubmit} className="form__container">
+      {error && <div className="form__header-error">{error}</div>}
+
+      <div className="input__container">
+        <label htmlFor="username" className="input__label">
+          Username <span className="asterisk">*</span>
+        </label>
+        <input
+          id="username"
+          type="text"
+          value={username}
+          placeholder="Your username"
+          onChange={onUsernameChange}
+          required
+        />
+        <span className="form__error">{firstErr("username")}</span>
+      </div>
+
+      <div className="input__container">
+        <label htmlFor="email" className="input__label">
+          Email <span className="asterisk">*</span>
+        </label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          placeholder="Your email"
+          onChange={onEmailChange}
+          required
+        />
+        <span className="form__error">{firstErr("email")}</span>
+      </div>
+
+      <div className="input__container">
+        <label htmlFor="description" className="input__label">
+          Description
+        </label>
+        <textarea
+          id="description"
+          value={description}
+          placeholder="Describe yourself"
+          onChange={onDescriptionChange}
+        />
+        <span className="form__error">{firstErr("description")}</span>
+      </div>
+
+      <div className="input__container">
+        <label htmlFor="birthdate" className="input__label">
+          Birthdate
+        </label>
+        <input
+          id="birthdate"
+          type="date"
+          value={birthdate}
+          onChange={onBirthdateChange}
+        />
+        <span className="form__error">{firstErr("birthdate")}</span>
+      </div>
+
+      <div className="input__container">
+        <label htmlFor="profileAvatarFile" className="input__label">
+          Avatar <span className="asterisk">*</span>
+        </label>
+        <input
+          id="profileAvatarFile"
+          className="input-file"
+          type="file"
+          accept=".jpg, .jpeg, .png, .bmp"
+          onChange={onAvatarChange}
+        />
+        <label htmlFor="profileAvatarFile" className="file-upload__trigger">
+          {avatarFile || avatarUrl ? (
+            <div className="file-upload__preview-wrapper">
+              <img
+                className="file-upload__preview-img"
+                src={
+                  avatarFile
+                    ? URL.createObjectURL(avatarFile)
+                    : `${import.meta.env.VITE_API_URL}/${avatarUrl}`
+                }
+                alt="Avatar preview"
+              />
+              <button
+                type="button"
+                className="file-upload__remove"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setAvatarFile(null);
+                  setAvatarUrl("");
+                }}
+              >
+                <X className="file-upload__remove-icon" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Upload className="file-upload__icon" />
+              <span className="file-upload__text">
+                Click here to upload a file
+              </span>
+            </>
+          )}
+        </label>
+        <span className="form__error">{firstErr("avatarFile")}</span>
+      </div>
+
+      <button type="submit" className="btn invert-btn submit-btn">
+        {submitLabel}
+      </button>
+      <span className="form__text">
+        All fields marked with (<span className="asterisk">*</span>) are
+        mandatory.
+      </span>
+    </form>
+  );
+};
+
+export default ProfileForm;

@@ -118,7 +118,7 @@ const Profile = () => {
           <span className="btn-txt-display">Back</span>
         </button>
         <div className="profile-header__buttons">
-          <Link className="btn" to="#">
+          <Link className="btn" to={`/profile/edit`}>
             <Pencil className="btn__icon" />
             <span className="btn-txt-display">Edit profile</span>
           </Link>

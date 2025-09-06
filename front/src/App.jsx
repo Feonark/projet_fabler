@@ -11,6 +11,7 @@ import NewCharacter from "./Pages/Character/NewCharacter";
 import EditCharacter from "./Pages/Character/EditCharacter";
 import Register from "./Pages/Register/Register";
 import Profile from "./Pages/Profile/Profile";
+import EditProfile from "./Pages/Profile/EditProfile";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router";
 import PublicLayout from "./Layouts/PublicLayout/PublicLayout";
@@ -29,6 +30,7 @@ function App() {
             <Route path="register" element={<Register />} />
 
             <Route path="profile" element={<Profile />} />
+            <Route path="profile/edit" element={<EditProfile />} />
 
             <Route path="profile/characters/new" element={<NewCharacter />} />
             <Route
