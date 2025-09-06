@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, Upload, X } from "lucide-react";
+import { LABELS } from "../../Utils/labels";
 import "./StoryForm.css";
 
 const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
@@ -371,7 +372,7 @@ export default function StoryForm({
             <option value="">-- Select genre --</option>
             {GENRE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
-                {opt}
+                {LABELS.GENRE[opt]}
               </option>
             ))}
           </select>
@@ -392,7 +393,7 @@ export default function StoryForm({
             <option value="">-- Select audience --</option>
             {AUDIENCE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
-                {opt}
+                {LABELS.AUDIENCE[opt]}
               </option>
             ))}
           </select>
@@ -415,7 +416,7 @@ export default function StoryForm({
             <option value="">-- Select access --</option>
             {ACCESS_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
-                {opt}
+                {LABELS.ACCESS[opt]}
               </option>
             ))}
           </select>
@@ -436,7 +437,7 @@ export default function StoryForm({
             <option value="">-- Select language --</option>
             {LANGUAGE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
-                {opt}
+                {LABELS.LANGUAGE[opt]}
               </option>
             ))}
           </select>

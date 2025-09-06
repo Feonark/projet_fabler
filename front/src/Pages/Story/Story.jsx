@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
+import { LABELS } from "../../Utils/labels";
 import StorymemberCard from "../../Components/StorymemberCard/StorymemberCard";
 import PlaceCard from "../../Components/PlaceCard/PlaceCard";
 import {
@@ -279,11 +280,8 @@ const Story = () => {
   // OTHER
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  const formatEnumLabel = (value) => {
-    return value
-      .toLowerCase()
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatEnumLabel = (type, value) => {
+    return LABELS[type]?.[value] || value;
   };
 
   const getCurrentStoryMemberId = () => {
@@ -420,25 +418,25 @@ const Story = () => {
             <span className="banner__chip">
               <BookMarked className="chip__icon" />
               <span className="chip__txt">
-                {formatEnumLabel(`${story.genreType}`)}
+                {formatEnumLabel("GENRE", story.genreType)}
               </span>
             </span>
             <span className="banner__chip">
               <Target className="chip__icon" />
               <span className="chip__txt">
-                {formatEnumLabel(`${story.audienceType}`)}
+                {formatEnumLabel("AUDIENCE", story.audienceType)}
               </span>
             </span>
             <span className="banner__chip">
               <Globe className="chip__icon" />
               <span className="chip__txt">
-                {formatEnumLabel(`${story.languageType}`)}
+                {formatEnumLabel("LANGUAGE", story.languageType)}
               </span>
             </span>
             <span className="banner__chip">
               <DoorClosed className="chip__icon" />
               <span className="chip__txt">
-                {formatEnumLabel(`${story.accessType}`)}
+                {formatEnumLabel("ACCESS", story.accessType)}
               </span>
             </span>
           </div>

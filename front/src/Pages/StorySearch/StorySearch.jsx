@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { LABELS } from "../../Utils/labels";
 import { Link } from "react-router";
 import {
   ChevronDown,
@@ -101,11 +102,8 @@ export default function StorySearch() {
   // OTHER
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  const formatEnumLabel = (value) => {
-    return value
-      .toLowerCase()
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatEnumLabel = (type, value) => {
+    return LABELS[type]?.[value] || value;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +148,7 @@ export default function StorySearch() {
                   <option value="">All genres</option>
                   {GENRE_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>
-                      {opt}
+                      {LABELS.GENRE[opt]}
                     </option>
                   ))}
                 </select>
@@ -170,7 +168,7 @@ export default function StorySearch() {
                   <option value="">All audiences</option>
                   {AUDIENCE_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>
-                      {opt}
+                      {LABELS.AUDIENCE[opt]}
                     </option>
                   ))}
                 </select>
@@ -192,7 +190,7 @@ export default function StorySearch() {
                   <option value="">All languages</option>
                   {LANGUAGE_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>
-                      {opt}
+                      {LABELS.LANGUAGE[opt]}
                     </option>
                   ))}
                 </select>
@@ -212,7 +210,7 @@ export default function StorySearch() {
                   <option value="">All accesses</option>
                   {ACCESS_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>
-                      {opt}
+                      {LABELS.ACCESS[opt]}
                     </option>
                   ))}
                 </select>

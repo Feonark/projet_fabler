@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../../Contexts/AuthContext";
+import { LABELS } from "../../Utils/labels";
 import { SquarePlus, Search } from "lucide-react";
 import "./Home.css";
 import StoryCard from "../../Components/StoryCard/StoryCard";
@@ -41,11 +42,8 @@ const Home = () => {
   // OTHER
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  const formatEnumLabel = (value) => {
-    return value
-      .toLowerCase()
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatEnumLabel = (type, value) => {
+    return LABELS[type]?.[value] || value;
   };
 
   const getCurrentStoryMemberId = () => {

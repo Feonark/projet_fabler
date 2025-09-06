@@ -30,25 +30,25 @@ const StoryCard = ({ story, author, formatEnumLabel }) => {
         {story.genreType && (
           <span className="card__chip">
             <BookMarked className="card-chip__icon" />
-            {formatEnumLabel(`${story.genreType}`)}
+            {formatEnumLabel("GENRE", story.genreType)}
           </span>
         )}
         {story.audienceType && (
           <span className="card__chip">
             <Target className="card-chip__icon" />
-            {formatEnumLabel(`${story.audienceType}`)}
+            {formatEnumLabel("AUDIENCE", story.audienceType)}
           </span>
         )}
         {story.languageType && (
           <span className="card__chip">
             <Globe className="card-chip__icon" />
-            {formatEnumLabel(`${story.languageType}`)}
+            {formatEnumLabel("LANGUAGE", story.languageType)}
           </span>
         )}
         {story.accessType && (
           <span className="card__chip">
             <DoorClosed className="card-chip__icon" />
-            {formatEnumLabel(`${story.accessType}`)}
+            {formatEnumLabel("ACCESS", story.accessType)}
           </span>
         )}
       </div>
