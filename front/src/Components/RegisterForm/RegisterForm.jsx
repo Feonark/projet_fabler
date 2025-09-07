@@ -368,62 +368,60 @@ const RegisterForm = () => {
         <span className="form__error">{firstErr("plainPassword")}</span>
       </div>
 
-      <div className="form__row">
-        <div className="input__container form-row__item">
-          <label className="input__label">Birthdate</label>
-          <input type="date" value={birthdate} onChange={onBirthdateChange} />
-          <span className="form__error">{firstErr("birthdate")}</span>
-        </div>
+      <div className="input__container">
+        <label className="input__label">Birthdate</label>
+        <input type="date" value={birthdate} onChange={onBirthdateChange} />
+        <span className="form__error">{firstErr("birthdate")}</span>
+      </div>
 
-        <div className="input__container form-row__item">
-          <label htmlFor="avatarFile" className="input__label">
-            Profile picture
-          </label>
-          <input
-            id="avatarFile"
-            type="file"
-            className="input-file"
-            accept=".jpg, .jpeg, .png, .bmp"
-            onChange={onAvatarChange}
-          />
+      <div className="input__container">
+        <label htmlFor="avatarFile" className="input__label">
+          Profile picture
+        </label>
+        <input
+          id="avatarFile"
+          type="file"
+          className="input-file"
+          accept=".jpg, .jpeg, .png, .bmp"
+          onChange={onAvatarChange}
+        />
 
-          {/* input upload custom + preview */}
-          <label htmlFor="avatarFile" className="file-upload__trigger">
-            {avatarFile || avatarUrl ? (
-              <div className="file-upload__preview-wrapper">
-                <img
-                  className="file-upload__preview-img"
-                  src={
-                    avatarFile
-                      ? URL.createObjectURL(avatarFile)
-                      : `${import.meta.env.VITE_API_URL}/${avatarUrl}`
-                  }
-                  alt="Avatar preview"
-                />
-                <button
-                  type="button"
-                  className="file-upload__remove"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setAvatarFile(null);
-                    setAvatarUrl("");
-                  }}
-                >
-                  <X className="file-upload__remove-icon" />
-                </button>
-              </div>
-            ) : (
-              <>
-                <Upload className="file-upload__icon" />
-                <span className="file-upload__text">
-                  Click here to upload a file
-                </span>
-              </>
-            )}
-          </label>
+        {/* input upload custom + preview */}
+        <label htmlFor="avatarFile" className="file-upload__trigger">
+          {avatarFile || avatarUrl ? (
+            <div className="file-upload__preview-wrapper">
+              <img
+                className="file-upload__preview-img"
+                src={
+                  avatarFile
+                    ? URL.createObjectURL(avatarFile)
+                    : `${import.meta.env.VITE_API_URL}/${avatarUrl}`
+                }
+                alt="Avatar preview"
+              />
+              <button
+                type="button"
+                className="file-upload__remove"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setAvatarFile(null);
+                  setAvatarUrl("");
+                }}
+              >
+                <X className="file-upload__remove-icon" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Upload className="file-upload__icon" />
+              <span className="file-upload__text">
+                Click here to upload a file
+              </span>
+            </>
+          )}
+        </label>
 
-          <span className="form__error">{firstErr("avatarFile")}</span>
-        </div>
+        <span className="form__error">{firstErr("avatarFile")}</span>
       </div>
 
       <div className="input__container">
