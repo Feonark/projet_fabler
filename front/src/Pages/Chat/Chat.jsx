@@ -163,17 +163,26 @@ const Chat = () => {
   }, [token, chat?.members?.map((m) => m.memberChatStatus?.["@id"]).join(",")]);
 
   // Troisième useEffect pour la gestion online/offline
-  // Quand le chat & l'user sont bien présents, on passe le statut à online
-  // Quand l'user quitte la page, on passe le statut à offline
   useEffect(() => {
-    if (chat && user && token) {
-      setOnlineStatus(true);
-    }
+    if (!chat || !user || !token) return;
 
+    // Quand le composant est monté on met online
+    setOnlineStatus(true);
+
+    const handleBeforeUnload = () => {
+      // quand l'onglet ou le navigateur se ferme on met offline avec sendBeacon === true
+      setOnlineStatus(false, true);
+    };
+
+    // J'ajoute un event listener sur beforeunload
+    // (qui s'active quand la fenêtre est sur le point d'être déchargée)
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Cleanup de l'eventListener
+    // avec passage du statut à false si l'user quitte le composant mais reste sur l'app
     return () => {
-      if (user && token) {
-        setOnlineStatus(false);
-      }
+      setOnlineStatus(false);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [chat?.id, user?.id, token]);
 
@@ -289,27 +298,45 @@ const Chat = () => {
   // CRUD
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  const setOnlineStatus = async (online) => {
+  // useBeacon = booléen optionnel, par défaut false, indique si on doit utiliser sendBeacon au lieu de fetch
+  const setOnlineStatus = async (online, useBeacon = false) => {
     if (!chat || !user) return;
+
+    // Je cherche le membre correspondant à l'utilisateur connecté
+    // Si y en a pas je stoppe
     const myMember = chat.members?.find(
       (member) => member.memberUser.id === user.id
     );
     if (!myMember) return;
+
+    // Je construis la requête URL qui pointe vers l'endpoint du statut du membre + le payload
+    const url = `${import.meta.env.VITE_API_URL}${
+      myMember.memberChatStatus["@id"]
+    }`;
+    const payload = JSON.stringify({ isOnline: online });
+
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}${myMember.memberChatStatus["@id"]}`,
-        {
+      // Si useBeacon === true,
+      // transformation du payload JSON en Blob pour que sendBeacon puisse l'envoyer
+      // puis envoi de la requête
+      if (useBeacon) {
+        const blob = new Blob([payload], {
+          type: "application/merge-patch+json",
+        });
+        navigator.sendBeacon(url, blob);
+      } else {
+        // Sinon requête fetch normale
+        const response = await fetch(url, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/merge-patch+json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ isOnline: online }),
+          body: payload,
+        });
+        if (!response.ok) {
+          throw new Error(`Erreur serveur : ${response.status}`);
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Erreur serveur : ${response.status}`);
       }
     } catch (err) {
       console.error("Erreur setOnlineStatus:", err);

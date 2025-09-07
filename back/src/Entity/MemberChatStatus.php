@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
@@ -19,6 +20,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         new Patch(
             normalizationContext: ['groups' => ['status:read']],
             denormalizationContext: ['groups' => ['status:edit']],
+        ),
+        new Post(
+            uriTemplate: '/member_chat_statuses/{id}',
+            requirements: ['id' => '\d+'],
+            denormalizationContext: ['groups' => ['status:edit']],
+            normalizationContext: ['groups' => ['status:read']],
+            inputFormats: ['json' => ['application/merge-patch+json']],
+            outputFormats: ['json' => ['application/ld+json']],
         )
     ]
 )]
