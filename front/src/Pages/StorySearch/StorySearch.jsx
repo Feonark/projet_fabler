@@ -14,7 +14,7 @@ import "./StorySearch.css";
 
 const GENRE_OPTIONS = [
   "FANTASY",
-  "SCI_FICTION",
+  "SCIENCE_FICTION",
   "HORROR",
   "ROMANCE",
   "MEDIEVAL",

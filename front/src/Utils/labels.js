@@ -2,13 +2,13 @@
 export const LABELS = {
   GENRE: {
     FANTASY: "Fantasy",
-    SCI_FICTION: "Science-fiction",
+    SCIENCE_FICTION: "Science-fiction",
     HORROR: "Horror",
     ROMANCE: "Romance",
     MEDIEVAL: "Medieval",
     POST_APOCALYPTIC: "Post-apocalyptic",
     CYBERPUNK: "Cyberpunk",
-    SUPERNATURAL: "Surnatural",
+    SUPERNATURAL: "Supernatural",
     MYSTERY: "Mystery",
     ADVENTURE: "Adventure",
     STEAMPUNK: "Steampunk",

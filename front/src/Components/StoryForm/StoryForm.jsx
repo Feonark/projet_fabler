@@ -8,7 +8,7 @@ const MAX_BANNER_SIZE = 1000 * 1024; // 1Mo
 
 const GENRE_OPTIONS = [
   "FANTASY",
-  "SCI_FICTION",
+  "SCIENCE_FICTION",
   "HORROR",
   "ROMANCE",
   "MEDIEVAL",
