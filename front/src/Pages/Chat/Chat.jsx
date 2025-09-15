@@ -434,7 +434,7 @@ const Chat = () => {
   };
 
   function scrollToBottom() {
-    if (window.innerWidth >= 1224) {
+    if (window.innerWidth >= 768) {
       messagesEndRefDesktop.current?.scrollIntoView({ behavior: "smooth" });
     } else {
       messagesEndRefMobile.current?.scrollIntoView({ behavior: "smooth" });
